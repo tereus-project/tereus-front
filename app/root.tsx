@@ -1,0 +1,38 @@
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "remix";
+import type { MetaFunction } from "remix";
+import euiThemeLight from '@elastic/eui/dist/eui_theme_light.css';
+import { EuiGlobalStyles, EuiProvider } from "@elastic/eui";
+
+export const meta: MetaFunction = () => {
+  return { title: "New Remix App" };
+};
+
+export default function App() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Meta />
+        <EuiGlobalStyles />
+        <link rel="stylesheet" href={euiThemeLight} />
+        <Links />
+      </head>
+      <body>
+        <EuiProvider colorMode="light" globalStyles={false}>
+          <Outlet />
+        </EuiProvider>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
