@@ -1,2 +1,2 @@
 # Tereus Front
-Web application for using Tereus API.
+Web application for Tereus API.
