@@ -12,7 +12,7 @@ import euiThemeLight from '@elastic/eui/dist/eui_theme_light.css';
 import { EuiGlobalStyles, EuiProvider } from "@elastic/eui";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "Tereus" };
 };
 
 export const links: LinksFunction = () => {
