@@ -1,7 +1,7 @@
 import { EuiAvatar, EuiHeader, EuiHeaderLink, EuiHeaderLinks, EuiHeaderLogo, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiIcon, EuiPage, EuiPageBody, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiToolTip, IconType } from "@elastic/eui";
 
 export type PageProps = React.PropsWithChildren<{
-  title: string;
+  title?: string;
   icon?: IconType;
 }>
 
@@ -56,10 +56,12 @@ export function Page({ children, title, icon = '' }: PageProps) {
 
       <EuiPage>
         <EuiPageBody>
-          <EuiPageHeader
-            iconType={icon}
-            pageTitle={title}
-          />
+          {title &&
+            <EuiPageHeader
+              iconType={icon}
+              pageTitle={title}
+            />
+          }
 
           <EuiPageContent
             hasBorder={false}
