@@ -1,5 +1,6 @@
 import {
   Links,
+  LinksFunction,
   LiveReload,
   Meta,
   Outlet,
@@ -14,6 +15,15 @@ export const meta: MetaFunction = () => {
   return { title: "New Remix App" };
 };
 
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'stylesheet',
+      href: euiThemeLight,
+    },
+  ];
+};
+
 export default function App() {
   return (
     <html lang="en">
@@ -22,7 +32,6 @@ export default function App() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <EuiGlobalStyles />
-        <link rel="stylesheet" href={euiThemeLight} />
         <Links />
       </head>
       <body>
