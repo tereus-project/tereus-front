@@ -60,7 +60,7 @@ export default function Remixer() {
 
   useEffect(() => {
     if (transition.state === 'loading' && actionData?.response) {
-      setSources(loaderData.concat(actionData.response));
+      setSources(sources.concat(actionData.response));
 
       addToast({
         id: uuidv4(),
