@@ -100,6 +100,7 @@ export default function Remixer() {
                 name="file"
                 display="default"
                 accept=".zip"
+                autoComplete="off"
                 required
                 multiple={false}
               />
