@@ -7,12 +7,14 @@ const { icon: EuiIconLogoElastic } = require('@elastic/eui/es/components/icon/as
 const { icon: EuiIconImport } = require('@elastic/eui/es/components/icon/assets/import');
 const { icon: EuiIconArrowDown } = require('@elastic/eui/es/components/icon/assets/arrow_down');
 const { icon: EuiIconCompute } = require('@elastic/eui/es/components/icon/assets/compute');
+const { icon: EuiIconCross } = require('@elastic/eui/es/components/icon/assets/cross');
 
 appendIconComponentCache({
   logoElastic: EuiIconLogoElastic,
   importAction: EuiIconImport,
   arrowDown: EuiIconArrowDown,
   compute: EuiIconCompute,
+  cross: EuiIconCross,
 });
 
 hydrate(<RemixBrowser />, document);
