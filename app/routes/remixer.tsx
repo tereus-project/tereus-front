@@ -5,6 +5,7 @@ import { ActionFunction, json, unstable_createMemoryUploadHandler, unstable_pars
 import * as api from '~/api';
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";
+import { v4 as uuidv4 } from 'uuid';
 
 export const loader = async () => {
   return [
@@ -62,7 +63,7 @@ export default function Remixer() {
       setSources(loaderData.concat(actionData.response));
 
       addToast({
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         title: 'New source added',
         color: 'success',
         text: <>Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon.</>,
