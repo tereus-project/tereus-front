@@ -8,6 +8,7 @@ const { icon: EuiIconImport } = require('@elastic/eui/es/components/icon/assets/
 const { icon: EuiIconArrowDown } = require('@elastic/eui/es/components/icon/assets/arrow_down');
 const { icon: EuiIconCompute } = require('@elastic/eui/es/components/icon/assets/compute');
 const { icon: EuiIconCross } = require('@elastic/eui/es/components/icon/assets/cross');
+const { icon: EuiIconLock } = require('@elastic/eui/es/components/icon/assets/lock');
 
 appendIconComponentCache({
   logoElastic: EuiIconLogoElastic,
@@ -15,6 +16,7 @@ appendIconComponentCache({
   arrowDown: EuiIconArrowDown,
   compute: EuiIconCompute,
   cross: EuiIconCross,
+  lock: EuiIconLock,
 });
 
 hydrate(<RemixBrowser />, document);

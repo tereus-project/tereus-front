@@ -1,8 +1,26 @@
-export default async function request<T>(method: string, url: string, body?: FormData): Promise<[T, null] | [null, string[]]> {
+export default async function request<T>(config: {
+  method: string;
+  url: string;
+  body?: FormData | any;
+  token?: string;
+}): Promise<[T, null] | [null, string[]]> {
   try {
-    const res = await fetch(`${process.env.API_URL}${url}`, {
-      method,
+    const headers: HeadersInit = {};
+    let body = config.body;
+
+    if (!(config.body instanceof FormData)) {
+      body = JSON.stringify(config.body);
+      headers['Content-Type'] = 'application/json';
+    }
+
+    if (config.token) {
+      headers['Authorization'] = `Bearer ${config.token}`;
+    }
+
+    const res = await fetch(`${process.env.API_URL}${config.url}`, {
+      method: config.method,
       body,
+      headers,
     });
 
     const data = await res.json();

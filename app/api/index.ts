@@ -8,4 +8,23 @@ export interface RemixResponseDTO {
   target_language: string;
 }
 
-export const remix = (body: FormData) => request<RemixResponseDTO>('POST', `/remix/${body.get('sourceLanguage')}/to/${body.get('targetLanguage')}`, body);
+export const remix = (body: FormData, token: string) => request<RemixResponseDTO>({
+  method: 'POST',
+  url: `/remix/zip/${body.get('sourceLanguage')}/to/${body.get('targetLanguage')}`,
+  body,
+  token,
+});
+
+export interface AuthGithubDTO {
+  code: string;
+}
+
+export interface AuthGithubResponseDTO {
+  token: string;
+}
+
+export const authGithub = (body: AuthGithubDTO) => request<AuthGithubResponseDTO>({
+  method: 'POST',
+  url: `/auth/login/github`,
+  body,
+});

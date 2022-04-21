@@ -25,6 +25,10 @@ export function Page({ children, title, icon = '' }: PageProps) {
               Remixer
             </EuiHeaderLink>
 
+            <EuiHeaderLink href="/login">
+              Login
+            </EuiHeaderLink>
+
             <EuiHeaderLink href="">
               Docs
             </EuiHeaderLink>

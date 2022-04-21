@@ -6,6 +6,7 @@ import * as api from '~/api';
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";
 import { v4 as uuidv4 } from 'uuid';
+import { sessionCookie } from "~/cookie";
 
 export const loader = async () => {
   return [
@@ -27,11 +28,18 @@ export const loader = async () => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = (await sessionCookie.parse(cookieHeader)) || {};
+
+  if (!session.token) {
+    return json({ errors: [{ message: 'Not logged in' }] });
+  }
+
   const values = await unstable_parseMultipartFormData(request, unstable_createMemoryUploadHandler({
     maxFileSize: 20_000_000,
   }));
 
-  const [response, errors] = await api.remix(values);
+  const [response, errors] = await api.remix(values, session.token);
   return json({ response, errors });
 }
 
