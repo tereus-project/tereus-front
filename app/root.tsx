@@ -54,8 +54,6 @@ export default function App() {
     user: loaderData.user,
   };
 
-  console.log(loaderData);
-
   return (
     <html lang="en">
       <head>
