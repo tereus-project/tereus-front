@@ -2,18 +2,40 @@ import request from "~/api/request";
 
 export * from '~/api/utils';
 
+export interface RemixGitDTO {
+  git_repo: string;
+}
+
+export interface RemixInlineDTO {
+  source_code: string;
+}
+
 export interface RemixResponseDTO {
   id: string;
   source_language: string;
   target_language: string;
 }
 
-export const remix = (body: FormData, token: string) => request<RemixResponseDTO>({
-  method: 'POST',
-  url: `/remix/zip/${body.get('sourceLanguage')}/to/${body.get('targetLanguage')}`,
-  body,
-  token,
-});
+export const remix = {
+  'zip': (sourceLanguage: string, targetLanguage: string, body: FormData, token: string) => request<RemixResponseDTO>({
+    method: 'POST',
+    url: `/remix/zip/${sourceLanguage}/to/${targetLanguage}`,
+    body,
+    token,
+  }),
+  'git': (sourceLanguage: string, targetLanguage: string, body: RemixGitDTO, token: string) => request<RemixResponseDTO>({
+    method: 'POST',
+    url: `/remix/git/${sourceLanguage}/to/${targetLanguage}`,
+    body,
+    token,
+  }),
+  'inline': (sourceLanguage: string, targetLanguage: string, body: RemixInlineDTO, token: string) => request<RemixResponseDTO>({
+    method: 'POST',
+    url: `/remix/inline/${sourceLanguage}/to/${targetLanguage}`,
+    body,
+    token,
+  }),
+}
 
 export interface AuthGithubDTO {
   code: string;

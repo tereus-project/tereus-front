@@ -1,11 +1,11 @@
-import { EuiBasicTable, EuiButton, EuiCode, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiGlobalToastList, EuiSelect, EuiSpacer } from "@elastic/eui";
+import { EuiBasicTable, EuiButton, EuiCode, EuiFieldText, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiGlobalToastList, EuiRadioGroup, EuiSelect, EuiSpacer } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction, redirect, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, useActionData, useLoaderData, useOutletContext, useSubmit, useTransition } from "remix";
+import { v4 as uuidv4 } from 'uuid';
 import * as api from '~/api';
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";
-import { v4 as uuidv4 } from 'uuid';
 import { sessionCookie } from "~/cookie";
 import { TereusContext } from "~/root";
 
@@ -45,10 +45,52 @@ export const action: ActionFunction = async ({ request }) => {
 
   const values = await unstable_parseMultipartFormData(request, unstable_createMemoryUploadHandler({
     maxFileSize: 20_000_000,
-  }));
+  }))
 
-  const [response, errors] = await api.remix(values, session.token);
-  return json({ response, errors });
+  const mode = values.get('mode')?.toString();
+  const sourceLanguage = values.get('sourceLanguage')?.toString();
+  const targetLanguage = values.get('targetLanguage')?.toString();
+
+  if (!mode) {
+    return json({ errors: [{ message: 'Missing mode' }] });
+  }
+
+  if (!sourceLanguage) {
+    return json({ errors: [{ message: 'Missing source language' }] });
+  }
+
+  if (!targetLanguage) {
+    return json({ errors: [{ message: 'Missing target language' }] });
+  }
+
+  if (mode === 'zip') {
+    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.token);
+    return json({ response, errors });
+  } else if (mode === 'git') {
+    const gitRepo = values.get('gitRepo')?.toString();
+
+    if (!gitRepo) {
+      return json({ errors: [{ message: 'Missing git repo' }] });
+    }
+
+    const [response, errors] = await api.remix.git(sourceLanguage, targetLanguage, {
+      git_repo: gitRepo,
+    }, session.token);
+    return json({ response, errors });
+  } else if (mode === 'inline') {
+    const sourceCode = values.get('sourceCode')?.toString();
+
+    if (!sourceCode) {
+      return json({ errors: [{ message: 'Missing source code' }] });
+    }
+
+    const [response, errors] = await api.remix.inline(sourceLanguage, targetLanguage, {
+      source_code: sourceCode,
+    }, session.token);
+    return json({ response, errors });
+  }
+
+  return json({ errors: ['Unknown mode'] });
 }
 
 export default function Remixer() {
@@ -62,6 +104,16 @@ export default function Remixer() {
 
   const [sources, setSources] = useState(loaderData);
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const modeIdZip = 'selected-mode-zip';
+  const modeIdGit = 'selected-mode-git';
+  const [selectedModeId, setSelectedModeId] = useState(modeIdZip);
+
+  const modeIdToMode: Record<string, keyof typeof api.remix> = {
+    [modeIdZip]: 'zip',
+    [modeIdGit]: 'git',
+  };
+  const [selectedMode, setSelectedMode] = useState(modeIdToMode[selectedModeId]);
 
   const addToast = (toast: Toast) => {
     setToasts(toasts.concat(toast));
@@ -78,6 +130,7 @@ export default function Remixer() {
 
   useEffect(() => {
     if (transition.state === 'loading' && actionData?.response) {
+      console.log(actionData);
       setSources(sources.concat(actionData.response));
 
       addToast({
@@ -100,29 +153,72 @@ export default function Remixer() {
         error={actionData?.errors}
         onSubmit={createSource}
       >
-        <EuiFlexGroup>
-          {/* <EuiFlexItem grow={false}>
-          <EuiFormRow label="Source name">
-            <EuiFieldText
-              placeholder="Source name"
-              value={sourceName}
-              onChange={(e) => setSourceName(e.target.value)}
-            />
-          </EuiFormRow>
-        </EuiFlexItem> */}
-
-          <EuiFlexItem grow={4}>
-            <EuiFormRow label="Source files" fullWidth>
-              <EuiFilePicker
-                fullWidth
-                name="file"
-                display="default"
-                accept=".zip"
-                autoComplete="off"
-                required
-                multiple={false}
+        <EuiFlexGroup alignItems="center">
+          {
+            /* <EuiFlexItem grow={false}>
+            <EuiFormRow label="Source name">
+              <EuiFieldText
+                placeholder="Source name"
+                value={sourceName}
+                onChange={(e) => setSourceName(e.target.value)}
               />
             </EuiFormRow>
+          </EuiFlexItem> */
+          }
+
+          <input type="hidden" name="mode" value={selectedMode} />
+
+          <EuiFlexItem grow={4}>
+            <EuiRadioGroup
+              options={[
+                {
+                  id: modeIdZip,
+                  label: (
+                    <EuiFilePicker
+                      fullWidth
+                      name="file"
+                      display="default"
+                      accept=".zip"
+                      autoComplete="off"
+                      required={selectedModeId === modeIdZip}
+                      multiple={false}
+                      onChange={() => {
+                        setSelectedModeId(modeIdZip);
+                        setSelectedMode('zip');
+                      }}
+                    />
+                  ),
+                  labelProps: {
+                    id: `${modeIdZip}-label`,
+                    style: {
+                      width: '100%',
+                    },
+                  },
+                },
+                {
+                  id: modeIdGit,
+                  label: (
+                    <EuiFieldText
+                      fullWidth
+                      name="gitRepo"
+                      required={selectedModeId === modeIdGit}
+                      placeholder="https://github.com/sqlite/sqlite"
+                    />
+                  ),
+                  labelProps: {
+                    id: `${modeIdGit}-label`,
+                    style: {
+                      width: '100%',
+                    },
+                  },
+                }
+              ]}
+              idSelected={selectedModeId}
+              onChange={(id) => {
+                setSelectedModeId(id);
+                setSelectedMode(modeIdToMode[id]);
+              }}
+            />
           </EuiFlexItem>
 
           <EuiFlexItem grow={2}>
