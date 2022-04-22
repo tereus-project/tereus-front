@@ -28,3 +28,14 @@ export const authGithub = (body: AuthGithubDTO) => request<AuthGithubResponseDTO
   url: `/auth/login/github`,
   body,
 });
+
+export interface GetCurrentUserResponseDTO {
+  id: string;
+  email: string;
+}
+
+export const getCurrentUser = (token: string) => request<GetCurrentUserResponseDTO>({
+  method: 'GET',
+  url: `/users/me`,
+  token,
+});

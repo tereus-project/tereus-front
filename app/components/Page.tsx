@@ -1,12 +1,16 @@
 import { EuiAvatar, EuiHeader, EuiHeaderLink, EuiHeaderLinks, EuiHeaderLogo, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiIcon, EuiPage, EuiPageBody, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiToolTip, IconType } from "@elastic/eui";
+import md5 from 'md5';
 
 export type PageProps = React.PropsWithChildren<{
   title?: string;
   icon?: IconType;
+  user?: {
+    email: string;
+  };
 }>
 
 
-export function Page({ children, title, icon = '' }: PageProps) {
+export function Page({ children, title, icon = '', user }: PageProps) {
   return (
     <main>
       <EuiHeader theme="dark">
@@ -21,27 +25,33 @@ export function Page({ children, title, icon = '' }: PageProps) {
 
         <EuiHeaderSectionItem>
           <EuiHeaderLinks>
-            <EuiHeaderLink href="/remixer">
-              Remixer
-            </EuiHeaderLink>
+            {user && (
+              <EuiHeaderLink href="/remixer">
+                Remixer
+              </EuiHeaderLink>
+            )}
 
-            <EuiHeaderLink href="/login">
-              Login
-            </EuiHeaderLink>
+            {!user && (
+              <EuiHeaderLink href="/login">
+                Login
+              </EuiHeaderLink>
+            )}
 
             <EuiHeaderLink href="">
               Docs
             </EuiHeaderLink>
           </EuiHeaderLinks>
 
-          <EuiToolTip
-            content="History"
-            position="bottom"
-          >
-            <EuiHeaderSectionItemButton aria-label="History">
-              <EuiIcon type="/icons/history.svg" size="m" />
-            </EuiHeaderSectionItemButton>
-          </EuiToolTip>
+          {user && (
+            <EuiToolTip
+              content="History"
+              position="bottom"
+            >
+              <EuiHeaderSectionItemButton aria-label="History">
+                <EuiIcon type="/icons/history.svg" size="m" />
+              </EuiHeaderSectionItemButton>
+            </EuiToolTip>
+          )}
 
           <EuiToolTip
             content="GitHub"
@@ -52,9 +62,11 @@ export function Page({ children, title, icon = '' }: PageProps) {
             </EuiHeaderSectionItemButton>
           </EuiToolTip>
 
-          <EuiHeaderSectionItemButton aria-label="Account menu">
-            <EuiAvatar name="Nathanel Demacon" size="s" />
-          </EuiHeaderSectionItemButton>
+          {user && (
+            <EuiHeaderSectionItemButton aria-label="Account menu">
+              <EuiAvatar name="Your account" size="m" imageUrl={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
+            </EuiHeaderSectionItemButton>
+          )}
         </EuiHeaderSectionItem>
       </EuiHeader>
 

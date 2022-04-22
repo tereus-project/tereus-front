@@ -1,14 +1,22 @@
 import { EuiBasicTable, EuiButton, EuiCode, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiGlobalToastList, EuiSelect, EuiSpacer } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import React, { useEffect, useState } from "react";
-import { ActionFunction, json, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, useActionData, useLoaderData, useSubmit, useTransition } from "remix";
+import { ActionFunction, json, LoaderFunction, redirect, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, useActionData, useLoaderData, useOutletContext, useSubmit, useTransition } from "remix";
 import * as api from '~/api';
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";
 import { v4 as uuidv4 } from 'uuid';
 import { sessionCookie } from "~/cookie";
+import { TereusContext } from "~/root";
 
-export const loader = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = (await sessionCookie.parse(cookieHeader)) || {};
+
+  if (!session.token) {
+    return redirect("/login");
+  }
+
   return [
     {
       id: '2e7d5e7d-18a1-49fe-93f0-52951e0ec93a',
@@ -44,6 +52,8 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function Remixer() {
+  const context = useOutletContext<TereusContext>();
+
   const submit = useSubmit();
   const transition = useTransition();
 
@@ -81,7 +91,7 @@ export default function Remixer() {
   }, [transition]);
 
   return (
-    <Page title="Remixer" icon="compute">
+    <Page title="Remixer" icon="compute" user={context.user}>
       <EuiForm
         component="form"
         method="post"

@@ -1,6 +1,6 @@
 import { EuiGlobalStyles, EuiProvider } from "@elastic/eui";
 import euiThemeLight from '@elastic/eui/dist/eui_theme_light.css';
-import type { MetaFunction } from "remix";
+import { json, LoaderFunction, MetaFunction, useLoaderData } from "remix";
 import {
   Links,
   LinksFunction,
@@ -10,6 +10,8 @@ import {
   Scripts,
   ScrollRestoration
 } from "remix";
+import * as api from '~/api';
+import { sessionCookie } from "./cookie";
 import styles from "~/styles/global.css";
 
 export const meta: MetaFunction = () => {
@@ -29,7 +31,31 @@ export const links: LinksFunction = () => {
   ];
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = (await sessionCookie.parse(cookieHeader)) || {};
+
+  if (session.token) {
+    const [user, errors] = await api.getCurrentUser(session.token);
+    return json({ user, errors });
+  }
+
+  return json({ user: null });
+};
+
+export interface TereusContext {
+  user?: api.GetCurrentUserResponseDTO;
+}
+
 export default function App() {
+  const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
+
+  const context = {
+    user: loaderData.user,
+  };
+
+  console.log(loaderData);
+
   return (
     <html lang="en">
       <head>
@@ -41,7 +67,7 @@ export default function App() {
       </head>
       <body>
         <EuiProvider colorMode="light" globalStyles={false}>
-          <Outlet />
+          <Outlet context={context} />
         </EuiProvider>
         <ScrollRestoration />
         <Scripts />
