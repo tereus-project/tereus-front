@@ -1,9 +1,35 @@
-import { EuiBasicTable, EuiButton, EuiCode, EuiFieldText, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiGlobalToastList, EuiRadioGroup, EuiSelect, EuiSpacer } from "@elastic/eui";
+import {
+  EuiBasicTable,
+  EuiButton,
+  EuiCode,
+  EuiFieldText,
+  EuiFilePicker,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiForm,
+  EuiFormRow,
+  EuiGlobalToastList,
+  EuiRadioGroup,
+  EuiSelect,
+  EuiSpacer,
+} from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import React, { useEffect, useState } from "react";
-import { ActionFunction, json, LoaderFunction, redirect, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, useActionData, useLoaderData, useOutletContext, useSubmit, useTransition } from "remix";
-import { v4 as uuidv4 } from 'uuid';
-import * as api from '~/api';
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+  redirect,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
+  useActionData,
+  useLoaderData,
+  useOutletContext,
+  useSubmit,
+  useTransition,
+} from "remix";
+import { v4 as uuidv4 } from "uuid";
+import * as api from "~/api";
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
@@ -19,17 +45,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return [
     {
-      id: '2e7d5e7d-18a1-49fe-93f0-52951e0ec93a',
+      id: "2e7d5e7d-18a1-49fe-93f0-52951e0ec93a",
       // name: 'Test 1',
-      source_language: 'c',
-      target_language: 'go',
+      source_language: "c",
+      target_language: "go",
       // progress: 0.5,
     },
     {
-      id: '6d92c9d7-b74c-42fd-8f24-128c99608d30',
+      id: "6d92c9d7-b74c-42fd-8f24-128c99608d30",
       // name: 'Test 2',
-      source_language: 'c',
-      target_language: 'go',
+      source_language: "c",
+      target_language: "go",
       // progress: 0.5,
     },
   ] as api.RemixResponseDTO[];
@@ -40,58 +66,76 @@ export const action: ActionFunction = async ({ request }) => {
   const session = (await sessionCookie.parse(cookieHeader)) || {};
 
   if (!session.token) {
-    return json({ errors: [{ message: 'Not logged in' }] });
+    return json({ errors: [{ message: "Not logged in" }] });
   }
 
-  const values = await unstable_parseMultipartFormData(request, unstable_createMemoryUploadHandler({
-    maxFileSize: 20_000_000,
-  }))
+  const values = await unstable_parseMultipartFormData(
+    request,
+    unstable_createMemoryUploadHandler({
+      maxFileSize: 20_000_000,
+    })
+  );
 
-  const mode = values.get('mode')?.toString();
-  const sourceLanguage = values.get('sourceLanguage')?.toString();
-  const targetLanguage = values.get('targetLanguage')?.toString();
+  const mode = values.get("mode")?.toString();
+  const sourceLanguage = values.get("sourceLanguage")?.toString();
+  const targetLanguage = values.get("targetLanguage")?.toString();
 
   if (!mode) {
-    return json({ errors: [{ message: 'Missing mode' }] });
+    return json({ errors: [{ message: "Missing mode" }] });
   }
 
   if (!sourceLanguage) {
-    return json({ errors: [{ message: 'Missing source language' }] });
+    return json({ errors: [{ message: "Missing source language" }] });
   }
 
   if (!targetLanguage) {
-    return json({ errors: [{ message: 'Missing target language' }] });
+    return json({ errors: [{ message: "Missing target language" }] });
   }
 
-  if (mode === 'zip') {
-    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.token);
+  if (mode === "zip") {
+    const [response, errors] = await api.remix.zip(
+      sourceLanguage,
+      targetLanguage,
+      values,
+      session.token
+    );
     return json({ response, errors });
-  } else if (mode === 'git') {
-    const gitRepo = values.get('gitRepo')?.toString();
+  } else if (mode === "git") {
+    const gitRepo = values.get("gitRepo")?.toString();
 
     if (!gitRepo) {
-      return json({ errors: [{ message: 'Missing git repo' }] });
+      return json({ errors: [{ message: "Missing git repo" }] });
     }
 
-    const [response, errors] = await api.remix.git(sourceLanguage, targetLanguage, {
-      git_repo: gitRepo,
-    }, session.token);
+    const [response, errors] = await api.remix.git(
+      sourceLanguage,
+      targetLanguage,
+      {
+        git_repo: gitRepo,
+      },
+      session.token
+    );
     return json({ response, errors });
-  } else if (mode === 'inline') {
-    const sourceCode = values.get('sourceCode')?.toString();
+  } else if (mode === "inline") {
+    const sourceCode = values.get("sourceCode")?.toString();
 
     if (!sourceCode) {
-      return json({ errors: [{ message: 'Missing source code' }] });
+      return json({ errors: [{ message: "Missing source code" }] });
     }
 
-    const [response, errors] = await api.remix.inline(sourceLanguage, targetLanguage, {
-      source_code: sourceCode,
-    }, session.token);
+    const [response, errors] = await api.remix.inline(
+      sourceLanguage,
+      targetLanguage,
+      {
+        source_code: sourceCode,
+      },
+      session.token
+    );
     return json({ response, errors });
   }
 
-  return json({ errors: ['Unknown mode'] });
-}
+  return json({ errors: ["Unknown mode"] });
+};
 
 export default function Remixer() {
   const context = useOutletContext<TereusContext>();
@@ -105,15 +149,17 @@ export default function Remixer() {
   const [sources, setSources] = useState(loaderData);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const modeIdZip = 'selected-mode-zip';
-  const modeIdGit = 'selected-mode-git';
+  const modeIdZip = "selected-mode-zip";
+  const modeIdGit = "selected-mode-git";
   const [selectedModeId, setSelectedModeId] = useState(modeIdZip);
 
   const modeIdToMode: Record<string, keyof typeof api.remix> = {
-    [modeIdZip]: 'zip',
-    [modeIdGit]: 'git',
+    [modeIdZip]: "zip",
+    [modeIdGit]: "git",
   };
-  const [selectedMode, setSelectedMode] = useState(modeIdToMode[selectedModeId]);
+  const [selectedMode, setSelectedMode] = useState(
+    modeIdToMode[selectedModeId]
+  );
 
   const addToast = (toast: Toast) => {
     setToasts(toasts.concat(toast));
@@ -126,18 +172,23 @@ export default function Remixer() {
   const createSource: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     submit(e.currentTarget, { method: "post", action: "/remixer" });
-  }
+  };
 
   useEffect(() => {
-    if (transition.state === 'loading' && actionData?.response) {
+    if (transition.state === "loading" && actionData?.response) {
       console.log(actionData);
       setSources(sources.concat(actionData.response));
 
       addToast({
         id: uuidv4(),
-        title: 'New source added',
-        color: 'success',
-        text: <>Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon.</>,
+        title: "New source added",
+        color: "success",
+        text: (
+          <>
+            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing
+            will start soon.
+          </>
+        ),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,8 +205,7 @@ export default function Remixer() {
         onSubmit={createSource}
       >
         <EuiFlexGroup alignItems="center">
-          {
-            /* <EuiFlexItem grow={false}>
+          {/* <EuiFlexItem grow={false}>
             <EuiFormRow label="Source name">
               <EuiFieldText
                 placeholder="Source name"
@@ -163,8 +213,7 @@ export default function Remixer() {
                 onChange={(e) => setSourceName(e.target.value)}
               />
             </EuiFormRow>
-          </EuiFlexItem> */
-          }
+          </EuiFlexItem> */}
 
           <input type="hidden" name="mode" value={selectedMode} />
 
@@ -184,14 +233,14 @@ export default function Remixer() {
                       multiple={false}
                       onChange={() => {
                         setSelectedModeId(modeIdZip);
-                        setSelectedMode('zip');
+                        setSelectedMode("zip");
                       }}
                     />
                   ),
                   labelProps: {
                     id: `${modeIdZip}-label`,
                     style: {
-                      width: '100%',
+                      width: "100%",
                     },
                   },
                 },
@@ -208,10 +257,10 @@ export default function Remixer() {
                   labelProps: {
                     id: `${modeIdGit}-label`,
                     style: {
-                      width: '100%',
+                      width: "100%",
                     },
                   },
-                }
+                },
               ]}
               idSelected={selectedModeId}
               onChange={(id) => {
@@ -228,8 +277,8 @@ export default function Remixer() {
                 name="sourceLanguage"
                 options={[
                   {
-                    value: 'c',
-                    text: 'C',
+                    value: "c",
+                    text: "C",
                   },
                 ]}
                 autoComplete="off"
@@ -245,8 +294,8 @@ export default function Remixer() {
                 name="targetLanguage"
                 options={[
                   {
-                    value: 'go',
-                    text: 'Go',
+                    value: "go",
+                    text: "Go",
                   },
                 ]}
                 autoComplete="off"
@@ -260,9 +309,9 @@ export default function Remixer() {
               <EuiButton
                 type="submit"
                 fill
-                disabled={transition.state === 'submitting'}
+                disabled={transition.state === "submitting"}
               >
-                {transition.state === 'submitting' ? 'Sending...' : 'Remix!'}
+                {transition.state === "submitting" ? "Sending..." : "Remix!"}
               </EuiButton>
             </EuiFormRow>
           </EuiFlexItem>
@@ -276,18 +325,18 @@ export default function Remixer() {
         items={sources}
         columns={[
           {
-            field: 'id',
-            name: 'ID',
+            field: "id",
+            name: "ID",
             truncateText: true,
           },
           {
-            field: 'source_language',
-            name: 'Source language',
+            field: "source_language",
+            name: "Source language",
             truncateText: true,
           },
           {
-            field: 'target_language',
-            name: 'Target language',
+            field: "target_language",
+            name: "Target language",
             truncateText: true,
           },
           // {
@@ -298,14 +347,14 @@ export default function Remixer() {
           //   },
           // },
         ]}
-      // pagination={{
-      //   pageIndex,
-      //   pageSize,
-      //   totalItemCount: sources.length,
-      //   pageSizeOptions: [10, 20, 50, 100, 'all'],
-      //   showPerPageOptions: true,
-      // }}
-      // onChange={onTableChange}
+        // pagination={{
+        //   pageIndex,
+        //   pageSize,
+        //   totalItemCount: sources.length,
+        //   pageSizeOptions: [10, 20, 50, 100, 'all'],
+        //   showPerPageOptions: true,
+        // }}
+        // onChange={onTableChange}
       />
       <EuiGlobalToastList
         toasts={toasts}
