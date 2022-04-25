@@ -1,15 +1,7 @@
 import { EuiBasicTable } from "@elastic/eui";
 import { formatRelative, parseJSON } from "date-fns";
 import React, { useEffect, useState } from "react";
-import {
-  json,
-  LoaderFunction,
-  redirect,
-  useActionData,
-  useLoaderData,
-  useOutletContext,
-  useTransition,
-} from "remix";
+import { json, LoaderFunction, redirect, useActionData, useLoaderData, useOutletContext, useTransition } from "remix";
 import * as api from "~/api";
 import { ActionFormData } from "~/api";
 import { Page } from "~/components/Page";

@@ -58,22 +58,14 @@ export function Page({ children, title, icon = "", user }: PageProps) {
           )}
 
           <EuiToolTip content="GitHub" position="bottom">
-            <EuiHeaderSectionItemButton
-              aria-label="GitHub"
-              href="https://github.com/tereus-project"
-              target="_blank"
-            >
+            <EuiHeaderSectionItemButton aria-label="GitHub" href="https://github.com/tereus-project" target="_blank">
               <EuiIcon type="/icons/github.svg" size="m" />
             </EuiHeaderSectionItemButton>
           </EuiToolTip>
 
           {user && (
             <EuiHeaderSectionItemButton aria-label="Account menu">
-              <EuiAvatar
-                name="Your account"
-                size="m"
-                imageUrl={`https://www.gravatar.com/avatar/${md5(user.email)}`}
-              />
+              <EuiAvatar name="Your account" size="m" imageUrl={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
             </EuiHeaderSectionItemButton>
           )}
         </EuiHeaderSectionItem>

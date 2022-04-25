@@ -17,36 +17,21 @@ export interface RemixResponseDTO {
 }
 
 export const remix = {
-  zip: (
-    sourceLanguage: string,
-    targetLanguage: string,
-    body: FormData,
-    token: string
-  ) =>
+  zip: (sourceLanguage: string, targetLanguage: string, body: FormData, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
       url: `/remix/zip/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
-  git: (
-    sourceLanguage: string,
-    targetLanguage: string,
-    body: RemixGitDTO,
-    token: string
-  ) =>
+  git: (sourceLanguage: string, targetLanguage: string, body: RemixGitDTO, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
       url: `/remix/git/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
-  inline: (
-    sourceLanguage: string,
-    targetLanguage: string,
-    body: RemixInlineDTO,
-    token: string
-  ) =>
+  inline: (sourceLanguage: string, targetLanguage: string, body: RemixInlineDTO, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
       url: `/remix/inline/${sourceLanguage}/to/${targetLanguage}`,

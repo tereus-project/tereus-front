@@ -1,5 +1,5 @@
 class RequestError {
-  constructor(public response: Response, public data: any) { }
+  constructor(public response: Response, public data: any) {}
 }
 
 export default async function request<T>(config: {
@@ -14,11 +14,11 @@ export default async function request<T>(config: {
 
     if (!(config.body instanceof FormData)) {
       body = JSON.stringify(config.body);
-      headers['Content-Type'] = 'application/json';
+      headers["Content-Type"] = "application/json";
     }
 
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      headers["Authorization"] = `Bearer ${config.token}`;
     }
 
     const res = await fetch(`${process.env.API_URL}${config.url}`, {
@@ -33,7 +33,7 @@ export default async function request<T>(config: {
       throw new RequestError(res, data);
     }
 
-    return [data, null]
+    return [data, null];
   } catch (e) {
     if (e instanceof RequestError) {
       return [null, Array.isArray(e.data) ? e.data : [e.data]];

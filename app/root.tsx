@@ -1,16 +1,8 @@
 import { EuiGlobalStyles, EuiProvider } from "@elastic/eui";
-import euiThemeLight from '@elastic/eui/dist/eui_theme_light.css';
+import euiThemeLight from "@elastic/eui/dist/eui_theme_light.css";
 import { json, LoaderFunction, MetaFunction, useLoaderData } from "remix";
-import {
-  Links,
-  LinksFunction,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration
-} from "remix";
-import * as api from '~/api';
+import { Links, LinksFunction, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "remix";
+import * as api from "~/api";
 import { sessionCookie } from "./cookie";
 import styles from "~/styles/global.css";
 
@@ -21,13 +13,13 @@ export const meta: MetaFunction = () => {
 export const links: LinksFunction = () => {
   return [
     {
-      rel: 'stylesheet',
+      rel: "stylesheet",
       href: euiThemeLight,
     },
     {
-      rel: 'stylesheet',
+      rel: "stylesheet",
       href: styles,
-    }
+    },
   ];
 };
 

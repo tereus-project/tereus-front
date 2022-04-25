@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return {
     githubLoginUrl,
   };
-}
+};
 
 export default function Login() {
   const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
