@@ -1,5 +1,5 @@
 import { LoaderFunction, redirect } from "remix";
-import * as api from '~/api';
+import * as api from "~/api";
 import { sessionCookie } from "~/cookie";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -25,4 +25,4 @@ export const loader: LoaderFunction = async ({ request }) => {
       "Set-Cookie": await sessionCookie.serialize(session),
     },
   });
-}
+};

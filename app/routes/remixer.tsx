@@ -93,12 +93,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   if (mode === "zip") {
-    const [response, errors] = await api.remix.zip(
-      sourceLanguage,
-      targetLanguage,
-      values,
-      session.token
-    );
+    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.token);
     return json({ response, errors });
   } else if (mode === "git") {
     const gitRepo = values.get("gitRepo")?.toString();
@@ -157,9 +152,7 @@ export default function Remixer() {
     [modeIdZip]: "zip",
     [modeIdGit]: "git",
   };
-  const [selectedMode, setSelectedMode] = useState(
-    modeIdToMode[selectedModeId]
-  );
+  const [selectedMode, setSelectedMode] = useState(modeIdToMode[selectedModeId]);
 
   const addToast = (toast: Toast) => {
     setToasts(toasts.concat(toast));
@@ -185,8 +178,7 @@ export default function Remixer() {
         color: "success",
         text: (
           <>
-            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing
-            will start soon.
+            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon.
           </>
         ),
       });
@@ -306,11 +298,7 @@ export default function Remixer() {
 
           <EuiFlexItem grow={false}>
             <EuiFormRow hasEmptyLabelSpace>
-              <EuiButton
-                type="submit"
-                fill
-                disabled={transition.state === "submitting"}
-              >
+              <EuiButton type="submit" fill disabled={transition.state === "submitting"}>
                 {transition.state === "submitting" ? "Sending..." : "Remix!"}
               </EuiButton>
             </EuiFormRow>
@@ -356,11 +344,7 @@ export default function Remixer() {
         // }}
         // onChange={onTableChange}
       />
-      <EuiGlobalToastList
-        toasts={toasts}
-        dismissToast={removeToast}
-        toastLifeTimeMs={6000}
-      />
+      <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </Page>
   );
 }
