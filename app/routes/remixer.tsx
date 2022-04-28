@@ -1,5 +1,4 @@
 import {
-  EuiBasicTable,
   EuiButton,
   EuiCode,
   EuiFieldText,
@@ -11,19 +10,18 @@ import {
   EuiGlobalToastList,
   EuiRadioGroup,
   EuiSelect,
-  EuiSpacer,
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import React, { useEffect, useState } from "react";
 import {
   ActionFunction,
   json,
+  Link,
   LoaderFunction,
   redirect,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
   useActionData,
-  useLoaderData,
   useOutletContext,
   useSubmit,
   useTransition,
@@ -43,22 +41,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  return [
-    {
-      id: "2e7d5e7d-18a1-49fe-93f0-52951e0ec93a",
-      // name: 'Test 1',
-      source_language: "c",
-      target_language: "go",
-      // progress: 0.5,
-    },
-    {
-      id: "6d92c9d7-b74c-42fd-8f24-128c99608d30",
-      // name: 'Test 2',
-      source_language: "c",
-      target_language: "go",
-      // progress: 0.5,
-    },
-  ] as api.RemixResponseDTO[];
+  return {};
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -139,9 +122,7 @@ export default function Remixer() {
   const transition = useTransition();
 
   const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
-  const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
 
-  const [sources, setSources] = useState(loaderData);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const modeIdZip = "selected-mode-zip";
@@ -169,16 +150,14 @@ export default function Remixer() {
 
   useEffect(() => {
     if (transition.state === "loading" && actionData?.response) {
-      console.log(actionData);
-      setSources(sources.concat(actionData.response));
-
       addToast({
         id: uuidv4(),
         title: "New source added",
         color: "success",
         text: (
           <>
-            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon.
+            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon. You can check the
+            <Link to="/history">history page</Link> for status.
           </>
         ),
       });
@@ -312,44 +291,6 @@ export default function Remixer() {
         </EuiFlexGroup>
       </EuiForm>
 
-      <EuiSpacer />
-
-      <EuiBasicTable
-        tableCaption="Demo for EuiBasicTable with pagination"
-        items={sources}
-        columns={[
-          {
-            field: "id",
-            name: "ID",
-            truncateText: true,
-          },
-          {
-            field: "source_language",
-            name: "Source language",
-            truncateText: true,
-          },
-          {
-            field: "target_language",
-            name: "Target language",
-            truncateText: true,
-          },
-          // {
-          //   field: 'progress',
-          //   name: 'Progress',
-          //   render: (_, item) => {
-          //     return <EuiProgress value={item.progress * 100} max={100} size="m" />
-          //   },
-          // },
-        ]}
-        // pagination={{
-        //   pageIndex,
-        //   pageSize,
-        //   totalItemCount: sources.length,
-        //   pageSizeOptions: [10, 20, 50, 100, 'all'],
-        //   showPerPageOptions: true,
-        // }}
-        // onChange={onTableChange}
-      />
       <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </Page>
   );
