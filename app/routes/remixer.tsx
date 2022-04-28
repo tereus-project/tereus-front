@@ -244,6 +244,12 @@ export default function Remixer() {
                       name="gitRepo"
                       required={selectedModeId === modeIdGit}
                       placeholder="https://github.com/sqlite/sqlite"
+                      onChange={() => {
+                        if (selectedModeId !== modeIdGit) {
+                          setSelectedModeId(modeIdGit);
+                          setSelectedMode("git");
+                        }
+                      }}
                     />
                   ),
                   labelProps: {
