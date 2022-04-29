@@ -5,6 +5,7 @@ const { appendIconComponentCache } = require("@elastic/eui/es/components/icon/ic
 
 const { icon: EuiIconLogoElastic } = require("@elastic/eui/es/components/icon/assets/logo_elastic");
 const { icon: EuiIconImport } = require("@elastic/eui/es/components/icon/assets/import");
+const { icon: EuiIconArrowUp } = require("@elastic/eui/es/components/icon/assets/arrow_up");
 const { icon: EuiIconArrowDown } = require("@elastic/eui/es/components/icon/assets/arrow_down");
 const { icon: EuiIconCompute } = require("@elastic/eui/es/components/icon/assets/compute");
 const { icon: EuiIconCross } = require("@elastic/eui/es/components/icon/assets/cross");
@@ -14,6 +15,7 @@ const { icon: EuiIconClock } = require("@elastic/eui/es/components/icon/assets/c
 appendIconComponentCache({
   logoElastic: EuiIconLogoElastic,
   importAction: EuiIconImport,
+  arrowUp: EuiIconArrowUp,
   arrowDown: EuiIconArrowDown,
   compute: EuiIconCompute,
   cross: EuiIconCross,

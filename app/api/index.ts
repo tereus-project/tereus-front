@@ -76,6 +76,7 @@ export interface SubmissionDTO {
   source_language: string;
   target_language: string;
   status: string;
+  reason: string;
   git_repo: string;
   created_at: Date;
 }

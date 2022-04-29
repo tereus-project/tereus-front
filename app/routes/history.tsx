@@ -1,4 +1,12 @@
-import { EuiBasicTable, EuiButton, EuiGlobalToastList } from "@elastic/eui";
+import {
+  EuiBasicTable,
+  EuiButton,
+  EuiButtonIcon,
+  EuiDescriptionList,
+  EuiGlobalToastList,
+  EuiScreenReaderOnly,
+  RIGHT_ALIGNMENT,
+} from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { formatRelative, parseJSON } from "date-fns";
 import React, { useState } from "react";
@@ -33,16 +41,36 @@ export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
-  const [sources] = useState(loaderData.response ?? []);
-
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (toast: Toast) => {
-    setToasts(toasts.concat(toast));
-  };
+  const addToast = (toast: Toast) => setToasts(toasts.concat(toast));
 
   const removeToast = (removedToast: Toast) => {
     setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
+  };
+
+  const [sources] = useState(loaderData.response ?? []);
+  const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<Record<string, React.ReactNode>>({});
+
+  const toggleDetails = (item: api.SubmissionDTO) => {
+    const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
+
+    if (itemIdToExpandedRowMapValues[item.id]) {
+      delete itemIdToExpandedRowMapValues[item.id];
+    } else {
+      itemIdToExpandedRowMapValues[item.id] = (
+        <EuiDescriptionList
+          listItems={[
+            {
+              title: "Error reason",
+              description: item.reason,
+            },
+          ]}
+        />
+      );
+    }
+
+    setItemIdToExpandedRowMap(itemIdToExpandedRowMapValues);
   };
 
   const download = async (id: string) => {
@@ -73,6 +101,10 @@ export default function History() {
       <EuiBasicTable
         tableCaption=""
         items={sources}
+        itemId="id"
+        itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+        isExpandable={true}
+        hasActions={true}
         columns={[
           {
             field: "id",
@@ -97,28 +129,49 @@ export default function History() {
             truncateText: true,
           },
           {
-            field: "download_url",
-            name: "Actions",
-            render: (_, record) => {
-              if (record.status === "done") {
-                return (
-                  <EuiButton
-                    onClick={() => {
-                      download(record.id);
-                    }}
-                  >
-                    Download
-                  </EuiButton>
-                );
-              } else {
-                return (
-                  <EuiButton disabled>
-                    {record.status[0].toUpperCase()}
-                    {record.status.slice(1)}
-                  </EuiButton>
-                );
-              }
-            },
+            actions: [
+              {
+                name: "Download",
+                description: "Download all files",
+                render: (record) => {
+                  if (record.status === "done") {
+                    return (
+                      <EuiButton
+                        onClick={() => {
+                          download(record.id);
+                        }}
+                      >
+                        Download
+                      </EuiButton>
+                    );
+                  } else {
+                    return (
+                      <EuiButton disabled>
+                        {record.status[0].toUpperCase()}
+                        {record.status.slice(1)}
+                      </EuiButton>
+                    );
+                  }
+                },
+              },
+            ],
+          },
+          {
+            align: RIGHT_ALIGNMENT,
+            width: "40px",
+            isExpander: true,
+            name: (
+              <EuiScreenReaderOnly>
+                <span>Expand rows</span>
+              </EuiScreenReaderOnly>
+            ),
+            render: (record: api.SubmissionDTO) => (
+              <EuiButtonIcon
+                onClick={() => toggleDetails(record)}
+                aria-label={itemIdToExpandedRowMap[record.id] ? "Collapse" : "Expand"}
+                iconType={itemIdToExpandedRowMap[record.id] ? "arrowUp" : "arrowDown"}
+              />
+            ),
           },
         ]}
         // pagination={{
