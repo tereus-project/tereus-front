@@ -7,12 +7,13 @@ export default async function request<T>(config: {
   url: string;
   body?: FormData | any;
   token?: string;
-}): Promise<[T, null] | [null, string[]]> {
+  raw?: boolean;
+}): Promise<[T, null, Response] | [null, string[], Response | null]> {
   try {
     const headers: HeadersInit = {};
     let body = config.body;
 
-    if (!(config.body instanceof FormData)) {
+    if (body && !(body instanceof FormData)) {
       body = JSON.stringify(config.body);
       headers["Content-Type"] = "application/json";
     }
@@ -27,19 +28,20 @@ export default async function request<T>(config: {
       headers,
     });
 
-    const data = await res.json();
+    const data = config.raw ? null : await res.json();
 
     if (res.status >= 400 && res.status <= 599) {
       throw new RequestError(res, data);
     }
 
-    return [data, null];
+    return [data, null, res];
   } catch (e) {
     if (e instanceof RequestError) {
-      return [null, Array.isArray(e.data) ? e.data : [e.data]];
+      const data = e.data ?? e.response.statusText;
+      return [null, Array.isArray(data) ? data : [data], e.response];
     }
 
     console.error(e);
-    return [null, ["Internal Server Error"]];
+    return [null, ["Internal Server Error"], null];
   }
 }

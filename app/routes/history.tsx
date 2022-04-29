@@ -1,7 +1,9 @@
-import { EuiBasicTable } from "@elastic/eui";
+import { EuiBasicTable, EuiButton, EuiGlobalToastList } from "@elastic/eui";
+import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { formatRelative, parseJSON } from "date-fns";
 import React, { useState } from "react";
 import { json, LoaderFunction, redirect, useLoaderData, useOutletContext } from "remix";
+import { v4 as uuidv4 } from "uuid";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
@@ -21,7 +23,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   const [response, errors] = await api.getUserSubmissions(session.token);
-  return json({ response: response?.submissions, errors });
+  return json<LoaderResponse>({
+    response: response?.submissions,
+    errors,
+  });
 };
 
 export default function History() {
@@ -29,6 +34,39 @@ export default function History() {
   const loaderData = useLoaderData<LoaderResponse>();
 
   const [sources] = useState(loaderData.response ?? []);
+
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = (toast: Toast) => {
+    setToasts(toasts.concat(toast));
+  };
+
+  const removeToast = (removedToast: Toast) => {
+    setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
+  };
+
+  const download = async (id: string) => {
+    const res = await fetch(`/download/${id}`);
+
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${id}.zip`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } else {
+      const data = await res.json();
+
+      addToast({
+        id: uuidv4(),
+        title: "Failed to download files",
+        color: "danger",
+        text: data?.errors?.join("\n"),
+      });
+    }
+  };
 
   return (
     <Page title="Remix history" icon="clock" user={context.user}>
@@ -58,13 +96,19 @@ export default function History() {
             name: "Target language",
             truncateText: true,
           },
-          // {
-          //   field: 'progress',
-          //   name: 'Progress',
-          //   render: (_, item) => {
-          //     return <EuiProgress value={item.progress * 100} max={100} size="m" />
-          //   },
-          // },
+          {
+            field: "download_url",
+            name: "Progress",
+            render: (_, record) => (
+              <EuiButton
+                onClick={() => {
+                  download(record.id);
+                }}
+              >
+                Download
+              </EuiButton>
+            ),
+          },
         ]}
         // pagination={{
         //   pageIndex,
@@ -75,6 +119,8 @@ export default function History() {
         // }}
         // onChange={onTableChange}
       />
+
+      <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </Page>
   );
 }

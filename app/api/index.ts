@@ -86,3 +86,10 @@ export const getUserSubmissions = (token: string) =>
     url: `/users/me/submissions`,
     token,
   });
+
+export const downloadSubmission = (token: string, id: string) => request<void>({
+  method: "GET",
+  url: `/remix/${id}`,
+  token,
+  raw: true,
+});

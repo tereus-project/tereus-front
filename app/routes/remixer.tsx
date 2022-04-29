@@ -123,8 +123,6 @@ export default function Remixer() {
 
   const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
 
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
   const modeIdZip = "selected-mode-zip";
   const modeIdGit = "selected-mode-git";
   const [selectedModeId, setSelectedModeId] = useState(modeIdZip);
@@ -134,6 +132,8 @@ export default function Remixer() {
     [modeIdGit]: "git",
   };
   const [selectedMode, setSelectedMode] = useState(modeIdToMode[selectedModeId]);
+
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (toast: Toast) => {
     setToasts(toasts.concat(toast));
