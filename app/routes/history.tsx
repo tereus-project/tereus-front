@@ -98,16 +98,27 @@ export default function History() {
           },
           {
             field: "download_url",
-            name: "Progress",
-            render: (_, record) => (
-              <EuiButton
-                onClick={() => {
-                  download(record.id);
-                }}
-              >
-                Download
-              </EuiButton>
-            ),
+            name: "Actions",
+            render: (_, record) => {
+              if (record.status === "done") {
+                return (
+                  <EuiButton
+                    onClick={() => {
+                      download(record.id);
+                    }}
+                  >
+                    Download
+                  </EuiButton>
+                );
+              } else {
+                return (
+                  <EuiButton disabled>
+                    {record.status[0].toUpperCase()}
+                    {record.status.slice(1)}
+                  </EuiButton>
+                );
+              }
+            },
           },
         ]}
         // pagination={{
