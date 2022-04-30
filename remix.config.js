@@ -7,5 +7,6 @@ module.exports = {
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
-  // devServerPort: 8002
+  // devServerPort: 8002,
+  serverDependenciesToBundle: [/^rehype.*/, /^remark.*/, /^unified.*/, /^vfile.*/, /^unist.*/],
 };

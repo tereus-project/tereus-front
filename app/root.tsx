@@ -1,10 +1,12 @@
-import { EuiGlobalStyles, EuiProvider } from "@elastic/eui";
+import { EuiGlobalStyles, EuiGlobalToastList, EuiProvider } from "@elastic/eui";
 import euiThemeLight from "@elastic/eui/dist/eui_theme_light.css";
 import { json, LoaderFunction, MetaFunction, useLoaderData } from "remix";
 import { Links, LinksFunction, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "remix";
 import * as api from "~/api";
 import { sessionCookie } from "./cookie";
 import styles from "~/styles/global.css";
+import { useState } from "react";
+import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
 export const meta: MetaFunction = () => {
   return { title: "Tereus" };
@@ -37,13 +39,24 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export interface TereusContext {
   user?: api.GetCurrentUserResponseDTO;
+  pushToast: (toast: Toast) => void;
 }
 
 export default function App() {
   const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const context = {
+  const pushToast = (toast: Toast) => {
+    setToasts(toasts.concat(toast));
+  };
+
+  const removeToast = (removedToast: Toast) => {
+    setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
+  };
+
+  const context: TereusContext = {
     user: loaderData.user,
+    pushToast,
   };
 
   return (
@@ -58,6 +71,7 @@ export default function App() {
       <body>
         <EuiProvider colorMode="light" globalStyles={false}>
           <Outlet context={context} />
+          <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
         </EuiProvider>
         <ScrollRestoration />
         <Scripts />

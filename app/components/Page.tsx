@@ -40,7 +40,7 @@ export function Page({ children, title, icon = "", user }: PageProps) {
 
         <EuiHeaderSectionItem>
           <EuiHeaderLinks>
-            {user && <EuiHeaderLink href="/remixer">Remixer</EuiHeaderLink>}
+            {user && <EuiHeaderLink href="/remixer/zip">Remixer</EuiHeaderLink>}
 
             {!user && <EuiHeaderLink href="/login">Login</EuiHeaderLink>}
 

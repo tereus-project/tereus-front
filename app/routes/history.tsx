@@ -41,14 +41,6 @@ export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const addToast = (toast: Toast) => setToasts(toasts.concat(toast));
-
-  const removeToast = (removedToast: Toast) => {
-    setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
-  };
-
   const [sources] = useState(loaderData.response ?? []);
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<Record<string, React.ReactNode>>({});
 
@@ -87,7 +79,7 @@ export default function History() {
     } else {
       const data = await res.json();
 
-      addToast({
+      context.pushToast({
         id: uuidv4(),
         title: "Failed to download files",
         color: "danger",
@@ -183,8 +175,6 @@ export default function History() {
         // }}
         // onChange={onTableChange}
       />
-
-      <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </Page>
   );
 }

@@ -95,3 +95,11 @@ export const downloadSubmission = (token: string, id: string) =>
     token,
     raw: true,
   });
+
+export const downloadSubmissionMain = (token: string, id: string) =>
+  request<string>({
+    method: "GET",
+    url: `/remix/${id}/main`,
+    token,
+    raw: true,
+  });

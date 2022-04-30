@@ -37,8 +37,15 @@ export default async function request<T>(config: {
     return [data, null, res];
   } catch (e) {
     if (e instanceof RequestError) {
+      if (!e.data) {
+        try {
+          e.data = await e.response.json();
+        } catch {}
+      }
+
       const data = e.data ?? e.response.statusText;
-      return [null, Array.isArray(data) ? data : [data], e.response];
+      const errors = (Array.isArray(data) ? data : [data]).map((e) => e.message);
+      return [null, errors, e.response];
     }
 
     console.error(e);
