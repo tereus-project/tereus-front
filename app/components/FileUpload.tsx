@@ -1,4 +1,5 @@
-import { Icon, Input, InputGroup, InputLeftElement, InputProps } from "@chakra-ui/react";
+import type { InputProps } from "@chakra-ui/react";
+import { Icon, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useRef } from "react";
 import { FiFile } from "react-icons/fi";
 
