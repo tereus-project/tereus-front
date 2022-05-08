@@ -1,6 +1,7 @@
 import { Button } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
-import { LoaderFunction, useLoaderData } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { Page } from "~/components/Page";
 
 export const loader: LoaderFunction = async ({ request }) => {

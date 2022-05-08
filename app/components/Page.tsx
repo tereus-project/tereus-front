@@ -1,7 +1,7 @@
 import { Avatar, Box, Container, Heading, VStack } from "@chakra-ui/react";
 import md5 from "md5";
 import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
-import { NavBar } from "./Navbar";
+import { NavBar } from "./NavBar";
 import { NavBarGroup } from "./NavBarGroup";
 import { NavBarLink } from "./NavBarLink";
 

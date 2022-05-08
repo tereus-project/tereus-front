@@ -1,6 +1,6 @@
-import { useOutletContext } from "remix";
+import { useOutletContext } from "@remix-run/react";
 import { Page } from "~/components/Page";
-import { TereusContext } from "~/root";
+import type { TereusContext } from "~/root";
 
 export default function Index() {
   const context = useOutletContext<TereusContext>();

@@ -16,19 +16,14 @@ import {
   Tabs,
   useToast,
 } from "@chakra-ui/react";
-import { Field, FieldProps, Form, Formik } from "formik";
+import type { ActionFunction } from "@remix-run/node";
+import { json, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
+import { useActionData, useSubmit, useTransition } from "@remix-run/react";
+import type { FieldProps } from "formik";
+import { Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import {
-  ActionFunction,
-  json,
-  unstable_createMemoryUploadHandler,
-  unstable_parseMultipartFormData,
-  useActionData,
-  useSubmit,
-  useTransition,
-} from "remix";
+import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { ActionFormData } from "~/api";
 import { FileUpload } from "~/components/FileUpload";
 import { sessionCookie } from "~/cookie";
 

@@ -1,9 +1,11 @@
 import { Container, Tab, TabList, Tabs } from "@chakra-ui/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import { Outlet, useHref, useLocation, useOutletContext } from "@remix-run/react";
 import { useLinkClickHandler } from "react-router-dom";
-import { LoaderFunction, Outlet, redirect, useHref, useLocation, useOutletContext } from "remix";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
-import { TereusContext } from "~/root";
+import type { TereusContext } from "~/root";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");

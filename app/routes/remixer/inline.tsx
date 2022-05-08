@@ -10,11 +10,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
-import { Field, FieldProps, Form, Formik } from "formik";
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useActionData, useSubmit, useTransition } from "@remix-run/react";
+import type { FieldProps } from "formik";
+import { Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { ActionFunction, json, useActionData, useSubmit, useTransition } from "remix";
+import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { ActionFormData } from "~/api";
 import { sessionCookie } from "~/cookie";
 
 export const action: ActionFunction = async ({ request }) => {

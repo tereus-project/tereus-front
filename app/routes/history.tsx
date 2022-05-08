@@ -1,10 +1,12 @@
 import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { useState } from "react";
-import { json, LoaderFunction, redirect, useLoaderData, useOutletContext } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, useOutletContext } from "@remix-run/react";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
-import { TereusContext } from "~/root";
+import type { TereusContext } from "~/root";
 
 interface LoaderResponse {
   response?: api.SubmissionDTO[];

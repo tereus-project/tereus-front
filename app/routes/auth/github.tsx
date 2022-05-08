@@ -1,4 +1,5 @@
-import { LoaderFunction, redirect } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import * as api from "~/api";
 import { sessionCookie } from "~/cookie";
 

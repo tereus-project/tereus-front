@@ -1,19 +1,9 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { withEmotionCache } from "@emotion/react";
+import type { LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import React, { useContext, useEffect } from "react";
-import {
-  json,
-  Links,
-  LinksFunction,
-  LiveReload,
-  LoaderFunction,
-  Meta,
-  MetaFunction,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useLoaderData,
-} from "remix"; // Depends on the runtime you choose
 import * as api from "~/api";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { sessionCookie } from "./cookie";
