@@ -1,4 +1,5 @@
-import React from "react";
+import { Button } from "@chakra-ui/react";
+import { RiGithubFill } from "react-icons/ri";
 import { LoaderFunction, useLoaderData } from "remix";
 import { Page } from "~/components/Page";
 
@@ -19,8 +20,12 @@ export default function Login() {
   const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
 
   return (
-    <Page title="Login" icon="lock">
-      <a href={loaderData.githubLoginUrl}>Login with GitHub</a>
+    <Page title="Login">
+      <a href={loaderData.githubLoginUrl}>
+        <Button leftIcon={<RiGithubFill />} colorScheme="blackAlpha" variant="solid">
+          Login with GitHub
+        </Button>
+      </a>
     </Page>
   );
 }

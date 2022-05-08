@@ -1,17 +1,6 @@
-import {
-  EuiBasicTable,
-  EuiButton,
-  EuiButtonIcon,
-  EuiDescriptionList,
-  EuiGlobalToastList,
-  EuiScreenReaderOnly,
-  RIGHT_ALIGNMENT,
-} from "@elastic/eui";
-import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
-import { formatRelative, parseJSON } from "date-fns";
-import React, { useState } from "react";
+import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import { useState } from "react";
 import { json, LoaderFunction, redirect, useLoaderData, useOutletContext } from "remix";
-import { v4 as uuidv4 } from "uuid";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
@@ -41,29 +30,9 @@ export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
+  const toast = useToast();
+
   const [sources] = useState(loaderData.response ?? []);
-  const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<Record<string, React.ReactNode>>({});
-
-  const toggleDetails = (item: api.SubmissionDTO) => {
-    const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
-
-    if (itemIdToExpandedRowMapValues[item.id]) {
-      delete itemIdToExpandedRowMapValues[item.id];
-    } else {
-      itemIdToExpandedRowMapValues[item.id] = (
-        <EuiDescriptionList
-          listItems={[
-            {
-              title: "Error reason",
-              description: item.reason,
-            },
-          ]}
-        />
-      );
-    }
-
-    setItemIdToExpandedRowMap(itemIdToExpandedRowMapValues);
-  };
 
   const download = async (id: string) => {
     const res = await fetch(`/download/${id}`);
@@ -79,102 +48,55 @@ export default function History() {
     } else {
       const data = await res.json();
 
-      context.pushToast({
-        id: uuidv4(),
+      toast({
         title: "Failed to download files",
-        color: "danger",
-        text: data?.errors?.join("\n"),
+        status: "error",
+        description: data?.errors?.join("\n"),
       });
     }
   };
 
   return (
-    <Page title="Remix history" icon="clock" user={context.user}>
-      <EuiBasicTable
-        tableCaption=""
-        items={sources}
-        itemId="id"
-        itemIdToExpandedRowMap={itemIdToExpandedRowMap}
-        isExpandable={true}
-        hasActions={true}
-        columns={[
-          {
-            field: "id",
-            name: "ID",
-            truncateText: true,
-          },
-          {
-            field: "created_at",
-            name: "Created at",
-            render: (_, data) => {
-              return formatRelative(parseJSON(data.created_at), new Date());
-            },
-          },
-          {
-            field: "source_language",
-            name: "Source language",
-            truncateText: true,
-          },
-          {
-            field: "target_language",
-            name: "Target language",
-            truncateText: true,
-          },
-          {
-            actions: [
-              {
-                name: "Download",
-                description: "Download all files",
-                render: (record) => {
-                  if (record.status === "done") {
-                    return (
-                      <EuiButton
-                        onClick={() => {
-                          download(record.id);
-                        }}
-                      >
-                        Download
-                      </EuiButton>
-                    );
-                  } else {
-                    return (
-                      <EuiButton disabled>
-                        {record.status[0].toUpperCase()}
-                        {record.status.slice(1)}
-                      </EuiButton>
-                    );
-                  }
-                },
-              },
-            ],
-          },
-          {
-            align: RIGHT_ALIGNMENT,
-            width: "40px",
-            isExpander: true,
-            name: (
-              <EuiScreenReaderOnly>
-                <span>Expand rows</span>
-              </EuiScreenReaderOnly>
-            ),
-            render: (record: api.SubmissionDTO) => (
-              <EuiButtonIcon
-                onClick={() => toggleDetails(record)}
-                aria-label={itemIdToExpandedRowMap[record.id] ? "Collapse" : "Expand"}
-                iconType={itemIdToExpandedRowMap[record.id] ? "arrowUp" : "arrowDown"}
-              />
-            ),
-          },
-        ]}
-        // pagination={{
-        //   pageIndex,
-        //   pageSize,
-        //   totalItemCount: sources.length,
-        //   pageSizeOptions: [10, 20, 50, 100, 'all'],
-        //   showPerPageOptions: true,
-        // }}
-        // onChange={onTableChange}
-      />
+    <Page title="Remix history" user={context.user}>
+      <TableContainer>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>ID</Th>
+              <Th>Created at</Th>
+              <Th>Source language</Th>
+              <Th>Target language</Th>
+              <Th>Download</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sources.map((source) => (
+              <Tr key={source.id}>
+                <Td>{source.id}</Td>
+                <Td>{source.created_at}</Td>
+                <Td>{source.source_language}</Td>
+                <Td>{source.target_language}</Td>
+                <Td>
+                  {source.status === "done" ? (
+                    <Button
+                      onClick={() => {
+                        download(source.id);
+                      }}
+                    >
+                      Download
+                    </Button>
+                  ) : (
+                    <Button disabled>
+                      {source.status[0].toUpperCase()}
+                      {source.status.slice(1)}
+                    </Button>
+                  )}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
     </Page>
   );
 }

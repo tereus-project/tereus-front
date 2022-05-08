@@ -1,91 +1,54 @@
-import {
-  EuiAvatar,
-  EuiHeader,
-  EuiHeaderLink,
-  EuiHeaderLinks,
-  EuiHeaderLogo,
-  EuiHeaderSectionItem,
-  EuiHeaderSectionItemButton,
-  EuiIcon,
-  EuiPage,
-  EuiPageBody,
-  EuiPageContent,
-  EuiPageContentBody,
-  EuiPageHeader,
-  EuiToolTip,
-  IconType,
-} from "@elastic/eui";
+import { Avatar, Box, Container, Heading, VStack } from "@chakra-ui/react";
 import md5 from "md5";
+import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
+import { NavBar } from "./Navbar";
+import { NavBarGroup } from "./NavBarGroup";
+import { NavBarLink } from "./NavBarLink";
 
 export type PageProps = React.PropsWithChildren<{
   title?: string;
-  icon?: IconType;
   user?: {
     email: string;
   };
 }>;
 
-export function Page({ children, title, icon = "", user }: PageProps) {
+export function Page({ children, title, user }: PageProps) {
   return (
-    <main>
-      <EuiHeader theme="dark">
-        <EuiHeaderSectionItem border="right">
-          <EuiHeaderLogo
-            // iconType="compute"
-            href="/"
-          >
+    <VStack>
+      <NavBar>
+        <NavBarGroup>
+          <NavBarLink to="/" variant="nav">
             Tereus
-          </EuiHeaderLogo>
-        </EuiHeaderSectionItem>
-
-        <EuiHeaderSectionItem>
-          <EuiHeaderLinks>
-            {user && <EuiHeaderLink href="/remixer/zip">Remixer</EuiHeaderLink>}
-
-            {!user && <EuiHeaderLink href="/login">Login</EuiHeaderLink>}
-
-            <EuiHeaderLink href="">Docs</EuiHeaderLink>
-          </EuiHeaderLinks>
+          </NavBarLink>
+        </NavBarGroup>
+        <NavBarGroup>
+          <NavBarLink to="/remixer/zip">Remixer</NavBarLink>
 
           {user && (
-            <EuiHeaderLink href="/history">
-              <EuiToolTip content="History" position="bottom">
-                <EuiHeaderSectionItemButton aria-label="History">
-                  <EuiIcon type="/icons/history.svg" size="m" />
-                </EuiHeaderSectionItemButton>
-              </EuiToolTip>
-            </EuiHeaderLink>
+            <NavBarLink to="/history">
+              <RiHistoryFill />
+            </NavBarLink>
           )}
 
-          <EuiToolTip content="GitHub" position="bottom">
-            <EuiHeaderSectionItemButton aria-label="GitHub" href="https://github.com/tereus-project" target="_blank">
-              <EuiIcon type="/icons/github.svg" size="m" />
-            </EuiHeaderSectionItemButton>
-          </EuiToolTip>
+          <NavBarLink to="https://github.com/tereus-project" target="_blank">
+            <RiGithubFill />
+          </NavBarLink>
 
           {user && (
-            <EuiHeaderSectionItemButton aria-label="Account menu">
-              <EuiAvatar name="Your account" size="m" imageUrl={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
-            </EuiHeaderSectionItemButton>
+            <NavBarLink to="" variant="unstyled">
+              <Avatar name="Your account" size="full" src={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
+            </NavBarLink>
           )}
-        </EuiHeaderSectionItem>
-      </EuiHeader>
+        </NavBarGroup>
+      </NavBar>
 
-      <EuiPage>
-        <EuiPageBody>
-          {title && <EuiPageHeader iconType={icon} pageTitle={title} />}
+      <Box as="main" width="full" padding={4}>
+        <Container as="header">
+          <Heading>{title}</Heading>
+        </Container>
 
-          <EuiPageContent
-            hasBorder={false}
-            hasShadow={false}
-            paddingSize="none"
-            color="transparent"
-            borderRadius="none"
-          >
-            <EuiPageContentBody>{children}</EuiPageContentBody>
-          </EuiPageContent>
-        </EuiPageBody>
-      </EuiPage>
-    </main>
+        {children}
+      </Box>
+    </VStack>
   );
 }

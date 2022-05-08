@@ -1,29 +1,79 @@
-import { EuiGlobalStyles, EuiGlobalToastList, EuiProvider } from "@elastic/eui";
-import euiThemeLight from "@elastic/eui/dist/eui_theme_light.css";
-import { json, LoaderFunction, MetaFunction, useLoaderData } from "remix";
-import { Links, LinksFunction, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "remix";
+import { ChakraProvider } from "@chakra-ui/react";
+import { withEmotionCache } from "@emotion/react";
+import React, { useContext, useEffect } from "react";
+import {
+  json,
+  Links,
+  LinksFunction,
+  LiveReload,
+  LoaderFunction,
+  Meta,
+  MetaFunction,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+} from "remix"; // Depends on the runtime you choose
 import * as api from "~/api";
+import { ClientStyleContext, ServerStyleContext } from "./context";
 import { sessionCookie } from "./cookie";
-import styles from "~/styles/global.css";
-import { useState } from "react";
-import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
-export const meta: MetaFunction = () => {
-  return { title: "Tereus" };
-};
+export const meta: MetaFunction = () => ({
+  charset: "utf-8",
+  viewport: "width=device-width,initial-scale=1",
+  title: "Tereus",
+});
 
-export const links: LinksFunction = () => {
+export let links: LinksFunction = () => {
   return [
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: "preconnect", href: "https://fonts.gstaticom" },
     {
       rel: "stylesheet",
-      href: euiThemeLight,
-    },
-    {
-      rel: "stylesheet",
-      href: styles,
+      href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap",
     },
   ];
 };
+
+const Document = withEmotionCache(({ children }: React.PropsWithChildren<{}>, emotionCache) => {
+  const serverStyleData = useContext(ServerStyleContext);
+  const clientStyleData = useContext(ClientStyleContext);
+
+  // Only executed on client
+  useEffect(() => {
+    // re-link sheet container
+    emotionCache.sheet.container = document.head;
+    // re-inject tags
+    const tags = emotionCache.sheet.tags;
+    emotionCache.sheet.flush();
+
+    tags.forEach((tag) => {
+      (emotionCache.sheet as any)._insertTag(tag);
+    });
+
+    // reset cache to reapply global styles
+    clientStyleData?.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <html lang="en">
+      <head>
+        <Meta />
+        <Links />
+        {serverStyleData?.map(({ key, ids, css }) => (
+          <style key={key} data-emotion={`${key} ${ids.join(" ")}`} dangerouslySetInnerHTML={{ __html: css }} />
+        ))}
+      </head>
+      <body>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+});
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
@@ -39,44 +89,20 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export interface TereusContext {
   user?: api.GetCurrentUserResponseDTO;
-  pushToast: (toast: Toast) => void;
 }
 
 export default function App() {
   const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const pushToast = (toast: Toast) => {
-    setToasts(toasts.concat(toast));
-  };
-
-  const removeToast = (removedToast: Toast) => {
-    setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
-  };
 
   const context: TereusContext = {
     user: loaderData.user,
-    pushToast,
   };
 
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <EuiGlobalStyles />
-        <Links />
-      </head>
-      <body>
-        <EuiProvider colorMode="light" globalStyles={false}>
-          <Outlet context={context} />
-          <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
-        </EuiProvider>
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
+    <Document>
+      <ChakraProvider>
+        <Outlet context={context} />
+      </ChakraProvider>
+    </Document>
   );
 }

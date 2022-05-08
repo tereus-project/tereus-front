@@ -1,12 +1,21 @@
-import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiPanel, EuiSelect } from "@elastic/eui";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Select,
+  Stack,
+  useToast,
+} from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
-import React, { useEffect, useState } from "react";
-import { ActionFunction, json, useActionData, useOutletContext, useSubmit, useTransition } from "remix";
-import { v4 as uuidv4 } from "uuid";
+import { Field, FieldProps, Form, Formik } from "formik";
+import { useEffect, useState } from "react";
+import { ActionFunction, json, useActionData, useSubmit, useTransition } from "remix";
 import * as api from "~/api";
 import { ActionFormData } from "~/api";
 import { sessionCookie } from "~/cookie";
-import { TereusContext } from "~/root";
 
 export const action: ActionFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
@@ -47,46 +56,44 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function RemixerZip() {
-  const context = useOutletContext<TereusContext>();
-
   const submit = useSubmit();
   const transition = useTransition();
-
   const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
 
+  const toast = useToast();
+
   const [isRemixing, setIsRemixing] = useState(false);
-
-  const [sourceLanguage, setSourceLanguage] = useState("c");
-  const [targetLanguage, setTargetLanguage] = useState("go");
-  const [sourceCode, setSourceCode] = useState("");
   const [outputCode, setOutputCode] = useState("");
-
-  const createSource: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-    submit(e.currentTarget, { method: "post" });
-  };
 
   const poll = async (id: string) => {
     const res = await fetch(`/download/${id}/main`);
 
-    if (res.ok) {
+    if (res.ok && res.status !== 204) {
       setIsRemixing(false);
       setOutputCode(await res.text());
 
-      context.pushToast({
-        id: uuidv4(),
+      toast({
         title: "Remixing success!",
-        color: "success",
+        status: "success",
       });
-    } else if (res.status !== 204) {
+    } else if (res.status === 204) {
+      setIsRemixing(false);
+
+      toast({
+        isClosable: true,
+        title: "No main file found",
+        status: "error",
+        description: "This might be a server error. Please try again later.",
+      });
+    } else if (res.status !== 404) {
       setIsRemixing(false);
       const data = await res.json();
 
-      context.pushToast({
-        id: uuidv4(),
+      toast({
+        isClosable: true,
         title: "An error occured",
-        color: "danger",
-        text: data?.errors?.join("\n") ?? res.statusText,
+        status: "error",
+        description: data?.errors?.join("\n") ?? res.statusText,
       });
     } else {
       setTimeout(() => poll(id), 400);
@@ -96,110 +103,120 @@ export default function RemixerZip() {
   useEffect(() => {
     if (transition.state === "loading") {
       if (actionData?.response) {
-        context.pushToast({
-          id: uuidv4(),
+        toast({
+          isClosable: true,
           title: "Remixing started!",
-          color: "success",
+          status: "info",
         });
 
         setIsRemixing(true);
         setTimeout(() => poll(actionData.response.id), 400);
+      } else if (actionData?.errors) {
+        toast({
+          isClosable: true,
+          title: "An error occured",
+          status: "error",
+          description: actionData.errors.join("\n"),
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition]);
 
+  type FormValues = {
+    sourceLanguage: string;
+    targetLanguage: string;
+    sourceCode: string;
+  };
+
   return (
-    <EuiForm
-      component="form"
-      method="post"
-      encType="multipart/form-data"
-      isInvalid={!!actionData?.errors}
-      error={actionData?.errors}
-      onSubmit={createSource}
+    <Formik<FormValues>
+      initialValues={{
+        sourceLanguage: "c",
+        targetLanguage: "go",
+        sourceCode: "",
+      }}
+      onSubmit={(values, actions) => {
+        const formData = new FormData();
+        formData.append("sourceLanguage", values.sourceLanguage);
+        formData.append("targetLanguage", values.targetLanguage);
+        formData.append("sourceCode", values.sourceCode);
+
+        submit(formData, { method: "post", encType: "multipart/form-data" });
+        actions.setSubmitting(false);
+      }}
     >
-      <EuiFlexGroup direction="column">
-        <EuiFlexItem>
-          <EuiPanel hasBorder={true}>
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem grow={2}>
-                <EuiFormRow label="Source language" fullWidth>
-                  <EuiSelect
-                    fullWidth
-                    name="sourceLanguage"
-                    options={[
-                      {
-                        value: "c",
-                        text: "C",
-                      },
-                    ]}
-                    autoComplete="off"
-                    required
-                    value={sourceLanguage}
-                    onChange={(e) => setSourceLanguage(e.target.value)}
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
+      {(props) => (
+        <Form>
+          <Container>
+            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
+              <Field name="sourceLanguage" isRequired>
+                {({ field, meta }: FieldProps<FormValues["sourceLanguage"]>) => (
+                  <FormControl isInvalid={!!meta.error && meta.touched}>
+                    <FormLabel htmlFor="sourceLanguage">Source language</FormLabel>
+                    <Select {...field} id="sourceLanguage">
+                      <option value="c">C</option>
+                    </Select>
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
 
-              <EuiFlexItem grow={2}>
-                <EuiFormRow label="Target language" fullWidth>
-                  <EuiSelect
-                    fullWidth
-                    name="targetLanguage"
-                    options={[
-                      {
-                        value: "go",
-                        text: "Go",
-                      },
-                    ]}
-                    autoComplete="off"
-                    required
-                    value={targetLanguage}
-                    onChange={(e) => setTargetLanguage(e.target.value)}
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
+              <br />
 
-              <EuiFlexItem grow={false}>
-                <EuiFormRow hasEmptyLabelSpace>
-                  <EuiButton type="submit" fill disabled={isRemixing || transition.state === "submitting"}>
-                    {transition.state === "submitting" ? "Sending..." : isRemixing ? "Pending..." : "Remix!"}
-                  </EuiButton>
-                </EuiFormRow>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiPanel>
-        </EuiFlexItem>
+              <Field name="targetLanguage" isRequired>
+                {({ field, meta }: FieldProps<FormValues["targetLanguage"]>) => (
+                  <FormControl isInvalid={!!meta.error && meta.touched}>
+                    <FormLabel htmlFor="targetLanguage">Target language</FormLabel>
+                    <Select {...field} id="targetLanguage">
+                      <option value="go">Go</option>
+                    </Select>
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+            </Box>
+          </Container>
 
-        <EuiFlexItem>
-          <EuiFlexGroup>
-            <EuiFlexItem>
-              <EuiPanel hasBorder={true}>
-                <input type="hidden" name="sourceCode" value={sourceCode} />
-                <Editor
-                  language={sourceLanguage}
-                  height="500px"
-                  value={sourceCode}
-                  onChange={(value) => setSourceCode(value ?? "")}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
+          <br />
 
-            <EuiFlexItem>
-              <EuiPanel hasBorder={true}>
-                <Editor
-                  language={targetLanguage}
-                  height="500px"
-                  options={{
-                    readOnly: true,
-                  }}
-                  value={outputCode}
-                />
-              </EuiPanel>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiForm>
+          <Stack direction={["column", "column", "column", "row"]}>
+            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
+              <Field name="sourceCode" isRequired>
+                {({ field, meta }: FieldProps<FormValues["sourceCode"]>) => (
+                  <FormControl isInvalid={!!meta.error && meta.touched} isRequired>
+                    <FormLabel htmlFor="sourceCode">Source Code</FormLabel>
+                    <Editor
+                      {...field}
+                      onChange={(value) => {
+                        props.setFieldValue("sourceCode", value);
+                      }}
+                      language={props.values.sourceLanguage}
+                      height="500px"
+                    />
+                  </FormControl>
+                )}
+              </Field>
+            </Box>
+
+            <Button paddingX={10} colorScheme="teal" isLoading={props.isSubmitting || isRemixing} type="submit">
+              Submit
+            </Button>
+
+            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
+              <FormLabel as="div">Output code</FormLabel>
+              <Editor
+                language={props.values.targetLanguage}
+                height="500px"
+                options={{
+                  readOnly: true,
+                }}
+                value={outputCode}
+              />
+            </Box>
+          </Stack>
+        </Form>
+      )}
+    </Formik>
   );
 }

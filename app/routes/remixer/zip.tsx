@@ -1,33 +1,36 @@
 import {
-  EuiButton,
-  EuiCode,
-  EuiFieldText,
-  EuiFilePicker,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiForm,
-  EuiFormRow,
-  EuiPanel,
-  EuiRadioGroup,
-  EuiSelect,
-} from "@elastic/eui";
-import React, { useEffect, useState } from "react";
+  Box,
+  Button,
+  Code,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Link as ChakraLink,
+  Select,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useToast,
+} from "@chakra-ui/react";
+import { Field, FieldProps, Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 import {
   ActionFunction,
   json,
-  Link,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
   useActionData,
-  useOutletContext,
   useSubmit,
   useTransition,
 } from "remix";
-import { v4 as uuidv4 } from "uuid";
 import * as api from "~/api";
 import { ActionFormData } from "~/api";
+import { FileUpload } from "~/components/FileUpload";
 import { sessionCookie } from "~/cookie";
-import { TereusContext } from "~/root";
 
 export const action: ActionFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
@@ -78,22 +81,7 @@ export const action: ActionFunction = async ({ request }) => {
       },
       session.token
     );
-    return json({ response, errors });
-  } else if (mode === "inline") {
-    const sourceCode = values.get("sourceCode")?.toString();
 
-    if (!sourceCode) {
-      return json({ errors: ["Missing source code"] });
-    }
-
-    const [response, errors] = await api.remix.inline(
-      sourceLanguage,
-      targetLanguage,
-      {
-        source_code: sourceCode,
-      },
-      session.token
-    );
     return json({ response, errors });
   }
 
@@ -101,38 +89,25 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function RemixerZip() {
-  const context = useOutletContext<TereusContext>();
-
   const submit = useSubmit();
   const transition = useTransition();
-
   const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
 
-  const modeIdZip = "selected-mode-zip";
-  const modeIdGit = "selected-mode-git";
-  const [selectedModeId, setSelectedModeId] = useState(modeIdZip);
+  const toast = useToast();
 
-  const modeIdToMode: Record<string, keyof typeof api.remix> = {
-    [modeIdZip]: "zip",
-    [modeIdGit]: "git",
-  };
-  const [selectedMode, setSelectedMode] = useState(modeIdToMode[selectedModeId]);
-
-  const createSource: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-    submit(e.currentTarget, { method: "post" });
-  };
+  const modes = ["zip", "git"];
+  const [mode, setMode] = useState(modes[0]);
 
   useEffect(() => {
     if (transition.state === "loading" && actionData?.response) {
-      context.pushToast({
-        id: uuidv4(),
+      toast({
+        isClosable: true,
         title: "New source added",
-        color: "success",
-        text: (
+        status: "success",
+        description: (
           <>
-            Source <EuiCode>{actionData.response.id}</EuiCode> added. Remixing will start soon. You can check the{" "}
-            <Link to="/history">history page</Link> for status.
+            Source <Code>{actionData.response.id}</Code> added. Remixing will start soon. You can check the{" "}
+            <ChakraLink href="/history">history page</ChakraLink> for status.
           </>
         ),
       });
@@ -140,121 +115,145 @@ export default function RemixerZip() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transition]);
 
+  type FormValues = {
+    sourceLanguage: string;
+    targetLanguage: string;
+    mode: string;
+    gitRepo: string;
+    file: File | null;
+  };
+
   return (
-    <EuiForm
-      component="form"
-      method="post"
-      encType="multipart/form-data"
-      isInvalid={!!actionData?.errors}
-      error={actionData?.errors}
-      onSubmit={createSource}
-    >
-      <input type="hidden" name="mode" value={selectedMode} />
+    <Container>
+      <Formik<FormValues>
+        initialValues={{
+          sourceLanguage: "c",
+          targetLanguage: "go",
+          mode: "zip" as "zip" | "git",
+          gitRepo: "",
+          file: null,
+        }}
+        onSubmit={(values, actions) => {
+          const formData = new FormData();
+          formData.append("mode", values.mode);
+          formData.append("sourceLanguage", values.sourceLanguage);
+          formData.append("targetLanguage", values.targetLanguage);
 
-      <EuiPanel hasBorder={true}>
-        <EuiFlexGroup alignItems="center">
-          <EuiFlexItem grow={4}>
-            <EuiRadioGroup
-              options={[
-                {
-                  id: modeIdZip,
-                  label: (
-                    <EuiFilePicker
-                      fullWidth
-                      name="file"
-                      display="default"
-                      accept=".zip"
-                      autoComplete="off"
-                      required={selectedModeId === modeIdZip}
-                      multiple={false}
-                      onChange={() => {
-                        setSelectedModeId(modeIdZip);
-                        setSelectedMode("zip");
-                      }}
-                    />
-                  ),
-                  labelProps: {
-                    id: `${modeIdZip}-label`,
-                    style: {
-                      width: "100%",
-                    },
-                  },
-                },
-                {
-                  id: modeIdGit,
-                  label: (
-                    <EuiFieldText
-                      fullWidth
-                      name="gitRepo"
-                      required={selectedModeId === modeIdGit}
-                      placeholder="https://github.com/sqlite/sqlite"
-                      onChange={() => {
-                        if (selectedModeId !== modeIdGit) {
-                          setSelectedModeId(modeIdGit);
-                          setSelectedMode("git");
-                        }
-                      }}
-                    />
-                  ),
-                  labelProps: {
-                    id: `${modeIdGit}-label`,
-                    style: {
-                      width: "100%",
-                    },
-                  },
-                },
-              ]}
-              idSelected={selectedModeId}
-              onChange={(id) => {
-                setSelectedModeId(id);
-                setSelectedMode(modeIdToMode[id]);
-              }}
-            />
-          </EuiFlexItem>
+          if (values.mode === "git") {
+            formData.append("gitRepo", values.gitRepo);
+          } else {
+            formData.append("file", values.file as File);
+          }
 
-          <EuiFlexItem grow={2}>
-            <EuiFormRow label="Source language" fullWidth>
-              <EuiSelect
-                fullWidth
-                name="sourceLanguage"
-                options={[
-                  {
-                    value: "c",
-                    text: "C",
-                  },
-                ]}
-                autoComplete="off"
-                required
-              />
-            </EuiFormRow>
-          </EuiFlexItem>
+          console.log(formData);
 
-          <EuiFlexItem grow={2}>
-            <EuiFormRow label="Target language" fullWidth>
-              <EuiSelect
-                fullWidth
-                name="targetLanguage"
-                options={[
-                  {
-                    value: "go",
-                    text: "Go",
-                  },
-                ]}
-                autoComplete="off"
-                required
-              />
-            </EuiFormRow>
-          </EuiFlexItem>
+          submit(formData, { method: "post", encType: "multipart/form-data" });
+          actions.setSubmitting(false);
+        }}
+      >
+        {(props) => (
+          <Form>
+            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
+              <Field name="sourceLanguage" isRequired>
+                {({ field, meta }: FieldProps<FormValues["sourceLanguage"]>) => (
+                  <FormControl isInvalid={!!meta.error && meta.touched}>
+                    <FormLabel htmlFor="sourceLanguage">Source language</FormLabel>
+                    <Select {...field} id="sourceLanguage">
+                      <option value="c">C</option>
+                    </Select>
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
 
-          <EuiFlexItem grow={false}>
-            <EuiFormRow hasEmptyLabelSpace>
-              <EuiButton type="submit" fill disabled={transition.state === "submitting"}>
-                {transition.state === "submitting" ? "Sending..." : "Remix!"}
-              </EuiButton>
-            </EuiFormRow>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiPanel>
-    </EuiForm>
+              <br />
+
+              <Field name="targetLanguage" isRequired>
+                {({ field, meta }: FieldProps<FormValues["targetLanguage"]>) => (
+                  <FormControl isInvalid={!!meta.error && meta.touched}>
+                    <FormLabel htmlFor="targetLanguage">Target language</FormLabel>
+                    <Select {...field} id="targetLanguage">
+                      <option value="go">Go</option>
+                    </Select>
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+            </Box>
+
+            <br />
+
+            <Field name="mode">
+              {({ field, meta }: FieldProps<FormValues["mode"]>) => (
+                <input {...field} id="mode" type="hidden" value={mode} />
+              )}
+            </Field>
+
+            <Tabs
+              isFitted
+              variant="enclosed"
+              index={modes.findIndex((m) => m === mode)}
+              onChange={(index) => setMode(modes[index])}
+            >
+              <TabList>
+                <Tab>Zip</Tab>
+                <Tab>Git</Tab>
+              </TabList>
+
+              <Box borderWidth="1px" borderRadius="lg" borderTopRadius="none" p={4} shadow="md">
+                <TabPanels>
+                  <TabPanel>
+                    <Field name="file">
+                      {({ field, meta }: FieldProps<FormValues["file"]>) => (
+                        <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "zip"}>
+                          <FormLabel htmlFor="file">Zip file</FormLabel>
+                          <FileUpload
+                            {...field}
+                            id="file"
+                            accept=".zip"
+                            setFieldValue={(file) => props.setFieldValue("file", file)}
+                            placeholder="Select a zip file"
+                          />
+                          <FormErrorMessage>{meta.error}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+
+                    <Button
+                      mt={4}
+                      colorScheme="teal"
+                      isLoading={props.isSubmitting || transition.state === "submitting"}
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </TabPanel>
+                  <TabPanel>
+                    <Field name="gitRepo">
+                      {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
+                        <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "git"}>
+                          <FormLabel htmlFor="gitRepo">Git repository</FormLabel>
+                          <Input {...field} id="gitRepo" placeholder="https://github.com/sqlite/sqlite" />
+                          <FormErrorMessage>{meta.error}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+
+                    <Button
+                      mt={4}
+                      colorScheme="teal"
+                      isLoading={props.isSubmitting || transition.state === "submitting"}
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </TabPanel>
+                </TabPanels>
+              </Box>
+            </Tabs>
+          </Form>
+        )}
+      </Formik>
+    </Container>
   );
 }

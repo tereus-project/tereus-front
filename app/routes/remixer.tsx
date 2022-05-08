@@ -1,5 +1,4 @@
-import { EuiTab, EuiTabs } from "@elastic/eui";
-import React from "react";
+import { Container, Tab, TabList, Tabs } from "@chakra-ui/react";
 import { useLinkClickHandler } from "react-router-dom";
 import { LoaderFunction, Outlet, redirect, useHref, useLocation, useOutletContext } from "remix";
 import { Page } from "~/components/Page";
@@ -25,24 +24,28 @@ export default function Remixer() {
     {
       name: "Zip / Git",
       href: useHref(`/remixer/zip`),
-      clickHandler: useLinkClickHandler(`/remixer/zip`),
+      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/remixer/zip`),
     },
     {
       name: "Inline",
       href: useHref(`/remixer/inline`),
-      clickHandler: useLinkClickHandler(`/remixer/inline`),
+      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/remixer/inline`),
     },
   ];
 
   return (
-    <Page title="Remixer" icon="compute" user={context.user}>
-      <EuiTabs expand={true}>
-        {tabs.map((tab) => (
-          <EuiTab href={tab.href} onClick={tab.clickHandler} isSelected={tab.href === location.pathname} key={tab.href}>
-            {tab.name}
-          </EuiTab>
-        ))}
-      </EuiTabs>
+    <Page title="Remixer" user={context.user}>
+      <Container>
+        <Tabs variant="line" index={tabs.findIndex((tab) => tab.href === location.pathname)}>
+          <TabList>
+            {tabs.map((tab) => (
+              <Tab key={tab.name} as="a" href={tab.href} onClick={tab.clickHandler}>
+                {tab.name}
+              </Tab>
+            ))}
+          </TabList>
+        </Tabs>
+      </Container>
 
       <br />
 
