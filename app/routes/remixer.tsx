@@ -12,7 +12,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = (await sessionCookie.parse(cookieHeader)) || {};
 
   if (!session.token) {
-    return redirect("/login");
+    const url = new URL(request.url);
+    return redirect(`/login?to=${url.pathname}${url.search}`);
   }
 
   return {};
