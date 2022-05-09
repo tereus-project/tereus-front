@@ -1,8 +1,9 @@
-import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
-import { useState } from "react";
+import { Text, Button, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { Fragment, useState } from "react";
+import { RiArrowDownSLine } from "react-icons/ri";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
 import { sessionCookie } from "~/cookie";
@@ -36,6 +37,16 @@ export default function History() {
   const toast = useToast();
 
   const [sources] = useState(loaderData.response ?? []);
+  const [collapsedSources, setCollapsedSources] = useState(
+    Object.fromEntries(sources.filter((source) => source.status === "failed").map((source) => [source.id, false]))
+  );
+
+  const toggleSourceDetails = (sourceId: string) => {
+    setCollapsedSources({
+      ...collapsedSources,
+      [sourceId]: !collapsedSources[sourceId],
+    });
+  };
 
   const download = async (id: string) => {
     const res = await fetch(`/download/${id}`);
@@ -62,7 +73,7 @@ export default function History() {
   return (
     <Page title="Remix history" user={context.user}>
       <TableContainer>
-        <Table variant="simple">
+        <Table size="sm">
           <Thead>
             <Tr>
               <Th>ID</Th>
@@ -70,32 +81,58 @@ export default function History() {
               <Th>Source language</Th>
               <Th>Target language</Th>
               <Th>Download</Th>
+              <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
             {sources.map((source) => (
-              <Tr key={source.id}>
-                <Td>{source.id}</Td>
-                <Td>{source.created_at}</Td>
-                <Td>{source.source_language}</Td>
-                <Td>{source.target_language}</Td>
-                <Td>
-                  {source.status === "done" ? (
-                    <Button
-                      onClick={() => {
-                        download(source.id);
-                      }}
-                    >
-                      Download
-                    </Button>
-                  ) : (
-                    <Button disabled>
-                      {source.status[0].toUpperCase()}
-                      {source.status.slice(1)}
-                    </Button>
-                  )}
-                </Td>
-              </Tr>
+              <Fragment key={source.id}>
+                <Tr
+                  onClick={source.status === "failed" ? () => toggleSourceDetails(source.id) : undefined}
+                  _hover={{
+                    cursor: source.status === "failed" ? "pointer" : "auto",
+                  }}
+                >
+                  <Td>{source.id}</Td>
+                  <Td>{source.created_at}</Td>
+                  <Td>{source.source_language}</Td>
+                  <Td>{source.target_language}</Td>
+                  <Td>
+                    {source.status === "done" ? (
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          download(source.id);
+                        }}
+                      >
+                        Download
+                      </Button>
+                    ) : (
+                      <Button disabled>
+                        {source.status[0].toUpperCase()}
+                        {source.status.slice(1)}
+                      </Button>
+                    )}
+                  </Td>
+                  <Td>
+                    {source.status === "failed" && (
+                      <RiArrowDownSLine transform={collapsedSources[source.id] ? "rotate(180)" : ""} />
+                    )}
+                  </Td>
+                </Tr>
+                {source.status === "failed" && (
+                  <Tr hidden={!collapsedSources[source.id]}>
+                    <Td colSpan={6}>
+                      <Heading mb={4} size="lg">
+                        Reason
+                      </Heading>
+                      <Text mb={2}>{source.reason}</Text>
+                    </Td>
+                  </Tr>
+                )}
+              </Fragment>
             ))}
           </Tbody>
         </Table>

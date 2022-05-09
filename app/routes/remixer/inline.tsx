@@ -239,7 +239,7 @@ export default function RemixerZip() {
                           if ((e.ctrlKey || e.metaKey) && e.keyCode === 3) {
                             e.preventDefault();
                             e.stopPropagation();
-                            
+
                             props.submitForm();
                           }
                         });
