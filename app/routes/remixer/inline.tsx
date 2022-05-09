@@ -234,6 +234,16 @@ export default function RemixerZip() {
                         props.setFieldValue("sourceCode", value);
                         updateInputQueryParam(value);
                       }}
+                      onMount={(editor) => {
+                        editor.onKeyDown((e) => {
+                          if ((e.ctrlKey || e.metaKey) && e.keyCode === 3) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            props.submitForm();
+                          }
+                        });
+                      }}
                       language={props.values.sourceLanguage}
                       height="500px"
                     />
