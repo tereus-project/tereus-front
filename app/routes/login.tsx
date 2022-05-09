@@ -17,10 +17,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   if (process.env.FRONT_URL) {
-    githubLoginUrl += `&redirect_uri=${process.env.FRONT_URL}/auth/github${searchParams.toString()}`;
+    githubLoginUrl += `&redirect_uri=${process.env.FRONT_URL}/auth/github?${searchParams.toString()}`;
   } else if (process.env.NODE_ENV === "development") {
     const url = new URL(request.url);
-    githubLoginUrl += `&redirect_uri=http://127.0.0.1:${url.port}/auth/github${searchParams.toString()}`;
+    githubLoginUrl += `&redirect_uri=http://127.0.0.1:${url.port}/auth/github?${searchParams.toString()}`;
   }
 
   return {
