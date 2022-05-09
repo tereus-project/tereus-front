@@ -111,6 +111,7 @@ export default function RemixerZip() {
       setOutputCode(data);
 
       toast({
+        isClosable: true,
         title: "Remixing success!",
         status: "success",
       });
