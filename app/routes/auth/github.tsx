@@ -9,7 +9,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const to = queries.get("to");
 
   const searchParams = new URLSearchParams();
-  
+
   if (to) {
     searchParams.append("to", to);
   }

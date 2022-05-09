@@ -12,9 +12,10 @@ import {
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useActionData, useSubmit, useTransition } from "@remix-run/react";
+import { useActionData, useLocation, useNavigate, useSubmit, useTransition } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
+import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
@@ -63,10 +64,28 @@ export default function RemixerZip() {
   const transition = useTransition();
   const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
 
+  const location = useLocation();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [isRemixing, setIsRemixing] = useState(false);
   const [outputCode, setOutputCode] = useState("");
+
+  let sourceCode = new URLSearchParams(location.search).get("i");
+  if (sourceCode) {
+    try {
+      sourceCode = atob(decodeURIComponent(sourceCode));
+    } catch {
+      sourceCode = "";
+    }
+  }
+
+  const updateInputQueryParam = debounce((value: string | undefined) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("i", encodeURIComponent(btoa(value ?? "")));
+
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
+  }, 1000);
 
   const poll = async (id: string) => {
     const res = await fetch(`/download/${id}/main`);
@@ -137,7 +156,7 @@ export default function RemixerZip() {
       initialValues={{
         sourceLanguage: "c",
         targetLanguage: "go",
-        sourceCode: "",
+        sourceCode: sourceCode ?? "",
       }}
       onSubmit={(values, actions) => {
         const formData = new FormData();
@@ -193,6 +212,7 @@ export default function RemixerZip() {
                       {...field}
                       onChange={(value) => {
                         props.setFieldValue("sourceCode", value);
+                        updateInputQueryParam(value);
                       }}
                       language={props.values.sourceLanguage}
                       height="500px"
