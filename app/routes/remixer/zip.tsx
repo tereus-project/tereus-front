@@ -14,11 +14,11 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  useToast,
+  useToast
 } from "@chakra-ui/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
-import { useActionData, useSubmit, useTransition } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
@@ -84,9 +84,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function RemixerZip() {
-  const submit = useSubmit();
-  const transition = useTransition();
-  const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
+  const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
   const toast = useToast();
 
@@ -94,21 +92,21 @@ export default function RemixerZip() {
   const [mode, setMode] = useState(modes[0]);
 
   useEffect(() => {
-    if (transition.state === "loading" && actionData?.response) {
+    if (fetcher.state === "loading" && fetcher.data?.response) {
       toast({
         isClosable: true,
         title: "New source added",
         status: "success",
         description: (
           <>
-            Source <Code>{actionData.response.id}</Code> added. Remixing will start soon. You can check the{" "}
+            Source <Code>{fetcher.data.response.id}</Code> added. Remixing will start soon. You can check the{" "}
             <ChakraLink href="/history">history page</ChakraLink> for status.
           </>
         ),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transition]);
+  }, [fetcher]);
 
   type FormValues = {
     sourceLanguage: string;
@@ -142,7 +140,7 @@ export default function RemixerZip() {
 
           console.log(formData);
 
-          submit(formData, { method: "post", encType: "multipart/form-data" });
+          fetcher.submit(formData, { replace: true, method: "post", encType: "multipart/form-data" });
           actions.setSubmitting(false);
         }}
       >
@@ -217,7 +215,7 @@ export default function RemixerZip() {
                     <Button
                       mt={4}
                       colorScheme="teal"
-                      isLoading={props.isSubmitting || transition.state === "submitting"}
+                      isLoading={props.isSubmitting || fetcher.state === "submitting"}
                       type="submit"
                     >
                       Submit
@@ -237,7 +235,7 @@ export default function RemixerZip() {
                     <Button
                       mt={4}
                       colorScheme="teal"
-                      isLoading={props.isSubmitting || transition.state === "submitting"}
+                      isLoading={props.isSubmitting || fetcher.state === "submitting"}
                       type="submit"
                     >
                       Submit

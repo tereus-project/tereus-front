@@ -7,12 +7,12 @@ import {
   FormLabel,
   Select,
   Stack,
-  useToast,
+  useToast
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useActionData, useLocation, useNavigate, useSubmit, useTransition } from "@remix-run/react";
+import { useFetcher, useLocation, useNavigate } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import { debounce } from "lodash";
@@ -60,9 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function RemixerZip() {
-  const submit = useSubmit();
-  const transition = useTransition();
-  const actionData = useActionData<ActionFormData<api.RemixResponseDTO>>();
+  const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,8 +121,8 @@ export default function RemixerZip() {
   };
 
   useEffect(() => {
-    if (transition.state === "loading") {
-      if (actionData?.response) {
+    if (fetcher.state === "loading") {
+      if (fetcher.data?.response) {
         toast({
           isClosable: true,
           title: "Remixing started!",
@@ -132,18 +130,18 @@ export default function RemixerZip() {
         });
 
         setIsRemixing(true);
-        setTimeout(() => poll(actionData.response.id), 400);
-      } else if (actionData?.errors) {
+        setTimeout(() => poll(fetcher.data!.response.id), 400);
+      } else if (fetcher.data?.errors) {
         toast({
           isClosable: true,
           title: "An error occured",
           status: "error",
-          description: actionData.errors.join("\n"),
+          description: fetcher.data.errors.join("\n"),
         });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transition]);
+  }, [fetcher]);
 
   type FormValues = {
     sourceLanguage: string;
@@ -164,7 +162,7 @@ export default function RemixerZip() {
         formData.append("targetLanguage", values.targetLanguage);
         formData.append("sourceCode", values.sourceCode);
 
-        submit(formData, { method: "post", encType: "multipart/form-data" });
+        fetcher.submit(formData, {replace: true, method: "post", encType: "multipart/form-data"});
         actions.setSubmitting(false);
       }}
     >
