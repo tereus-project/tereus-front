@@ -116,7 +116,7 @@ export default function RemixerZip() {
         description: data?.errors?.join("\n") ?? res.statusText,
       });
     } else {
-      setTimeout(() => poll(id), 400);
+      setTimeout(() => poll(id), 600);
     }
   };
 
