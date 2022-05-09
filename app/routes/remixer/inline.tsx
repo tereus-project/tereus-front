@@ -121,7 +121,7 @@ export default function RemixerZip() {
   };
 
   useEffect(() => {
-    if (fetcher.state === "loading") {
+    if (fetcher.type === "done") {
       if (fetcher.data?.response) {
         toast({
           isClosable: true,
@@ -129,7 +129,6 @@ export default function RemixerZip() {
           status: "info",
         });
 
-        setIsRemixing(true);
         setTimeout(() => poll(fetcher.data!.response.id), 400);
       } else if (fetcher.data?.errors) {
         toast({
@@ -138,7 +137,11 @@ export default function RemixerZip() {
           status: "error",
           description: fetcher.data.errors.join("\n"),
         });
+
+        setIsRemixing(false);
       }
+    } else if (fetcher.type === "actionSubmission") {
+      setIsRemixing(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher]);
