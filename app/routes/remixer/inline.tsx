@@ -7,7 +7,7 @@ import {
   FormLabel,
   Select,
   Stack,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
@@ -90,7 +90,25 @@ export default function RemixerZip() {
 
     if (res.ok && res.status !== 204) {
       setIsRemixing(false);
-      setOutputCode(await res.text());
+
+      const data = await res.text();
+
+      try {
+        const json = JSON.parse(data);
+
+        if (json && json.errors) {
+          toast({
+            isClosable: true,
+            title: "An error occured",
+            status: "error",
+          });
+
+          setOutputCode(json.errors.join("\n"));
+          return;
+        }
+      } catch {}
+
+      setOutputCode(data);
 
       toast({
         title: "Remixing success!",
@@ -165,7 +183,7 @@ export default function RemixerZip() {
         formData.append("targetLanguage", values.targetLanguage);
         formData.append("sourceCode", values.sourceCode);
 
-        fetcher.submit(formData, {replace: true, method: "post", encType: "multipart/form-data"});
+        fetcher.submit(formData, { replace: true, method: "post", encType: "multipart/form-data" });
         actions.setSubmitting(false);
       }}
     >

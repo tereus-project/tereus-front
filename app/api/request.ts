@@ -34,7 +34,7 @@ export default async function request<T>(config: {
       throw new RequestError(res, data);
     }
 
-    return [data, null, res];
+    return [data, data?.errors, res];
   } catch (e) {
     if (e instanceof RequestError) {
       if (!e.data) {
