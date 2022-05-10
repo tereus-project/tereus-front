@@ -43,7 +43,7 @@ export function Page({ children, title, user }: PageProps) {
       </NavBar>
 
       <Box as="main" width="full" padding={4}>
-        <Container as="header">
+        <Container as="header" mb={4}>
           <Heading>{title}</Heading>
         </Container>
 

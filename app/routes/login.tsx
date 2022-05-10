@@ -1,8 +1,12 @@
-import { Button } from "@chakra-ui/react";
-import { RiGithubFill } from "react-icons/ri";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Container } from "@chakra-ui/react";
 import type { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useSearchParams } from "@remix-run/react";
+import { RiGithubFill } from "react-icons/ri";
 import { Page } from "~/components/Page";
+
+type LoaderData = {
+  githubLoginUrl: string;
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   let githubLoginUrl = `https://github.com/login/oauth/authorize?scope=user:email%20repo%20gist&client_id=${process.env.GITHUB_OAUTH2_CLIENT_ID}`;
@@ -25,19 +29,34 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return {
     githubLoginUrl,
-  };
+  } as LoaderData;
 };
 
 export default function Login() {
-  const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
+  const loaderData = useLoaderData<LoaderData>();
+  const [searchParams] = useSearchParams();
+
+  const error = searchParams.get("error");
 
   return (
     <Page title="Login">
-      <a href={loaderData.githubLoginUrl}>
-        <Button leftIcon={<RiGithubFill />} colorScheme="blackAlpha" variant="solid">
-          Login with GitHub
-        </Button>
-      </a>
+      {error && (
+        <Container maxW="4xl" mb={4}>
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle>An error occured!</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </Container>
+      )}
+
+      <Container>
+        <a href={loaderData.githubLoginUrl}>
+          <Button leftIcon={<RiGithubFill />} colorScheme="blackAlpha" variant="solid">
+            Login with GitHub
+          </Button>
+        </a>
+      </Container>
     </Page>
   );
 }
