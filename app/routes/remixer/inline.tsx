@@ -5,6 +5,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Kbd,
   Select,
   Stack,
   useToast,
@@ -253,7 +254,15 @@ export default function RemixerZip() {
             </Box>
 
             <Button paddingX={10} colorScheme="teal" isLoading={props.isSubmitting || isRemixing} type="submit">
-              Submit
+              Submit (
+              <Kbd backgroundColor="gray.700" borderColor="gray.800">
+                ⌘
+              </Kbd>{" "}
+              +{" "}
+              <Kbd backgroundColor="gray.700" borderColor="gray.800">
+                ↵
+              </Kbd>
+              )
             </Button>
 
             <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
