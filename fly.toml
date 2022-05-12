@@ -5,6 +5,8 @@ kill_timeout = 5
 processes = []
 
 [env]
+  API_URL = "http://tereus-api.internal:1323"
+  FRONT_URL = "https://tereus.qtmsheep.com"
 
 [experimental]
   allowed_public_ports = []
