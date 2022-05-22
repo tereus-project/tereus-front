@@ -18,6 +18,7 @@ import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
 import { NavBar } from "./NavBar";
 import { NavBarGroup } from "./NavBarGroup";
 import { NavBarLink } from "./NavBarLink";
+import { sessionCookie } from "~/cookie";
 
 export type PageProps = React.PropsWithChildren<{
   title?: string;
@@ -48,29 +49,33 @@ export function Page({ children, title, user }: PageProps) {
             <RiGithubFill />
           </NavBarLink>
 
-          <Box ml="4">
-            <Menu>
-              <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
-                <Avatar size={"sm"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
-              </MenuButton>
-              <MenuList alignItems={"center"}>
-                <br />
-                <Center>
-                  <Avatar size={"2xl"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
-                </Center>
-                <br />
-                <Center>
-                  <p>{user?.email}</p>
-                </Center>
-                <br />
-                <MenuDivider />
-                <MenuItem>
-                  <Link to="/account">Account Settings</Link>
-                </MenuItem>
-                <MenuItem>Logout</MenuItem>
-              </MenuList>
-            </Menu>
-          </Box>
+          {user && (
+            <Box ml="4">
+              <Menu>
+                <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                  <Avatar size={"sm"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
+                </MenuButton>
+                <MenuList alignItems={"center"}>
+                  <br />
+                  <Center>
+                    <Avatar size={"2xl"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
+                  </Center>
+                  <br />
+                  <Center>
+                    <p>{user?.email}</p>
+                  </Center>
+                  <br />
+                  <MenuDivider />
+                  <MenuItem>
+                    <Link to="/account">Account Settings</Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <Link to="/auth/logout">Logout</Link>
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          )}
         </NavBarGroup>
       </NavBar>
 
