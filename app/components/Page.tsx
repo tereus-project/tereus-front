@@ -18,7 +18,6 @@ import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
 import { NavBar } from "./NavBar";
 import { NavBarGroup } from "./NavBarGroup";
 import { NavBarLink } from "./NavBarLink";
-import { sessionCookie } from "~/cookie";
 
 export type PageProps = React.PropsWithChildren<{
   title?: string;
@@ -66,12 +65,12 @@ export function Page({ children, title, user }: PageProps) {
                   </Center>
                   <br />
                   <MenuDivider />
-                  <MenuItem>
-                    <Link to="/account">Account Settings</Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link to="/auth/logout">Logout</Link>
-                  </MenuItem>
+                  <Link to="/account">
+                    <MenuItem>Account Settings</MenuItem>
+                  </Link>
+                  <Link to="/auth/logout">
+                    <MenuItem>Logout</MenuItem>
+                  </Link>
                 </MenuList>
               </Menu>
             </Box>
