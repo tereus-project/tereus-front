@@ -1,4 +1,18 @@
-import { Avatar, Box, Container, Heading, VStack } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Center,
+  Container,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  VStack,
+} from "@chakra-ui/react";
+import { Link } from "@remix-run/react";
 import md5 from "md5";
 import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
 import { NavBar } from "./NavBar";
@@ -34,11 +48,29 @@ export function Page({ children, title, user }: PageProps) {
             <RiGithubFill />
           </NavBarLink>
 
-          {user && (
-            <NavBarLink to="/account" variant="unstyled">
-              <Avatar name="Your account" size="full" src={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
-            </NavBarLink>
-          )}
+          <Box ml="4">
+            <Menu>
+              <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                <Avatar size={"sm"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
+              </MenuButton>
+              <MenuList alignItems={"center"}>
+                <br />
+                <Center>
+                  <Avatar size={"2xl"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
+                </Center>
+                <br />
+                <Center>
+                  <p>{user?.email}</p>
+                </Center>
+                <br />
+                <MenuDivider />
+                <MenuItem>
+                  <Link to="/account">Account Settings</Link>
+                </MenuItem>
+                <MenuItem>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
         </NavBarGroup>
       </NavBar>
 
