@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
   return json({ response, errors });
 };
 
-export default function RemixerZip() {
+export default function RemixerInline() {
   const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
   const location = useLocation();

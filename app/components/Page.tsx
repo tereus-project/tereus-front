@@ -35,7 +35,7 @@ export function Page({ children, title, user }: PageProps) {
           </NavBarLink>
 
           {user && (
-            <NavBarLink to="" variant="unstyled">
+            <NavBarLink to="/account" variant="unstyled">
               <Avatar name="Your account" size="full" src={`https://www.gravatar.com/avatar/${md5(user.email)}`} />
             </NavBarLink>
           )}
