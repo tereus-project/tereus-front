@@ -14,7 +14,7 @@ import {
   ListItem,
   useToast,
 } from "@chakra-ui/react";
-import { useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
+import { Link, useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { ImCheckmark, ImCross } from "react-icons/im";
@@ -142,6 +142,20 @@ export default function Pricing() {
   const currentPlanIndex = plans.findIndex((plan) => plan.tier === currentTier);
 
   const ManagePlanButton: React.FC<{ planIndex: number; plan: Plan }> = ({ planIndex, plan }) => {
+    if (!context.user) {
+      if (plan.tier === "free") {
+        return null;
+      }
+
+      return (
+        <Link to="/login?to=/pricing">
+          <Button variant="solid" colorScheme="green">
+            Upgrade to {plan.name}
+          </Button>
+        </Link>
+      );
+    }
+
     if (planIndex === currentPlanIndex && !context.user?.subscription?.cancelled) {
       if (plan.tier === "free") {
         return null;
