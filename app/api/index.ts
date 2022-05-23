@@ -58,7 +58,11 @@ export const authGithub = (body: AuthGithubDTO) =>
 export interface GetCurrentUserResponseDTO {
   id: string;
   email: string;
-  tier: string;
+  subscription?: {
+    tier: string;
+    expires_at: string;
+    cancelled: boolean;
+  }
 }
 
 export const getCurrentUser = (token: string) =>

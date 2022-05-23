@@ -12,9 +12,10 @@ import {
   List,
   ListIcon,
   ListItem,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
+import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { ImCheckmark, ImCross } from "react-icons/im";
 import { useDataRefresh } from "remix-utils";
@@ -128,9 +129,64 @@ export default function Pricing() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [billingPortalFetcher]);
 
-  const currentTier = useMemo(() => context.user?.tier ?? "free", [context.user]);
+  const currentTier = useMemo(() => context.user?.subscription?.tier ?? "free", [context.user]);
+  const expiresAt = useMemo(() => {
+    if (context.user?.subscription?.expires_at) {
+      const data = new Date(context.user.subscription.expires_at);
+      return format(data, "PPpp");
+    }
+
+    return null;
+  }, [context.user]);
 
   const currentPlanIndex = plans.findIndex((plan) => plan.tier === currentTier);
+
+  const ManagePlanButton: React.FC<{ planIndex: number; plan: Plan }> = ({ planIndex, plan }) => {
+    if (planIndex === currentPlanIndex && !context.user?.subscription?.cancelled) {
+      if (plan.tier === "free") {
+        return null;
+      }
+
+      return (
+        <Button
+          onClick={() => {
+            const formData = new FormData();
+            formData.append("return_url", window.location.href);
+            billingPortalFetcher.submit(formData, {
+              method: "post",
+              action: "/subscription/portal",
+              encType: "multipart/form-data",
+            });
+          }}
+          variant="solid"
+          disabled={isCheckoutLoading}
+          colorScheme="blue"
+        >
+          Manage
+        </Button>
+      );
+    }
+
+    if (plan.tier === "free" && context.user?.subscription?.cancelled) {
+      return null;
+    }
+
+    return (
+      <subscriptionCheckoutFetcher.Form method="post" action="/subscription/checkout" encType="multipart/form-data">
+        <input hidden readOnly name="tier" value={plan.tier} />
+
+        {planIndex < currentPlanIndex && !context.user?.subscription?.cancelled ? (
+          <Button type="submit" variant="solid" disabled={isCheckoutLoading}>
+            Downgrade to {plan.name}
+          </Button>
+        ) : (
+          <Button type="submit" variant="solid" disabled={isCheckoutLoading} colorScheme="green">
+            Upgrade to {plan.name}
+          </Button>
+        )}
+      </subscriptionCheckoutFetcher.Form>
+    );
+  };
 
   return (
     <Page title="Pricing" user={context.user} headingMaxW="7xl">
@@ -158,9 +214,15 @@ export default function Pricing() {
                     {plan.name}
                   </Heading>
                   {plan.tier === currentTier && (
-                    <Badge variant="solid" colorScheme="green">
-                      Current
-                    </Badge>
+                    <>
+                      <Badge variant="solid" colorScheme="green">
+                        {!context.user?.subscription?.cancelled ? (
+                          <Box>Current</Box>
+                        ) : (
+                          <Box>Expires at {expiresAt}</Box>
+                        )}
+                      </Badge>
+                    </>
                   )}
                 </HStack>
                 <Heading as="h4" size="md" color="gray.400">
@@ -176,44 +238,7 @@ export default function Pricing() {
                 ))}
               </List>
               <Box pb={4} px={6}>
-                {planIndex === currentPlanIndex ? (
-                  plan.tier !== "free" && (
-                    <Button
-                      onClick={() => {
-                        const formData = new FormData();
-                        formData.append("return_url", window.location.href);
-                        billingPortalFetcher.submit(formData, {
-                          method: "post",
-                          action: "/subscription/portal",
-                          encType: "multipart/form-data",
-                        });
-                      }}
-                      variant="solid"
-                      disabled={isCheckoutLoading}
-                      colorScheme="blue"
-                    >
-                      Manage
-                    </Button>
-                  )
-                ) : (
-                  <subscriptionCheckoutFetcher.Form
-                    method="post"
-                    action="/subscription/checkout"
-                    encType="multipart/form-data"
-                  >
-                    <input hidden readOnly name="tier" value={plan.tier} />
-
-                    {planIndex < currentPlanIndex ? (
-                      <Button type="submit" variant="solid" disabled={isCheckoutLoading}>
-                        Downgrade to {plan.name}
-                      </Button>
-                    ) : (
-                      <Button type="submit" variant="solid" disabled={isCheckoutLoading} colorScheme="green">
-                        Upgrade to {plan.name}
-                      </Button>
-                    )}
-                  </subscriptionCheckoutFetcher.Form>
-                )}
+                <ManagePlanButton planIndex={planIndex} plan={plan} />
               </Box>
             </GridItem>
           ))}
