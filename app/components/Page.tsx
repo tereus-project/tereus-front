@@ -70,7 +70,7 @@ export function Page({ children, title, user, headingMaxW = "60ch" }: PageProps)
                 <MenuList alignItems={"center"}>
                   <br />
                   <Center>
-                    <Avatar size={"2xl"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`} />
+                    <Avatar size={"2xl"} src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}?s=384`} />
                   </Center>
                   <br />
                   <Center>
