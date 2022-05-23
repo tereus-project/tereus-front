@@ -62,7 +62,7 @@ export interface GetCurrentUserResponseDTO {
     tier: string;
     expires_at: string;
     cancelled: boolean;
-  }
+  };
 }
 
 export const getCurrentUser = (token: string) =>
@@ -126,7 +126,7 @@ export const createSubscriptionCheckout = (token: string, body: CreateSubscripti
     body,
     token,
   });
-}
+};
 
 export interface CreateBillingPortalBodyDTO {
   return_url: string;
@@ -143,4 +143,4 @@ export const createBillingPortal = (token: string, body: CreateBillingPortalBody
     body,
     token,
   });
-}
+};
