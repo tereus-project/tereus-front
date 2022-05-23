@@ -5,17 +5,24 @@ import type { To } from "history";
 import React from "react";
 
 export type PageProps = React.PropsWithChildren<{
-  to: To;
+  to?: To;
+  href?: string;
   target?: React.HTMLAttributeAnchorTarget;
   variant?: ThemingProps<"Button">["variant"];
 }>;
 
-export function NavBarLink({ children, to, target, variant = "outline" }: PageProps) {
+export function NavBarLink({ children, to, href, target, variant = "outline" }: PageProps) {
   return (
     <Box ml="4">
-      <Link to={to} target={target}>
-        <Button variant={variant}>{children}</Button>
-      </Link>
+      {to ? (
+        <Link to={to} target={target}>
+          <Button variant={variant}>{children}</Button>
+        </Link>
+      ) : (
+        <a href={href} target={target}>
+          <Button variant={variant}>{children}</Button>
+        </a>
+      )}
     </Box>
   );
 }

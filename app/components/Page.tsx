@@ -57,7 +57,7 @@ export function Page({ children, title, user, headingMaxW = "60ch" }: PageProps)
             </NavBarLink>
           )}
 
-          <NavBarLink to="https://github.com/tereus-project" target="_blank">
+          <NavBarLink href="https://github.com/tereus-project" target="_blank">
             <RiGithubFill />
           </NavBarLink>
 
