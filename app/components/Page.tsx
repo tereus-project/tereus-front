@@ -1,3 +1,4 @@
+import type { LayoutProps } from "@chakra-ui/react";
 import {
   Avatar,
   Box,
@@ -10,10 +11,12 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { Link } from "@remix-run/react";
 import md5 from "md5";
+import { BsCpu } from "react-icons/bs";
+import { CgArrowUpO } from "react-icons/cg";
 import { RiGithubFill, RiHistoryFill } from "react-icons/ri";
 import { NavBar } from "./NavBar";
 import { NavBarGroup } from "./NavBarGroup";
@@ -24,9 +27,10 @@ export type PageProps = React.PropsWithChildren<{
   user?: {
     email: string;
   };
+  headingMaxW?: LayoutProps["maxW"];
 }>;
 
-export function Page({ children, title, user }: PageProps) {
+export function Page({ children, title, user, headingMaxW = "60ch" }: PageProps) {
   return (
     <VStack>
       <NavBar>
@@ -36,11 +40,20 @@ export function Page({ children, title, user }: PageProps) {
           </NavBarLink>
         </NavBarGroup>
         <NavBarGroup>
-          <NavBarLink to="/remixer/zip">Remixer</NavBarLink>
+          <NavBarLink to="/pricing">
+            <CgArrowUpO />
+            <Box ml={2}>Upgrade</Box>
+          </NavBarLink>
+
+          <NavBarLink to="/remixer/zip">
+            <BsCpu />
+            <Box ml={2}>Remixer</Box>
+          </NavBarLink>
 
           {user && (
             <NavBarLink to="/history">
               <RiHistoryFill />
+              <Box ml={1}>History</Box>
             </NavBarLink>
           )}
 
@@ -79,7 +92,7 @@ export function Page({ children, title, user }: PageProps) {
       </NavBar>
 
       <Box as="main" width="full" padding={4}>
-        <Container as="header" mb={4}>
+        <Container maxW={headingMaxW} as="header" mb={4}>
           <Heading>{title}</Heading>
         </Container>
 

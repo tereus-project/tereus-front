@@ -58,6 +58,7 @@ export const authGithub = (body: AuthGithubDTO) =>
 export interface GetCurrentUserResponseDTO {
   id: string;
   email: string;
+  tier: string;
 }
 
 export const getCurrentUser = (token: string) =>
@@ -103,3 +104,39 @@ export const downloadSubmissionMain = (token: string, id: string) =>
     token,
     raw: true,
   });
+
+export interface CreateSubscriptionCheckoutBodyDTO {
+  tier: string;
+  success_url: string;
+  cancel_url: string;
+}
+
+export interface CreateSubscriptionCheckoutResponseDTO {
+  redirect_url: string;
+}
+
+export const createSubscriptionCheckout = (token: string, body: CreateSubscriptionCheckoutBodyDTO) => {
+  return request<CreateSubscriptionCheckoutResponseDTO>({
+    method: "POST",
+    url: `/subscription/checkout`,
+    body,
+    token,
+  });
+}
+
+export interface CreateBillingPortalBodyDTO {
+  return_url: string;
+}
+
+export interface CreateBillingPortalResponseDTO {
+  redirect_url: string;
+}
+
+export const createBillingPortal = (token: string, body: CreateBillingPortalBodyDTO) => {
+  return request<CreateBillingPortalResponseDTO>({
+    method: "POST",
+    url: `/subscription/portal`,
+    body,
+    token,
+  });
+}

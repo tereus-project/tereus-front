@@ -71,7 +71,7 @@ export default function History() {
   };
 
   return (
-    <Page title="Remix history" user={context.user}>
+    <Page title="Remix history" user={context.user} headingMaxW="full">
       <TableContainer>
         <Table size="sm">
           <Thead>

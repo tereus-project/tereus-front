@@ -66,6 +66,11 @@ const Document = withEmotionCache(({ children }: React.PropsWithChildren<{}>, em
   );
 });
 
+interface LoaderResponse {
+  user?: api.GetCurrentUserResponseDTO;
+  errors: string[] | null;
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
   const session = (await sessionCookie.parse(cookieHeader)) || {};
@@ -75,7 +80,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ user, errors });
   }
 
-  return json({ user: null });
+  return json({ errors: null });
 };
 
 export interface TereusContext {
@@ -83,16 +88,16 @@ export interface TereusContext {
 }
 
 export default function App() {
-  const loaderData = useLoaderData<Awaited<ReturnType<typeof loader>>>();
-
-  const context: TereusContext = {
-    user: loaderData.user,
-  };
+  const loaderData = useLoaderData<LoaderResponse>();
 
   return (
     <Document>
       <ChakraProvider>
-        <Outlet context={context} />
+        <Outlet
+          context={{
+            user: loaderData.user,
+          }}
+        />
       </ChakraProvider>
     </Document>
   );
