@@ -4,10 +4,11 @@ import type { LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/nod
 import { json } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import React, { useContext, useEffect } from "react";
+import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 import * as api from "~/api";
 import { CustomScrollRestoration } from "./components/CustomScrollRestoration";
 import { ClientStyleContext, ServerStyleContext } from "./context";
-import { sessionCookie } from "./cookie";
+import { commitSession, getSession } from "./sessions.server";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -67,20 +68,33 @@ const Document = withEmotionCache(({ children }: React.PropsWithChildren<{}>, em
 });
 
 interface LoaderResponse {
-  user?: api.GetCurrentUserResponseDTO;
+  csrf: string;
+  user: api.GetCurrentUserResponseDTO | null;
+
   errors: string[] | null;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request);
+  const csrf = createAuthenticityToken(session);
 
-  if (session.token) {
-    const [user, errors] = await api.getCurrentUser(session.token);
-    return json({ user, errors });
+  const data: LoaderResponse = {
+    csrf,
+    user: null,
+    errors: null,
+  };
+
+  if (session.has("token")) {
+    const [user, errors] = await api.getCurrentUser(session.get("token"));
+    data.user = user;
+    data.errors = (data.errors ?? []).concat(errors ?? []);
   }
 
-  return json({ errors: null });
+  return json(data, {
+    headers: {
+      'Set-Cookie': await commitSession(session),
+    },
+  });
 };
 
 export interface TereusContext {
@@ -91,14 +105,16 @@ export default function App() {
   const loaderData = useLoaderData<LoaderResponse>();
 
   return (
-    <Document>
-      <ChakraProvider>
-        <Outlet
-          context={{
-            user: loaderData.user,
-          }}
-        />
-      </ChakraProvider>
-    </Document>
+    <AuthenticityTokenProvider token={loaderData.csrf}>
+      <Document>
+        <ChakraProvider>
+          <Outlet
+            context={{
+              user: loaderData.user,
+            }}
+          />
+        </ChakraProvider>
+      </Document>
+    </AuthenticityTokenProvider>
   );
 }

@@ -1,13 +1,12 @@
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import * as api from "~/api";
-import { sessionCookie } from "~/cookie";
+import { getSession } from "~/sessions.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request);
 
-  if (!session.token) {
+  if (!session.has("token")) {
     return json({ errors: ["Not logged in"] });
   }
 
@@ -19,7 +18,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ errors: ["Missing return URL"] });
   }
 
-  const [response, errors] = await api.createBillingPortal(session.token, {
+  const [response, errors] = await api.createBillingPortal(session.get("token"), {
     return_url: returnURL,
   });
   return json({ response, errors });

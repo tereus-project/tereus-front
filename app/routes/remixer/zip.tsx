@@ -25,20 +25,19 @@ import { useEffect, useState } from "react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { FileUpload } from "~/components/FileUpload";
-import { sessionCookie } from "~/cookie";
+import { getSession } from "~/sessions.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request);
 
-  if (!session.token) {
+  if (!session.has("token")) {
     return json({ errors: ["Not logged in"] });
   }
 
   const values = await unstable_parseMultipartFormData(
     request,
     unstable_createMemoryUploadHandler({
-      maxFileSize: 20_000_000,
+      maxPartSize: 20_000_000,
     })
   );
 
@@ -59,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   if (mode === "zip") {
-    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.token);
+    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.get("token"));
     return json({ response, errors });
   } else if (mode === "git") {
     const gitRepo = values.get("gitRepo")?.toString();
@@ -74,7 +73,7 @@ export const action: ActionFunction = async ({ request }) => {
       {
         git_repo: gitRepo,
       },
-      session.token
+      session.get("token")
     );
 
     return json({ response, errors });

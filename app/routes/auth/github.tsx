@@ -1,7 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import * as api from "~/api";
-import { sessionCookie } from "~/cookie";
+import { commitSession, getSession } from "~/sessions.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const queries = new URL(request.url).searchParams;
@@ -25,13 +25,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(`/login?${searchParams.toString()}`);
   }
 
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
-  session.token = data.token;
+  const session = await getSession(request);
+  session.set("token", data.token);
 
   return redirect(to ?? "/", {
     headers: {
-      "Set-Cookie": await sessionCookie.serialize(session),
+      "Set-Cookie": await commitSession(session),
     },
   });
 };

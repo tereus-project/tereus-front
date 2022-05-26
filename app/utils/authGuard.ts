@@ -1,6 +1,6 @@
 import { redirect } from "@remix-run/node";
 import * as api from '~/api';
-import { sessionCookie } from "~/cookie";
+import { getSession } from "~/sessions.server";
 import type { Guard } from "./guard";
 
 function redirectToLogin(request: Request, errors?: string[]) {
@@ -16,17 +16,16 @@ function redirectToLogin(request: Request, errors?: string[]) {
 }
 
 export const authGuard: Guard<string> = async (request: Request) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request);
 
-  if (!session.token) {
+  if (!session.has("token")) {
     throw redirectToLogin(request);
   }
 
-  const [, errors] = await api.validateToken(session.token);
+  const [, errors] = await api.validateToken(session.get("token"));
   if (errors) {
     throw redirectToLogin(request, errors);
   }
 
-  return session.token;
+  return session.get("token");
 }

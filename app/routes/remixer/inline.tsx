@@ -18,15 +18,16 @@ import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
+import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { sessionCookie } from "~/cookie";
+import { getSession } from "~/sessions.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
 
-  if (!session.token) {
+  if (!session.has("token")) {
     return json({ errors: ["Not logged in"] });
   }
 
@@ -55,12 +56,13 @@ export const action: ActionFunction = async ({ request }) => {
     {
       source_code: sourceCode,
     },
-    session.token
+    session.get("token")
   );
   return json({ response, errors });
 };
 
 export default function RemixerInline() {
+  const csrf = useAuthenticityToken();
   const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
   const location = useLocation();
@@ -180,12 +182,7 @@ export default function RemixerInline() {
         sourceCode: sourceCode ?? "",
       }}
       onSubmit={(values, actions) => {
-        const formData = new FormData();
-        formData.append("sourceLanguage", values.sourceLanguage);
-        formData.append("targetLanguage", values.targetLanguage);
-        formData.append("sourceCode", values.sourceCode);
-
-        fetcher.submit(formData, { replace: true, method: "post", encType: "multipart/form-data" });
+        fetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
         actions.setSubmitting(false);
       }}
     >
