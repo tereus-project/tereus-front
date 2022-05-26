@@ -9,10 +9,7 @@ const { commitSession, destroySession, ...session } = createCookieSessionStorage
   cookie: sessionCookie,
 });
 
-export {
-  commitSession,
-  destroySession,
-};
+export { commitSession, destroySession };
 
 export function getSession(request: Request) {
   return session.getSession(request.headers.get("cookie"));

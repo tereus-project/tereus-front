@@ -92,7 +92,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return json(data, {
     headers: {
-      'Set-Cookie': await commitSession(session),
+      "Set-Cookie": await commitSession(session),
     },
   });
 };

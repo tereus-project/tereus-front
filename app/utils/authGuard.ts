@@ -1,15 +1,15 @@
 import { redirect } from "@remix-run/node";
-import * as api from '~/api';
+import * as api from "~/api";
 import { getSession } from "~/sessions.server";
 import type { Guard } from "./guard";
 
 function redirectToLogin(request: Request, errors?: string[]) {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
-  searchParams.set('to', `${url.pathname}${url.search}`);
+  searchParams.set("to", `${url.pathname}${url.search}`);
 
   if (errors) {
-    searchParams.set('errors', JSON.stringify(errors));
+    searchParams.set("errors", JSON.stringify(errors));
   }
 
   return redirect(`/login?${searchParams.toString()}`);
@@ -28,4 +28,4 @@ export const authGuard: Guard<string> = async (request: Request) => {
   }
 
   return session.get("token");
-}
+};
