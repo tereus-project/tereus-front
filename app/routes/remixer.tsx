@@ -1,21 +1,13 @@
 import { Container, Tab, TabList, Tabs } from "@chakra-ui/react";
 import type { LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { Outlet, useHref, useLocation, useOutletContext } from "@remix-run/react";
 import { useLinkClickHandler } from "react-router-dom";
 import { Page } from "~/components/Page";
-import { sessionCookie } from "~/cookie";
 import type { TereusContext } from "~/root";
+import { authGuard } from "~/utils/authGuard";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
-
-  if (!session.token) {
-    const url = new URL(request.url);
-    return redirect(`/login?to=${url.pathname}${url.search}`);
-  }
-
+  await authGuard(request);
   return {};
 };
 

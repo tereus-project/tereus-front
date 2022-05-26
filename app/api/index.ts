@@ -55,6 +55,14 @@ export const authGithub = (body: AuthGithubDTO) =>
     body,
   });
 
+export const validateToken = (token: string) =>
+  request<void>({
+    method: "POST",
+    url: `/auth/check`,
+    token,
+    raw: true,
+  });
+
 export interface GetCurrentUserResponseDTO {
   id: string;
   email: string;

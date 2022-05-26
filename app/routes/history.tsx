@@ -1,13 +1,13 @@
-import { Text, Button, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import { Button, Heading, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import type { LoaderFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
 import { Fragment, useState } from "react";
 import { RiArrowDownSLine } from "react-icons/ri";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
-import { sessionCookie } from "~/cookie";
 import type { TereusContext } from "~/root";
+import { authGuard } from "~/utils/authGuard";
 
 interface LoaderResponse {
   response?: api.SubmissionDTO[];
@@ -15,15 +15,9 @@ interface LoaderResponse {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = (await sessionCookie.parse(cookieHeader)) || {};
+  const token = await authGuard(request);
 
-  if (!session.token) {
-    const url = new URL(request.url);
-    return redirect(`/login?to=${url.pathname}${url.search}`);
-  }
-
-  const [response, errors] = await api.getUserSubmissions(session.token);
+  const [response, errors] = await api.getUserSubmissions(token);
   return json<LoaderResponse>({
     response: response?.submissions,
     errors,
