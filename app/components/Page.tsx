@@ -1,4 +1,3 @@
-import type { LayoutProps } from "@chakra-ui/react";
 import {
   Avatar,
   Box,
@@ -6,12 +5,16 @@ import {
   Center,
   Container,
   Heading,
+  HStack,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
+  Stack,
+  Text,
   VStack,
+  type LayoutProps,
 } from "@chakra-ui/react";
 import { Link } from "@remix-run/react";
 import md5 from "md5";
@@ -24,13 +27,14 @@ import { NavBarLink } from "./NavBarLink";
 
 export type PageProps = React.PropsWithChildren<{
   title?: string;
+  subtitle?: string;
   user?: {
     email: string;
   };
   headingMaxW?: LayoutProps["maxW"];
 }>;
 
-export function Page({ children, title, user, headingMaxW = "60ch" }: PageProps) {
+export function Page({ children, title, subtitle, user, headingMaxW = "60ch" }: PageProps) {
   return (
     <VStack>
       <NavBar>
@@ -93,7 +97,12 @@ export function Page({ children, title, user, headingMaxW = "60ch" }: PageProps)
 
       <Box as="main" width="full" padding={4}>
         <Container maxW={headingMaxW} as="header" mb={4}>
-          <Heading>{title}</Heading>
+          <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
+            <Heading>{title}</Heading>
+            <HStack spacing="1" justify="center">
+              <Text color="muted">{subtitle}</Text>
+            </HStack>
+          </Stack>
         </Container>
 
         {children}

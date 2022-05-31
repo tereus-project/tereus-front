@@ -1,7 +1,17 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Container } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Container,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { RiGithubFill } from "react-icons/ri";
+import { RiGithubFill, RiGitlabFill } from "react-icons/ri";
 import { Page } from "~/components/Page";
 
 type LoaderData = {
@@ -39,7 +49,7 @@ export default function Login() {
   const error = searchParams.get("error");
 
   return (
-    <Page title="Login">
+    <Page title="Login to Tereus" subtitle="Sign up or create an account in one click!">
       {error && (
         <Container maxW="4xl" mb={4}>
           <Alert status="error">
@@ -50,12 +60,31 @@ export default function Login() {
         </Container>
       )}
 
-      <Container>
-        <a href={loaderData.githubLoginUrl}>
-          <Button leftIcon={<RiGithubFill />} colorScheme="blackAlpha" variant="solid">
-            Login with GitHub
-          </Button>
-        </a>
+      <Container maxW="lg" py={{ base: "12", md: "24" }} px={{ base: "0", sm: "8" }}>
+        <Stack>
+          <Box
+            py={{ base: "0", sm: "8" }}
+            px={{ base: "4", sm: "10" }}
+            bg={"gray.100"}
+            boxShadow={{ base: "none", sm: useColorModeValue("lg", "md-dark") }}
+            borderRadius={{ base: "none", sm: "xl" }}
+          >
+            <Stack spacing="6">
+              <Stack spacing="6">
+                <a href={loaderData.githubLoginUrl}>
+                  <Button width="100%" leftIcon={<RiGithubFill />} colorScheme="blue" variant="solid">
+                    Continue with GitHub
+                  </Button>
+                </a>
+                <a href={loaderData.githubLoginUrl}>
+                  <Button width="100%" leftIcon={<RiGitlabFill />} colorScheme="blue" variant="solid">
+                    Continue with GitLab
+                  </Button>
+                </a>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
       </Container>
     </Page>
   );
