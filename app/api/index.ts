@@ -88,6 +88,8 @@ export interface SubmissionDTO {
   id: string;
   source_language: string;
   target_language: string;
+  is_inline: boolean;
+  is_public: boolean;
   status: string;
   reason: string;
   git_repo: string;
@@ -115,6 +117,23 @@ export const downloadSubmissionMain = (token: string, id: string) =>
     url: `/remix/${id}/main`,
     token,
     raw: true,
+  });
+
+export interface UpdateSubmissionVisibilityBodyDTO {
+  is_public: boolean;
+}
+
+export interface UpdateSubmissionVisibilityResponseDTO {
+  id: string;
+  is_public: boolean;
+}
+
+export const updateSubmissionVisibility = (token: string, id: string, body: UpdateSubmissionVisibilityBodyDTO) =>
+  request<UpdateSubmissionVisibilityResponseDTO>({
+    method: "PATCH",
+    url: `/submissions/${id}/visibility`,
+    token,
+    body,
   });
 
 export interface CreateSubscriptionCheckoutBodyDTO {
