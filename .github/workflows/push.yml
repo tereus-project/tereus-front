@@ -34,6 +34,7 @@ jobs:
     name: Deploy app to fly
     needs: [lint, format]
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
