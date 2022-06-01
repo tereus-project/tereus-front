@@ -6,7 +6,7 @@ export default async function request<T>(config: {
   method: string;
   url: string;
   body?: FormData | any;
-  token?: string;
+  token?: string | null;
   raw?: boolean;
 }): Promise<[T, null, Response] | [null, string[], Response | null]> {
   try {

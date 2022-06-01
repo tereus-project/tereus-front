@@ -117,14 +117,14 @@ export interface DownloadInlineSubmissionDataResponseDTO {
   target_language: string;
 }
 
-export const downloadInlineSubmissionInput = (token: string, id: string) =>
+export const downloadInlineSubmissionInput = (token: string | null, id: string) =>
   request<DownloadInlineSubmissionDataResponseDTO>({
     method: "GET",
     url: `/submissions/${id}/inline/source`,
     token,
   });
 
-export const downloadInlineSubmissionOutput = (token: string, id: string) =>
+export const downloadInlineSubmissionOutput = (token: string | null, id: string) =>
   request<DownloadInlineSubmissionDataResponseDTO>({
     method: "GET",
     url: `/submissions/${id}/inline/output`,
