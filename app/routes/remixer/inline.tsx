@@ -22,6 +22,7 @@ import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { getSession } from "~/sessions.server";
+import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 
 export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request);
@@ -63,7 +64,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function RemixerInline() {
   const csrf = useAuthenticityToken();
-  const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -88,85 +88,68 @@ export default function RemixerInline() {
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 
-  const poll = async (id: string) => {
-    const res = await fetch(`/download/${id}/main`);
+  const remixingInlineResultFetcher = useFetcher<DownloadSubmissionMainOutputLoaderResponse>();
+  useEffect(() => {
+    if (remixingInlineResultFetcher.type === "done") {
+      if (remixingInlineResultFetcher.data?.errors) {
+        if (remixingInlineResultFetcher.data.response.isTerminal) {
+          setIsRemixing(false);
 
-    if (res.ok && res.status !== 204) {
-      setIsRemixing(false);
-
-      const data = await res.text();
-
-      try {
-        const json = JSON.parse(data);
-
-        if (json && json.errors) {
           toast({
             isClosable: true,
             title: "An error occured",
             status: "error",
+            description: remixingInlineResultFetcher.data.errors.join("\n"),
           });
-
-          setOutputCode(json.errors.join("\n"));
-          return;
+        } else {
+          setTimeout(
+            () =>
+              remixingInlineResultFetcher.load(
+                `/download/${remixingInlineResultFetcher.data.response.submissionId}/main`
+              ),
+            600
+          );
         }
-      } catch {}
+      } else if (remixingInlineResultFetcher.data?.response.submissionData) {
+        setIsRemixing(false);
+        setOutputCode(atob(remixingInlineResultFetcher.data.response.submissionData.data));
 
-      setOutputCode(data);
-
-      toast({
-        isClosable: true,
-        title: "Remixing success!",
-        status: "success",
-      });
-    } else if (res.status === 204) {
-      setIsRemixing(false);
-
-      toast({
-        isClosable: true,
-        title: "No main file found",
-        status: "error",
-        description: "This might be a server error. Please try again later.",
-      });
-    } else if (res.status !== 404) {
-      setIsRemixing(false);
-      const data = await res.json();
-
-      toast({
-        isClosable: true,
-        title: "An error occured",
-        status: "error",
-        description: data?.errors?.join("\n") ?? res.statusText,
-      });
-    } else {
-      setTimeout(() => poll(id), 600);
+        toast({
+          isClosable: true,
+          title: "Remixing success!",
+          status: "success",
+        });
+      }
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remixingInlineResultFetcher]);
 
+  const remixingFetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
   useEffect(() => {
-    if (fetcher.type === "done") {
-      if (fetcher.data?.response) {
+    if (remixingFetcher.type === "done") {
+      if (remixingFetcher.data?.response) {
         toast({
           isClosable: true,
           title: "Remixing started!",
           status: "info",
         });
 
-        setTimeout(() => poll(fetcher.data!.response.id), 400);
-      } else if (fetcher.data?.errors) {
+        setTimeout(() => remixingInlineResultFetcher.load(`/download/${remixingFetcher.data.response!.id}/main`), 600);
+      } else if (remixingFetcher.data?.errors) {
         toast({
           isClosable: true,
           title: "An error occured",
           status: "error",
-          description: fetcher.data.errors.join("\n"),
+          description: remixingFetcher.data.errors.join("\n"),
         });
 
         setIsRemixing(false);
       }
-    } else if (fetcher.type === "actionSubmission") {
+    } else if (remixingFetcher.type === "actionSubmission") {
       setIsRemixing(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetcher]);
+  }, [remixingFetcher]);
 
   type FormValues = {
     sourceLanguage: string;
@@ -182,7 +165,7 @@ export default function RemixerInline() {
         sourceCode: sourceCode ?? "",
       }}
       onSubmit={(values, actions) => {
-        fetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
+        remixingFetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
         actions.setSubmitting(false);
       }}
     >

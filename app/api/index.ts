@@ -20,21 +20,21 @@ export const remix = {
   zip: (sourceLanguage: string, targetLanguage: string, body: FormData, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
-      url: `/remix/zip/${sourceLanguage}/to/${targetLanguage}`,
+      url: `/submissions/zip/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
   git: (sourceLanguage: string, targetLanguage: string, body: RemixGitDTO, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
-      url: `/remix/git/${sourceLanguage}/to/${targetLanguage}`,
+      url: `/submissions/git/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
   inline: (sourceLanguage: string, targetLanguage: string, body: RemixInlineDTO, token: string) =>
     request<RemixResponseDTO>({
       method: "POST",
-      url: `/remix/inline/${sourceLanguage}/to/${targetLanguage}`,
+      url: `/submissions/inline/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
@@ -106,17 +106,29 @@ export const getUserSubmissions = (token: string) =>
 export const downloadSubmission = (token: string, id: string) =>
   request<void>({
     method: "GET",
-    url: `/remix/${id}`,
+    url: `/submissions/${id}/download`,
     token,
     raw: true,
   });
 
-export const downloadSubmissionMain = (token: string, id: string) =>
-  request<string>({
+export interface DownloadInlineSubmissionDataResponseDTO {
+  data: string;
+  source_language: string;
+  target_language: string;
+}
+
+export const downloadInlineSubmissionInput = (token: string, id: string) =>
+  request<DownloadInlineSubmissionDataResponseDTO>({
     method: "GET",
-    url: `/remix/${id}/main`,
+    url: `/submissions/${id}/inline/source`,
     token,
-    raw: true,
+  });
+
+export const downloadInlineSubmissionOutput = (token: string, id: string) =>
+  request<DownloadInlineSubmissionDataResponseDTO>({
+    method: "GET",
+    url: `/submissions/${id}/inline/output`,
+    token,
   });
 
 export interface UpdateSubmissionVisibilityBodyDTO {

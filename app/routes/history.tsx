@@ -97,10 +97,10 @@ export default function History() {
 
         setSubmissions((submissions) => {
           return submissions.map((submission) => {
-            if (submission.id === visibilityFetcher.data.response.id) {
+            if (submission.id === visibilityFetcher.data.response!.id) {
               return {
                 ...submission,
-                is_public: visibilityFetcher.data.response.is_public,
+                is_public: visibilityFetcher.data.response!.is_public,
               };
             }
 
