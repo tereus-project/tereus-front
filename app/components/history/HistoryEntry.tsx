@@ -183,6 +183,7 @@ export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryPro
           {submission.status === "done" ? (
             <Button
               variant="outline"
+              colorScheme={"red"}
               leftIcon={<RiDeleteBin6Line />}
               onClick={(e) => {
                 e.preventDefault();
