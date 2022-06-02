@@ -9,10 +9,10 @@ import type * as api from "~/api";
 export type HistoryEntryProps = {
   submission: api.SubmissionDTO;
   onChange: (submission: api.SubmissionDTO) => void;
-  onDelete: (submission: api.SubmissionDTO) => void;
+  onClean: (submission: api.SubmissionDTO) => void;
 };
 
-export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryProps) {
+export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProps) {
   const toast = useToast();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -70,20 +70,20 @@ export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateVisibilityFetcher]);
 
-  const deleteFetcher = useFetcher<api.ActionFormData<null>>();
+  const cleanFetcher = useFetcher<api.ActionFormData<null>>();
   useEffect(() => {
-    if (deleteFetcher.type === "done") {
-      onDelete(submission);
-    } else if (deleteFetcher.data?.errors) {
+    if (cleanFetcher.type === "done") {
+      onClean(submission);
+    } else if (cleanFetcher.data?.errors) {
       toast({
         isClosable: true,
         title: "An error occured",
         status: "error",
-        description: deleteFetcher.data.errors.join("\n"),
+        description: cleanFetcher.data.errors.join("\n"),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deleteFetcher]);
+  }, [cleanFetcher]);
 
   return (
     <>
@@ -189,21 +189,21 @@ export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryPro
                 e.preventDefault();
                 e.stopPropagation();
 
-                deleteFetcher.submit(
+                cleanFetcher.submit(
                   {},
                   {
-                    action: `/submissions/${submission.id}/delete`,
+                    action: `/submissions/${submission.id}/clean`,
                     replace: true,
                     method: "post",
                   }
                 );
               }}
             >
-              Delete
+              Clean
             </Button>
           ) : (
             <Button disabled variant="outline" leftIcon={<RiDeleteBin6Line />}>
-              Delete
+              Clean
             </Button>
           )}
         </Td>

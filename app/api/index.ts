@@ -184,7 +184,7 @@ export const createBillingPortal = (token: string, body: CreateBillingPortalBody
   });
 };
 
-export const deleteSubmission = (token: string, id: string) => {
+export const cleanSubmission = (token: string, id: string) => {
   return request<void>({
     method: "DELETE",
     url: `/submissions/${id}`,

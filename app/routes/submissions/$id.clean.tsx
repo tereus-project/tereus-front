@@ -6,7 +6,7 @@ import { authGuard } from "~/utils/authGuard";
 export const action: ActionFunction = async ({ request, params }) => {
   const token = await authGuard(request);
 
-  const [response, errors] = await api.deleteSubmission(token, params.id!);
+  const [response, errors] = await api.cleanSubmission(token, params.id!);
 
   return json({ response, errors });
 };
