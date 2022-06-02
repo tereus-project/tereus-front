@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Heading, IconButton, Td, Tr, Text, useToast } from "@chakra-ui/react";
+import { Button, ButtonGroup, Heading, IconButton, ListItem, Td, Tr, UnorderedList, useToast } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
@@ -159,13 +159,18 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
         </Td>
         <Td>{submission.status === "failed" && <RiArrowDownSLine transform={collapsed ? "rotate(180)" : ""} />}</Td>
       </Tr>
+
       {submission.status === "failed" && (
         <Tr hidden={!collapsed}>
           <Td colSpan={6}>
             <Heading mb={4} size="lg">
               Reason
             </Heading>
-            <Text mb={2}>{submission.reason}</Text>
+            <UnorderedList mb={2}>
+              {submission.reason.split("\n").map((line, i) => (
+                <ListItem key={`reason-${i}`}>{line}</ListItem>
+              ))}
+            </UnorderedList>
           </Td>
         </Tr>
       )}
