@@ -2,16 +2,17 @@ import { Button, ButtonGroup, Heading, IconButton, ListItem, Td, Tr, UnorderedLi
 import { useFetcher } from "@remix-run/react";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { RiArrowDownSLine, RiFileCopyFill } from "react-icons/ri";
+import { RiArrowDownSLine, RiDeleteBin6Line, RiFileCopyFill } from "react-icons/ri";
 import { TbShare, TbShareOff } from "react-icons/tb";
 import type * as api from "~/api";
 
 export type HistoryEntryProps = {
   submission: api.SubmissionDTO;
   onChange: (submission: api.SubmissionDTO) => void;
+  onDelete: (submission: api.SubmissionDTO) => void;
 };
 
-export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
+export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryProps) {
   const toast = useToast();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -68,6 +69,21 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateVisibilityFetcher]);
+
+  const deleteFetcher = useFetcher<api.ActionFormData<null>>();
+  useEffect(() => {
+    if (deleteFetcher.type === "done") {
+      onDelete(submission);
+    } else if (deleteFetcher.data?.errors) {
+      toast({
+        isClosable: true,
+        title: "An error occured",
+        status: "error",
+        description: deleteFetcher.data.errors.join("\n"),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteFetcher]);
 
   return (
     <>
@@ -156,6 +172,33 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
                 Share and copy link
               </Button>
             ))}
+        </Td>
+        <Td>
+          {submission.status === "done" ? (
+            <Button
+              variant="outline"
+              leftIcon={<RiDeleteBin6Line />}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                deleteFetcher.submit(
+                  {},
+                  {
+                    action: `/submissions/${submission.id}/delete`,
+                    replace: true,
+                    method: "post",
+                  }
+                );
+              }}
+            >
+              Delete
+            </Button>
+          ) : (
+            <Button disabled variant="outline" leftIcon={<RiDeleteBin6Line />}>
+              Delete
+            </Button>
+          )}
         </Td>
         <Td>{submission.status === "failed" && <RiArrowDownSLine transform={collapsed ? "rotate(180)" : ""} />}</Td>
       </Tr>
