@@ -62,7 +62,7 @@ export default function History() {
                     })
                   );
                 }}
-                onDelete={(submission) => {
+                onClean={(submission) => {
                   setSubmissions(submissions.filter((s) => s.id !== submission.id));
                 }}
               />
