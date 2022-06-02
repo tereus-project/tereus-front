@@ -42,6 +42,7 @@ export default function History() {
               <Th>Target language</Th>
               <Th>Download</Th>
               <Th>Share</Th>
+              <Th>Delete</Th>
               <Th></Th>
             </Tr>
           </Thead>
@@ -60,6 +61,9 @@ export default function History() {
                       return submission;
                     })
                   );
+                }}
+                onDelete={(submission) => {
+                  setSubmissions(submissions.filter((s) => s.id !== submission.id));
                 }}
               />
             ))}
