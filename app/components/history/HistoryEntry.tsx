@@ -118,6 +118,7 @@ export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryPro
         </Td>
         <Td>
           {submission.is_inline &&
+            submission.status === "done" &&
             (submission.is_public ? (
               <ButtonGroup isAttached variant="outline">
                 <Button
@@ -172,6 +173,11 @@ export function HistoryEntry({ submission, onChange, onDelete }: HistoryEntryPro
                 Share and copy link
               </Button>
             ))}
+          {(!submission.is_inline || submission.status !== "done") && (
+            <Button disabled variant="outline" leftIcon={<TbShareOff />}>
+              Share
+            </Button>
+          )}
         </Td>
         <Td>
           {submission.status === "done" ? (
