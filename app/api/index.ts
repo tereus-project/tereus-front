@@ -192,3 +192,12 @@ export const cleanSubmission = (token: string, id: string) => {
     raw: true,
   });
 };
+
+export const deleteCrrentUser = (token: string) => {
+  return request<void>({
+    method: "DELETE",
+    url: `/users/me`,
+    token,
+    raw: true,
+  });
+};
