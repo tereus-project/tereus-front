@@ -64,7 +64,7 @@ export default function History() {
             deleteUserFetcher.submit(
               {},
               {
-                action: `/auth/delete-user`,
+                action: `/account/delete`,
                 replace: true,
                 method: "post",
               }
