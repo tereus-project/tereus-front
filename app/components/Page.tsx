@@ -82,7 +82,7 @@ export function Page({ children, title, subtitle, user, headingMaxW = "60ch" }: 
                   </Center>
                   <br />
                   <MenuDivider />
-                  <Link to="/account">
+                  <Link to="/account/profile">
                     <MenuItem>Account Settings</MenuItem>
                   </Link>
                   <Link to="/auth/logout">
