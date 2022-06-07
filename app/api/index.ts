@@ -210,3 +210,11 @@ export const deleteCrrentUser = (token: string) => {
     raw: true,
   });
 };
+
+export const downloadUserExport = (token: string) =>
+  request<void>({
+    method: "GET",
+    url: `/users/me/export`,
+    token,
+    raw: true,
+  });
