@@ -10,7 +10,7 @@ import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
 
 interface LoaderResponse {
-  response?: api.SubmissionDTO[];
+  response: api.GetUserSubmissionsResponseDTO | null;
   errors: string[] | null;
 }
 
@@ -18,17 +18,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   const token = await authGuard(request);
 
   const [response, errors] = await api.getUserSubmissions(token);
-  return json<LoaderResponse>({
-    response: response?.submissions,
-    errors,
-  });
+  return json<LoaderResponse>({ response, errors });
 };
 
 export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
-  const [submissions, setSubmissions] = useState(loaderData.response ?? []);
+  const [submissions, setSubmissions] = useState(loaderData.response?.items ?? []);
 
   return (
     <Page title="Remix history" user={context.user} headingMaxW="full">

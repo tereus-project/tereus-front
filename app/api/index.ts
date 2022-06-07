@@ -80,8 +80,17 @@ export const getCurrentUser = (token: string) =>
     token,
   });
 
+export interface PaginationMetadataDTO {
+  item_count: number;
+  total_items: number;
+  items_per_page: number;
+  total_pages: number;
+  current_page: number;
+}
+
 export interface GetUserSubmissionsResponseDTO {
-  submissions: SubmissionDTO[];
+  items: SubmissionDTO[];
+  meta: PaginationMetadataDTO;
 }
 
 export interface SubmissionDTO {
