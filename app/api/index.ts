@@ -192,3 +192,21 @@ export const createBillingPortal = (token: string, body: CreateBillingPortalBody
     token,
   });
 };
+
+export const cleanSubmission = (token: string, id: string) => {
+  return request<void>({
+    method: "DELETE",
+    url: `/submissions/${id}`,
+    token,
+    raw: true,
+  });
+};
+
+export const deleteCrrentUser = (token: string) => {
+  return request<void>({
+    method: "DELETE",
+    url: `/users/me`,
+    token,
+    raw: true,
+  });
+};

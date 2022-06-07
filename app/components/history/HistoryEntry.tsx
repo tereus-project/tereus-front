@@ -2,16 +2,17 @@ import { Button, ButtonGroup, Heading, IconButton, ListItem, Td, Tr, UnorderedLi
 import { useFetcher } from "@remix-run/react";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { RiArrowDownSLine, RiFileCopyFill } from "react-icons/ri";
+import { RiArrowDownSLine, RiDeleteBin6Line, RiFileCopyFill } from "react-icons/ri";
 import { TbShare, TbShareOff } from "react-icons/tb";
 import type * as api from "~/api";
 
 export type HistoryEntryProps = {
   submission: api.SubmissionDTO;
   onChange: (submission: api.SubmissionDTO) => void;
+  onClean: (submission: api.SubmissionDTO) => void;
 };
 
-export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
+export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProps) {
   const toast = useToast();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -69,6 +70,21 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateVisibilityFetcher]);
 
+  const cleanFetcher = useFetcher<api.ActionFormData<null>>();
+  useEffect(() => {
+    if (cleanFetcher.type === "done") {
+      onClean(submission);
+    } else if (cleanFetcher.data?.errors) {
+      toast({
+        isClosable: true,
+        title: "An error occured",
+        status: "error",
+        description: cleanFetcher.data.errors.join("\n"),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cleanFetcher]);
+
   return (
     <>
       <Tr
@@ -102,6 +118,7 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
         </Td>
         <Td>
           {submission.is_inline &&
+            submission.status === "done" &&
             (submission.is_public ? (
               <ButtonGroup isAttached variant="outline">
                 <Button
@@ -156,6 +173,39 @@ export function HistoryEntry({ submission, onChange }: HistoryEntryProps) {
                 Share and copy link
               </Button>
             ))}
+          {(!submission.is_inline || submission.status !== "done") && (
+            <Button disabled variant="outline" leftIcon={<TbShareOff />}>
+              Share
+            </Button>
+          )}
+        </Td>
+        <Td>
+          {submission.status === "done" ? (
+            <Button
+              variant="outline"
+              colorScheme={"red"}
+              leftIcon={<RiDeleteBin6Line />}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                cleanFetcher.submit(
+                  {},
+                  {
+                    action: `/submissions/${submission.id}/clean`,
+                    replace: true,
+                    method: "post",
+                  }
+                );
+              }}
+            >
+              Clean
+            </Button>
+          ) : (
+            <Button disabled variant="outline" leftIcon={<RiDeleteBin6Line />}>
+              Clean
+            </Button>
+          )}
         </Td>
         <Td>{submission.status === "failed" && <RiArrowDownSLine transform={collapsed ? "rotate(180)" : ""} />}</Td>
       </Tr>
