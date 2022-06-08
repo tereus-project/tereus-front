@@ -1,19 +1,9 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Container,
-  Heading,
-  ListItem,
-  Stack,
-  UnorderedList,
-} from "@chakra-ui/react";
+import { Alert, Card, Group, List } from "@mantine/core";
 import Editor from "@monaco-editor/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { AlertCircle } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
@@ -51,36 +41,33 @@ export default function Remixer() {
   const loaderData = useLoaderData<SharedSubmissionLoaderResponse>();
 
   const ErrorsDisplayComposition = () => (
-    <Alert status="error">
-      <AlertIcon />
-      <AlertTitle>An error occured!</AlertTitle>
-      <AlertDescription>
-        <UnorderedList>
-          {loaderData.errors!.map((error) => (
-            <ListItem key={error}>{error}</ListItem>
-          ))}
-        </UnorderedList>
-      </AlertDescription>
+    <Alert icon={<AlertCircle size={16} />} title="An error occured!" color="red" mb={12}>
+      <List>
+        {loaderData.errors!.map((error) => (
+          <List.Item key={error}>{error}</List.Item>
+        ))}
+      </List>
     </Alert>
   );
 
   return (
-    <Page user={context.user}>
-      {!loaderData.response && loaderData.errors && (
-        <Container maxW="4xl" mb={4}>
-          <ErrorsDisplayComposition />
-        </Container>
-      )}
+    <Page
+      title="Shared submission"
+      subtitle={
+        loaderData.response
+          ? `${loaderData.response.submissionId} - ${loaderData.response.input.source_language} to ${loaderData.response.input.target_language}`
+          : undefined
+      }
+      user={context.user}
+      containerFluid
+      headerFluid
+    >
+      {!loaderData.response && loaderData.errors && <ErrorsDisplayComposition />}
 
       {loaderData.response && (
         <>
-          <Heading as="h4" size="md" mb={4}>
-            Submission {loaderData.response.submissionId} - {loaderData.response.input.source_language} to{" "}
-            {loaderData.response.input.target_language}
-          </Heading>
-
-          <Stack direction={["column", "column", "column", "row"]}>
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
+          <Group>
+            <Card shadow="sm" withBorder style={{ flex: 1 }}>
               <Editor
                 language={loaderData.response.input.source_language}
                 height="500px"
@@ -89,9 +76,9 @@ export default function Remixer() {
                 }}
                 value={atob(loaderData.response.input.data)}
               />
-            </Box>
+            </Card>
 
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
+            <Card shadow="sm" withBorder style={{ flex: 1 }}>
               {loaderData.response.output ? (
                 <Editor
                   language={loaderData.response.output.target_language}
@@ -104,8 +91,8 @@ export default function Remixer() {
               ) : (
                 <ErrorsDisplayComposition />
               )}
-            </Box>
-          </Stack>
+            </Card>
+          </Group>
         </>
       )}
     </Page>

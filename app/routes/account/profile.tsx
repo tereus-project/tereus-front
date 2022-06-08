@@ -1,10 +1,10 @@
-import { Button, Container, HStack, ListItem, UnorderedList, useToast } from "@chakra-ui/react";
+import { Button, Group, List } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useOutletContext } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { FiDownload } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { Download, Trash } from "tabler-icons-react";
 import * as api from "~/api";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
@@ -28,18 +28,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
-  const toast = useToast();
 
   const [user] = useState(loaderData.response);
 
   const deleteUserFetcher = useFetcher<api.ActionFormData<null>>();
   useEffect(() => {
     if (deleteUserFetcher.data?.errors) {
-      toast({
-        isClosable: true,
+      showNotification({
+        color: "red",
         title: "An error occured",
-        status: "error",
-        description: deleteUserFetcher.data.errors.join("\n"),
+        message: deleteUserFetcher.data.errors.join("\n"),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,57 +57,49 @@ export default function History() {
     } else {
       const data = await res.json();
 
-      toast({
+      showNotification({
+        color: "red",
         title: "Failed to download files",
-        status: "error",
-        description: data?.errors?.join("\n"),
+        message: data?.errors?.join("\n"),
       });
     }
   };
 
   return (
-    <Page title="Your account" user={context.user}>
-      <Container>
-        <UnorderedList>
-          <ListItem>ID: {user?.id}</ListItem>
-          <ListItem>Email: {user?.email}</ListItem>
-        </UnorderedList>
+    <Page title="Your account" user={context.user} containerSize="xs">
+      <List>
+        <List.Item>ID: {user?.id}</List.Item>
+        <List.Item>Email: {user?.email}</List.Item>
+      </List>
 
-        <HStack mt={4}>
-          <Button
-            variant="outline"
-            colorScheme={"red"}
-            leftIcon={<RiDeleteBin6Line />}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              deleteUserFetcher.submit(
-                {},
-                {
-                  action: `/account/delete`,
-                  replace: true,
-                  method: "post",
-                }
-              );
-            }}
-          >
-            Delete account
-          </Button>
-          <Button
-            variant="outline"
-            leftIcon={<FiDownload />}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              downloadUserExport();
-            }}
-          >
-            Download data export
-          </Button>
-        </HStack>
-      </Container>
+      <Group>
+        <Button
+          variant="outline"
+          color="red"
+          leftIcon={<Trash size={16} />}
+          onClick={() => {
+            deleteUserFetcher.submit(
+              {},
+              {
+                action: `/account/delete`,
+                replace: true,
+                method: "post",
+              }
+            );
+          }}
+        >
+          Delete account
+        </Button>
+        <Button
+          variant="outline"
+          leftIcon={<Download />}
+          onClick={() => {
+            downloadUserExport();
+          }}
+        >
+          Download data export
+        </Button>
+      </Group>
     </Page>
   );
 }

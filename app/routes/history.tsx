@@ -1,4 +1,4 @@
-import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
+import { Table } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
@@ -28,45 +28,43 @@ export default function History() {
   const [submissions, setSubmissions] = useState(loaderData.response?.items ?? []);
 
   return (
-    <Page title="Remix history" user={context.user} headingMaxW="full">
-      <TableContainer>
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th>ID</Th>
-              <Th>Created at</Th>
-              <Th>Source language</Th>
-              <Th>Target language</Th>
-              <Th>Download</Th>
-              <Th>Share</Th>
-              <Th>Delete</Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {submissions.map((submission) => (
-              <HistoryEntry
-                key={submission.id}
-                submission={submission}
-                onChange={(newSubmission) => {
-                  setSubmissions(
-                    submissions.map((submission) => {
-                      if (submission.id === newSubmission.id) {
-                        return newSubmission;
-                      }
+    <Page title="Remix history" user={context.user} containerSize="xl">
+      <Table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Created at</th>
+            <th>Source language</th>
+            <th>Target language</th>
+            <th>Download</th>
+            <th>Share</th>
+            <th>Delete</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {submissions.map((submission) => (
+            <HistoryEntry
+              key={submission.id}
+              submission={submission}
+              onChange={(newSubmission) => {
+                setSubmissions(
+                  submissions.map((submission) => {
+                    if (submission.id === newSubmission.id) {
+                      return newSubmission;
+                    }
 
-                      return submission;
-                    })
-                  );
-                }}
-                onClean={(submission) => {
-                  setSubmissions(submissions.filter((s) => s.id !== submission.id));
-                }}
-              />
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+                    return submission;
+                  })
+                );
+              }}
+              onClean={(submission) => {
+                setSubmissions(submissions.filter((s) => s.id !== submission.id));
+              }}
+            />
+          ))}
+        </tbody>
+      </Table>
     </Page>
   );
 }

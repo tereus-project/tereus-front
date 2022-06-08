@@ -1,24 +1,10 @@
-import {
-  Alert,
-  AlertIcon,
-  Badge,
-  Box,
-  Button,
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  HStack,
-  List,
-  ListIcon,
-  ListItem,
-  useToast,
-} from "@chakra-ui/react";
+import { Alert, Badge, Button, Card, Grid, Group, List, Stack, Title, useMantineTheme } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { Link, useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { ImCheckmark, ImCross } from "react-icons/im";
 import { useDataRefresh } from "remix-utils";
+import { AlertCircle, Check, CircleDotted, X } from "tabler-icons-react";
 import type { ActionFormData, CreateBillingPortalResponseDTO, CreateSubscriptionCheckoutResponseDTO } from "~/api";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
@@ -29,7 +15,7 @@ interface Plan {
   tier: PlanTier;
   name: string;
   usdPrice: number;
-  features: Record<string, boolean>;
+  features: Record<string, "full" | "partial" | "no">;
 }
 
 const plans: Plan[] = [
@@ -38,11 +24,11 @@ const plans: Plan[] = [
     name: "Free",
     usdPrice: 0,
     features: {
-      "Inline remixing": true,
-      "Zip remixing": false,
-      "Git repository remixing": false,
-      "Data retention": false,
-      "Active support": false,
+      "Inline remixing": "full",
+      "Zip remixing": "no",
+      "Git repository remixing": "no",
+      "Data retention": "no",
+      "Active support": "no",
     },
   },
   {
@@ -50,11 +36,11 @@ const plans: Plan[] = [
     name: "Pro",
     usdPrice: 49,
     features: {
-      "Inline remixing": true,
-      "Zip remixing (<= 1MB)": true,
-      "Git repository remixing": false,
-      "Data retention ($0.20/MB)": true,
-      "Active support": true,
+      "Inline remixing": "full",
+      "Zip remixing (<= 1MB)": "partial",
+      "Git repository remixing": "no",
+      "Data retention ($0.20/MB)": "full",
+      "Active support": "full",
     },
   },
   {
@@ -62,11 +48,11 @@ const plans: Plan[] = [
     name: "Enterprise",
     usdPrice: 279,
     features: {
-      "Inline remixing": true,
-      "Zip remixing": true,
-      "Git repository remixing": true,
-      "Data retention (2GB free then $0.10/MB)": true,
-      "Active support": true,
+      "Inline remixing": "full",
+      "Zip remixing": "full",
+      "Git repository remixing": "full",
+      "Data retention (2GB free then $0.10/MB)": "full",
+      "Active support": "full",
     },
   },
 ];
@@ -75,8 +61,9 @@ export default function Pricing() {
   const context = useOutletContext<TereusContext>();
   const [searchParams] = useSearchParams();
 
+  const theme = useMantineTheme();
+
   const { refresh } = useDataRefresh();
-  const toast = useToast();
 
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
@@ -94,11 +81,10 @@ export default function Pricing() {
           window.location.href = redirect_url;
         }
       } else if (subscriptionCheckoutFetcher.data?.errors) {
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "red",
           title: "An error occured",
-          status: "error",
-          description: subscriptionCheckoutFetcher.data.errors.join("\n"),
+          message: subscriptionCheckoutFetcher.data.errors.join("\n"),
         });
       }
     } else if (subscriptionCheckoutFetcher.type === "actionSubmission") {
@@ -116,11 +102,10 @@ export default function Pricing() {
         const { redirect_url } = billingPortalFetcher.data.response;
         window.location.href = redirect_url;
       } else if (billingPortalFetcher.data?.errors) {
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "red",
           title: "An error occured",
-          status: "error",
-          description: billingPortalFetcher.data.errors.join("\n"),
+          message: billingPortalFetcher.data.errors.join("\n"),
         });
       }
     } else if (subscriptionCheckoutFetcher.type === "actionSubmission") {
@@ -149,9 +134,7 @@ export default function Pricing() {
 
       return (
         <Link to="/login?to=/pricing">
-          <Button variant="solid" colorScheme="green">
-            Upgrade to {plan.name}
-          </Button>
+          <Button color="green">Upgrade to {plan.name}</Button>
         </Link>
       );
     }
@@ -162,22 +145,24 @@ export default function Pricing() {
       }
 
       return (
-        <Button
-          onClick={() => {
-            const formData = new FormData();
-            formData.append("return_url", window.location.href);
-            billingPortalFetcher.submit(formData, {
-              method: "post",
-              action: "/subscription/portal",
-              encType: "multipart/form-data",
-            });
-          }}
-          variant="solid"
-          disabled={isCheckoutLoading}
-          colorScheme="blue"
-        >
-          Manage
-        </Button>
+        <div>
+          <Button
+            onClick={() => {
+              const formData = new FormData();
+              formData.append("return_url", window.location.href);
+              billingPortalFetcher.submit(formData, {
+                method: "post",
+                action: "/subscription/portal",
+                encType: "multipart/form-data",
+              });
+            }}
+            color="blue"
+            disabled={isCheckoutLoading}
+            loading={billingPortalFetcher.state === "submitting"}
+          >
+            Manage
+          </Button>
+        </div>
       );
     }
 
@@ -190,11 +175,11 @@ export default function Pricing() {
         <input hidden readOnly name="tier" value={plan.tier} />
 
         {planIndex < currentPlanIndex && !context.user?.subscription?.cancelled ? (
-          <Button type="submit" variant="solid" disabled={isCheckoutLoading}>
+          <Button type="submit" disabled={isCheckoutLoading} color="gray">
             Downgrade to {plan.name}
           </Button>
         ) : (
-          <Button type="submit" variant="solid" disabled={isCheckoutLoading} colorScheme="green">
+          <Button type="submit" disabled={isCheckoutLoading} color="teal">
             Upgrade to {plan.name}
           </Button>
         )}
@@ -203,61 +188,64 @@ export default function Pricing() {
   };
 
   return (
-    <Page title="Pricing" user={context.user} headingMaxW="7xl">
-      <Container maxW="7xl">
-        {searchParams.get("success") === "true" && (
-          <Alert status="success" mb={6}>
-            <AlertIcon />
-            Successfully subscribed to the {plans[currentPlanIndex].name} plan. Enjoy your new features!
-          </Alert>
-        )}
+    <Page title="Pricing" user={context.user} containerSize="lg">
+      {searchParams.get("success") === "true" && (
+        <Alert icon={<AlertCircle size={16} />} title="Success!" color="green" mb={12}>
+          Successfully subscribed to the {plans[currentPlanIndex].name} plan. Enjoy your new features!
+        </Alert>
+      )}
 
-        <Grid templateColumns={["repeat(1, 1fr)", "repeat(1, 1fr)", "repeat(3, 1fr)"]} gap={6}>
-          {plans.map((plan, planIndex) => (
-            <GridItem
-              key={`plan-${plan.tier}`}
-              w="full"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              shadow="md"
-            >
-              <Box borderBottomWidth="1px" py={4} px={6}>
-                <HStack>
-                  <Heading as="h3" size="lg">
-                    {plan.name}
-                  </Heading>
+      <Grid>
+        {plans.map((plan, planIndex) => (
+          <Grid.Col sm={12 / plans.length} xs={12} key={`plan-${plan.tier}`}>
+            <Card shadow="sm" p={0} withBorder style={{ height: "100%" }}>
+              <Stack
+                mb={12}
+                p="lg"
+                sx={() => ({
+                  gap: 0,
+                  borderBottom: `1px solid ${theme.colors.gray[2]}`,
+                })}
+              >
+                <Group>
+                  <Title order={3}>{plan.name}</Title>
                   {plan.tier === currentTier && (
-                    <>
-                      <Badge variant="solid" colorScheme="green">
-                        {!context.user?.subscription?.cancelled ? (
-                          <Box>Current</Box>
-                        ) : (
-                          <Box>Expires at {expiresAt}</Box>
-                        )}
-                      </Badge>
-                    </>
+                    <Badge color="green">
+                      {!context.user?.subscription?.cancelled ? <div>Current</div> : <div>Expires at {expiresAt}</div>}
+                    </Badge>
                   )}
-                </HStack>
-                <Heading as="h4" size="md" color="gray.400">
+                </Group>
+                <Title order={4} style={{ color: theme.colors.gray[5] }}>
                   ${plan.usdPrice} / month
-                </Heading>
-              </Box>
-              <List spacing={3} p={6}>
-                {Object.entries(plan.features).map(([feature, isIncluded], i) => (
-                  <ListItem key={`plan-${plan.tier}-feature-${i}`}>
-                    <ListIcon as={isIncluded ? ImCheckmark : ImCross} color={isIncluded ? "green.500" : "red.500"} />
-                    {feature}
-                  </ListItem>
-                ))}
-              </List>
-              <Box pb={4} px={6}>
+                </Title>
+              </Stack>
+
+              <Stack p="lg">
+                <List spacing={8}>
+                  {Object.entries(plan.features).map(([feature, isIncluded], i) => (
+                    <List.Item
+                      key={`plan-${plan.tier}-feature-${i}`}
+                      icon={
+                        isIncluded === "full" ? (
+                          <Check size={16} strokeWidth={3} color="teal" />
+                        ) : isIncluded === "partial" ? (
+                          <CircleDotted size={16} strokeWidth={3} color="blue" />
+                        ) : (
+                          <X size={16} strokeWidth={3} color="red" />
+                        )
+                      }
+                    >
+                      {feature}
+                    </List.Item>
+                  ))}
+                </List>
+
                 <ManagePlanButton planIndex={planIndex} plan={plan} />
-              </Box>
-            </GridItem>
-          ))}
-        </Grid>
-      </Container>
+              </Stack>
+            </Card>
+          </Grid.Col>
+        ))}
+      </Grid>
     </Page>
   );
 }

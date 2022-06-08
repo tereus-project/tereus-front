@@ -1,30 +1,15 @@
-import {
-  Box,
-  Button,
-  Code,
-  Container,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Link as ChakraLink,
-  Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Card, Code, Container, Select, Tabs, TextInput } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import type { ActionFunction } from "@remix-run/node";
 import { json, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { BrandGit, FileZip } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { FileUpload } from "~/components/FileUpload";
+import { FilePicker } from "~/components/FilePicker";
 import { getSession } from "~/sessions.server";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -37,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
   const values = await unstable_parseMultipartFormData(
     request,
     unstable_createMemoryUploadHandler({
-      maxPartSize: 20_000_000,
+      maxPartSize: 20 * 1024 ** 2,
     })
   );
 
@@ -85,21 +70,17 @@ export const action: ActionFunction = async ({ request }) => {
 export default function RemixerZip() {
   const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
 
-  const toast = useToast();
-
   const modes = ["zip", "git"];
-  const [mode, setMode] = useState(modes[0]);
 
   useEffect(() => {
     if (fetcher.state === "loading" && fetcher.data?.response) {
-      toast({
-        isClosable: true,
+      showNotification({
+        color: "green",
         title: "New source added",
-        status: "success",
-        description: (
+        message: (
           <>
             Source <Code>{fetcher.data.response.id}</Code> added. Remixing will start soon. You can check the{" "}
-            <ChakraLink href="/history">history page</ChakraLink> for status.
+            <Link to="/history">history page</Link> for status.
           </>
         ),
       });
@@ -116,7 +97,7 @@ export default function RemixerZip() {
   };
 
   return (
-    <Container>
+    <Container size="sm">
       <Formik<FormValues>
         initialValues={{
           sourceLanguage: "c",
@@ -137,24 +118,16 @@ export default function RemixerZip() {
             formData.append("file", values.file as File);
           }
 
-          console.log(formData);
-
           fetcher.submit(formData, { replace: true, method: "post", encType: "multipart/form-data" });
           actions.setSubmitting(false);
         }}
       >
         {(props) => (
           <Form>
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
+            <Card shadow="sm" withBorder>
               <Field name="sourceLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["sourceLanguage"]>) => (
-                  <FormControl isInvalid={!!meta.error && meta.touched}>
-                    <FormLabel htmlFor="sourceLanguage">Source language</FormLabel>
-                    <Select {...field} id="sourceLanguage">
-                      <option value="c">C</option>
-                    </Select>
-                    <FormErrorMessage>{meta.error}</FormErrorMessage>
-                  </FormControl>
+                  <Select {...field} label="Source language" data={[{ value: "c", label: "C" }]} error={meta.error} />
                 )}
               </Field>
 
@@ -162,87 +135,159 @@ export default function RemixerZip() {
 
               <Field name="targetLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["targetLanguage"]>) => (
-                  <FormControl isInvalid={!!meta.error && meta.touched}>
-                    <FormLabel htmlFor="targetLanguage">Target language</FormLabel>
-                    <Select {...field} id="targetLanguage">
-                      <option value="go">Go</option>
-                    </Select>
-                    <FormErrorMessage>{meta.error}</FormErrorMessage>
-                  </FormControl>
+                  <Select {...field} label="Target language" data={[{ value: "go", label: "Go" }]} error={meta.error} />
                 )}
               </Field>
-            </Box>
+            </Card>
 
             <br />
 
-            <Field name="mode">
-              {({ field, meta }: FieldProps<FormValues["mode"]>) => (
-                <input {...field} id="mode" type="hidden" value={mode} />
-              )}
-            </Field>
-
             <Tabs
-              isFitted
-              variant="enclosed"
-              index={modes.findIndex((m) => m === mode)}
-              onChange={(index) => setMode(modes[index])}
+              variant="outline"
+              onTabChange={(index: number) => props.setFieldValue("mode", modes[index])}
+              styles={{
+                tabsListWrapper: {
+                  zIndex: 1,
+                  backgroundColor: "white",
+                  position: "relative",
+                },
+                body: {
+                  paddingTop: 0,
+                },
+              }}
             >
-              <TabList>
-                <Tab>Zip</Tab>
-                <Tab>Git</Tab>
-              </TabList>
+              <Tabs.Tab label="Zip" icon={<FileZip size={16} />}>
+                <Card
+                  shadow="sm"
+                  withBorder
+                  sx={() => ({
+                    borderTop: 0,
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0,
+                  })}
+                >
+                  <Field name="file">
+                    {({ field, meta }: FieldProps<FormValues["file"]>) => (
+                      <FilePicker
+                        onChange={(files) => {
+                          props.setFieldValue("file", files[0]);
+                        }}
+                      />
+                    )}
+                  </Field>
 
-              <Box borderWidth="1px" borderRadius="lg" borderTopRadius="none" p={4} shadow="md">
-                <TabPanels>
-                  <TabPanel>
-                    <Field name="file">
-                      {({ field, meta }: FieldProps<FormValues["file"]>) => (
-                        <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "zip"}>
-                          <FormLabel htmlFor="file">Zip file</FormLabel>
-                          <FileUpload
-                            {...field}
-                            id="file"
-                            accept=".zip"
-                            setFieldValue={(file) => props.setFieldValue("file", file)}
-                            placeholder="Select a zip file"
-                          />
-                          <FormErrorMessage>{meta.error}</FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
+                  <Button
+                    mt={16}
+                    color="blue"
+                    loading={props.isSubmitting || fetcher.state === "submitting"}
+                    type="submit"
+                  >
+                    Send to queue
+                  </Button>
+                </Card>
+              </Tabs.Tab>
+              <Tabs.Tab label="Git" icon={<BrandGit size={16} />}>
+                <Card
+                  shadow="sm"
+                  withBorder
+                  sx={() => ({
+                    borderTop: 0,
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0,
+                  })}
+                >
+                  <Field name="gitRepo">
+                    {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
+                      <TextInput
+                        {...field}
+                        placeholder="https://github.com/sqlite/sqlite"
+                        label="Git repository"
+                        required={props.values.mode === "git"}
+                        error={meta.error}
+                      />
+                    )}
+                  </Field>
 
-                    <Button
-                      mt={4}
-                      colorScheme="teal"
-                      isLoading={props.isSubmitting || fetcher.state === "submitting"}
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </TabPanel>
-                  <TabPanel>
-                    <Field name="gitRepo">
-                      {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
-                        <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "git"}>
-                          <FormLabel htmlFor="gitRepo">Git repository</FormLabel>
-                          <Input {...field} id="gitRepo" placeholder="https://github.com/sqlite/sqlite" />
-                          <FormErrorMessage>{meta.error}</FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-
-                    <Button
-                      mt={4}
-                      colorScheme="teal"
-                      isLoading={props.isSubmitting || fetcher.state === "submitting"}
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </TabPanel>
-                </TabPanels>
-              </Box>
+                  <Button
+                    mt={16}
+                    color="blue"
+                    loading={props.isSubmitting || fetcher.state === "submitting"}
+                    type="submit"
+                  >
+                    Send to queue
+                  </Button>
+                </Card>
+              </Tabs.Tab>
             </Tabs>
+            {/* <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
+          <Field name="mode">
+            {({ field, meta }: FieldProps<FormValues["mode"]>) => (
+              <input {...field} id="mode" type="hidden" value={mode} />
+            )}
+          </Field>
+
+          <Tabs
+            isFitted
+            variant="enclosed"
+            index={modes.findIndex((m) => m === mode)}
+            onChange={(index) => setMode(modes[index])}
+          >
+            <TabList>
+              <Tab>Zip</Tab>
+              <Tab>Git</Tab>
+            </TabList>
+
+            <Box borderWidth="1px" borderRadius="lg" borderTopRadius="none" p={4} shadow="md">
+              <TabPanels>
+                <TabPanel>
+                  <Field name="file">
+                    {({ field, meta }: FieldProps<FormValues["file"]>) => (
+                      <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "zip"}>
+                        <FormLabel htmlFor="file">Zip file</FormLabel>
+                        <FileUpload
+                          {...field}
+                          id="file"
+                          accept=".zip"
+                          setFieldValue={(file) => props.setFieldValue("file", file)}
+                          placeholder="Select a zip file"
+                        />
+                        <FormErrorMessage>{meta.error}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+
+                  <Button
+                    mt={4}
+                    colorScheme="teal"
+                    isLoading={props.isSubmitting || fetcher.state === "submitting"}
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </TabPanel>
+                <TabPanel>
+                  <Field name="gitRepo">
+                    {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
+                      <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "git"}>
+                        <FormLabel htmlFor="gitRepo">Git repository</FormLabel>
+                        <Input {...field} id="gitRepo" placeholder="https://github.com/sqlite/sqlite" />
+                        <FormErrorMessage>{meta.error}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+
+                  <Button
+                    mt={4}
+                    colorScheme="teal"
+                    isLoading={props.isSubmitting || fetcher.state === "submitting"}
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </TabPanel>
+              </TabPanels>
+            </Box>
+          </Tabs> */}
           </Form>
         )}
       </Formik>

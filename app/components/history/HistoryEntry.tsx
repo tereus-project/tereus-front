@@ -1,9 +1,9 @@
-import { Button, ButtonGroup, Heading, IconButton, ListItem, Td, Tr, UnorderedList, useToast } from "@chakra-ui/react";
+import { Button, Group } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { RiArrowDownSLine, RiDeleteBin6Line, RiFileCopyFill } from "react-icons/ri";
-import { TbShare, TbShareOff } from "react-icons/tb";
+import { ChevronDown, Copy, Share, ShareOff, Trash } from "tabler-icons-react";
 import type * as api from "~/api";
 
 export type HistoryEntryProps = {
@@ -13,8 +13,6 @@ export type HistoryEntryProps = {
 };
 
 export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProps) {
-  const toast = useToast();
-
   const [collapsed, setCollapsed] = useState(false);
   const [hasBeenCopied, setHasBeenCopied] = useState(false);
 
@@ -34,10 +32,10 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
     } else {
       const data = await res.json();
 
-      toast({
+      showNotification({
+        color: "red",
         title: "Failed to download files",
-        status: "error",
-        description: data?.errors?.join("\n"),
+        message: data?.errors?.join("\n"),
       });
     }
   };
@@ -59,11 +57,10 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
           is_public: updateVisibilityFetcher.data.response!.is_public,
         });
       } else if (updateVisibilityFetcher.data?.errors) {
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "red",
           title: "An error occured",
-          status: "error",
-          description: updateVisibilityFetcher.data.errors.join("\n"),
+          message: updateVisibilityFetcher.data.errors.join("\n"),
         });
       }
     }
@@ -75,11 +72,10 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
     if (cleanFetcher.type === "done") {
       onClean(submission);
     } else if (cleanFetcher.data?.errors) {
-      toast({
-        isClosable: true,
+      showNotification({
+        color: "red",
         title: "An error occured",
-        status: "error",
-        description: cleanFetcher.data.errors.join("\n"),
+        message: cleanFetcher.data.errors.join("\n"),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,22 +83,22 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
 
   return (
     <>
-      <Tr
+      <tr
         onClick={submission.status === "failed" ? () => setCollapsed(!collapsed) : undefined}
-        _hover={{
-          cursor: submission.status === "failed" ? "pointer" : "auto",
+        style={{
+          cursor: submission.status === "failed" ? "pointer" : undefined,
         }}
       >
-        <Td>{submission.id}</Td>
-        <Td>{submission.created_at}</Td>
-        <Td>{submission.source_language}</Td>
-        <Td>{submission.target_language}</Td>
-        <Td>
+        <td>{submission.id}</td>
+        <td>{submission.created_at}</td>
+        <td>{submission.source_language}</td>
+        <td>{submission.target_language}</td>
+        <td>
           {submission.status === "done" ? (
             <Button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+              onClick={() => {
+                // e.preventDefault();
+                // e.stopPropagation();
 
                 download(submission.id);
               }}
@@ -115,30 +111,29 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
               {submission.status.slice(1)}
             </Button>
           )}
-        </Td>
-        <Td>
+        </td>
+        <td>
           {submission.is_inline &&
             submission.status === "done" &&
             (submission.is_public ? (
-              <ButtonGroup isAttached variant="outline">
+              <Group spacing={4}>
                 <Button
-                  leftIcon={<RiFileCopyFill />}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  leftIcon={<Copy size={16} />}
+                  onClick={() => {
+                    // e.preventDefault();
+                    // e.stopPropagation();
 
                     copyShareUrl(submission.id);
                   }}
                 >
                   {hasBeenCopied ? "Copied!" : "Copy link"}
                 </Button>
-                <IconButton
-                  aria-label="Copy"
-                  icon={<TbShareOff />}
-                  disabled={updateVisibilityFetcher.state !== "idle"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                <Button
+                  aria-label="Unshare"
+                  loading={updateVisibilityFetcher.state !== "idle"}
+                  onClick={() => {
+                    // e.preventDefault();
+                    // e.stopPropagation();
 
                     updateVisibilityFetcher.submit(
                       { isPublic: "false" },
@@ -149,16 +144,18 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
                       }
                     );
                   }}
-                />
-              </ButtonGroup>
+                >
+                  <ShareOff size={16} />
+                </Button>
+              </Group>
             ) : (
               <Button
                 variant="outline"
-                leftIcon={<TbShare />}
-                disabled={updateVisibilityFetcher.state !== "idle"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                leftIcon={<Share />}
+                loading={updateVisibilityFetcher.state !== "idle"}
+                onClick={() => {
+                  // e.preventDefault();
+                  // e.stopPropagation();
 
                   updateVisibilityFetcher.submit(
                     { isPublic: "true" },
@@ -174,20 +171,21 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
               </Button>
             ))}
           {(!submission.is_inline || submission.status !== "done") && (
-            <Button disabled variant="outline" leftIcon={<TbShareOff />}>
+            <Button disabled variant="outline" leftIcon={<ShareOff size={16} />}>
               Share
             </Button>
           )}
-        </Td>
-        <Td>
+        </td>
+        <td>
           {submission.status === "done" ? (
             <Button
               variant="outline"
-              colorScheme={"red"}
-              leftIcon={<RiDeleteBin6Line />}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+              color="red"
+              loading={cleanFetcher.state !== "idle"}
+              leftIcon={<Trash size={16} />}
+              onClick={() => {
+                // e.preventDefault();
+                // e.stopPropagation();
 
                 cleanFetcher.submit(
                   {},
@@ -202,27 +200,29 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
               Clean
             </Button>
           ) : (
-            <Button disabled variant="outline" leftIcon={<RiDeleteBin6Line />}>
+            <Button disabled variant="outline" leftIcon={<Trash size={16} />}>
               Clean
             </Button>
           )}
-        </Td>
-        <Td>{submission.status === "failed" && <RiArrowDownSLine transform={collapsed ? "rotate(180)" : ""} />}</Td>
-      </Tr>
+        </td>
+        <td>
+          {submission.status === "failed" && <ChevronDown size={16} transform={collapsed ? "rotate(180)" : ""} />}
+        </td>
+      </tr>
 
       {submission.status === "failed" && (
-        <Tr hidden={!collapsed}>
-          <Td colSpan={6}>
-            <Heading mb={4} size="lg">
+        <tr hidden={!collapsed}>
+          <td colSpan={6}>
+            {/* <Heading mb={4} size="lg">
               Reason
             </Heading>
             <UnorderedList mb={2}>
               {submission.reason.split("\n").map((line, i) => (
                 <ListItem key={`reason-${i}`}>{line}</ListItem>
               ))}
-            </UnorderedList>
-          </Td>
-        </Tr>
+            </UnorderedList> */}
+          </td>
+        </tr>
       )}
     </>
   );

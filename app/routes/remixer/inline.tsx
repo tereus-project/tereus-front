@@ -1,15 +1,5 @@
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Kbd,
-  Select,
-  Stack,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Card, Container, Divider, Group, Kbd, Select, Stack } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -19,6 +9,7 @@ import { Field, Form, Formik } from "formik";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
+import { Exchange } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { getSession } from "~/sessions.server";
@@ -62,12 +53,19 @@ export const action: ActionFunction = async ({ request }) => {
   return json({ response, errors });
 };
 
+const DEFAULT_SOURCE_CODES = {
+  c: `
+int main() {
+    printf("Hello, World!");
+}
+`.trimStart(),
+};
+
 export default function RemixerInline() {
   const csrf = useAuthenticityToken();
 
   const location = useLocation();
   const navigate = useNavigate();
-  const toast = useToast();
 
   const [isRemixing, setIsRemixing] = useState(false);
   const [outputCode, setOutputCode] = useState("");
@@ -95,11 +93,10 @@ export default function RemixerInline() {
         if (remixingInlineResultFetcher.data.response.isTerminal) {
           setIsRemixing(false);
 
-          toast({
-            isClosable: true,
+          showNotification({
+            color: "red",
             title: "An error occured",
-            status: "error",
-            description: remixingInlineResultFetcher.data.errors.join("\n"),
+            message: remixingInlineResultFetcher.data.errors.join("\n"),
           });
         } else {
           setTimeout(
@@ -114,10 +111,10 @@ export default function RemixerInline() {
         setIsRemixing(false);
         setOutputCode(atob(remixingInlineResultFetcher.data.response.submissionData.data));
 
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "green",
           title: "Remixing success!",
-          status: "success",
+          message: "",
         });
       }
     }
@@ -128,19 +125,18 @@ export default function RemixerInline() {
   useEffect(() => {
     if (remixingFetcher.type === "done") {
       if (remixingFetcher.data?.response) {
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "blue",
           title: "Remixing started!",
-          status: "info",
+          message: "",
         });
 
         setTimeout(() => remixingInlineResultFetcher.load(`/download/${remixingFetcher.data.response!.id}/main`), 600);
       } else if (remixingFetcher.data?.errors) {
-        toast({
-          isClosable: true,
+        showNotification({
+          color: "red",
           title: "An error occured",
-          status: "error",
-          description: remixingFetcher.data.errors.join("\n"),
+          message: remixingFetcher.data.errors.join("\n"),
         });
 
         setIsRemixing(false);
@@ -162,7 +158,7 @@ export default function RemixerInline() {
       initialValues={{
         sourceLanguage: "c",
         targetLanguage: "go",
-        sourceCode: sourceCode ?? "",
+        sourceCode: sourceCode ?? DEFAULT_SOURCE_CODES["c"],
       }}
       onSubmit={(values, actions) => {
         remixingFetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
@@ -171,17 +167,11 @@ export default function RemixerInline() {
     >
       {(props) => (
         <Form>
-          <Container>
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
+          <Container size="sm">
+            <Card shadow="sm" withBorder>
               <Field name="sourceLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["sourceLanguage"]>) => (
-                  <FormControl isInvalid={!!meta.error && meta.touched}>
-                    <FormLabel htmlFor="sourceLanguage">Source language</FormLabel>
-                    <Select {...field} id="sourceLanguage">
-                      <option value="c">C</option>
-                    </Select>
-                    <FormErrorMessage>{meta.error}</FormErrorMessage>
-                  </FormControl>
+                  <Select {...field} label="Source language" data={[{ value: "c", label: "C" }]} error={meta.error} />
                 )}
               </Field>
 
@@ -189,64 +179,60 @@ export default function RemixerInline() {
 
               <Field name="targetLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["targetLanguage"]>) => (
-                  <FormControl isInvalid={!!meta.error && meta.touched}>
-                    <FormLabel htmlFor="targetLanguage">Target language</FormLabel>
-                    <Select {...field} id="targetLanguage">
-                      <option value="go">Go</option>
-                    </Select>
-                    <FormErrorMessage>{meta.error}</FormErrorMessage>
-                  </FormControl>
+                  <Select {...field} label="Target language" data={[{ value: "go", label: "Go" }]} error={meta.error} />
                 )}
               </Field>
-            </Box>
+            </Card>
           </Container>
 
           <br />
 
-          <Stack direction={["column", "column", "column", "row"]}>
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
+          <Group mb={24} position="center" align="start">
+            <Card shadow="sm" withBorder style={{ flex: 1 }}>
               <Field name="sourceCode" isRequired>
                 {({ field, meta }: FieldProps<FormValues["sourceCode"]>) => (
-                  <FormControl isInvalid={!!meta.error && meta.touched} isRequired>
-                    <FormLabel htmlFor="sourceCode">Source Code</FormLabel>
-                    <Editor
-                      {...field}
-                      onChange={(value) => {
-                        props.setFieldValue("sourceCode", value);
-                        updateInputQueryParam(value);
-                      }}
-                      onMount={(editor) => {
-                        editor.onKeyDown((e) => {
-                          if ((e.ctrlKey || e.metaKey) && e.keyCode === 3) {
-                            e.preventDefault();
-                            e.stopPropagation();
+                  <Editor
+                    {...field}
+                    onChange={(value) => {
+                      props.setFieldValue("sourceCode", value);
+                      updateInputQueryParam(value);
+                    }}
+                    onMount={(editor) => {
+                      editor.onKeyDown((e) => {
+                        if ((e.ctrlKey || e.metaKey) && e.keyCode === 3) {
+                          e.preventDefault();
+                          e.stopPropagation();
 
-                            props.submitForm();
-                          }
-                        });
-                      }}
-                      language={props.values.sourceLanguage}
-                      height="500px"
-                    />
-                  </FormControl>
+                          props.submitForm();
+                        }
+                      });
+                    }}
+                    language={props.values.sourceLanguage}
+                    height="500px"
+                  />
                 )}
               </Field>
-            </Box>
-
-            <Button paddingX={10} colorScheme="teal" isLoading={props.isSubmitting || isRemixing} type="submit">
-              Submit (
-              <Kbd backgroundColor="gray.700" borderColor="gray.800">
-                ⌘
-              </Kbd>{" "}
-              +{" "}
-              <Kbd backgroundColor="gray.700" borderColor="gray.800">
-                ↵
-              </Kbd>
-              )
-            </Button>
-
-            <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md" width="full">
-              <FormLabel as="div">Output code</FormLabel>
+            </Card>
+            <Stack align="stretch">
+              <Button
+                px={10}
+                color="blue"
+                leftIcon={<Exchange size={16} />}
+                loading={props.isSubmitting || isRemixing}
+                type="submit"
+              >
+                Transpile
+              </Button>
+              <Divider my="xs" label="Or" labelPosition="center" />
+              <Box
+                sx={() => ({
+                  textAlign: "center",
+                })}
+              >
+                <Kbd px={10}>⌘</Kbd> + <Kbd px={10}>↵</Kbd>
+              </Box>
+            </Stack>
+            <Card shadow="sm" withBorder style={{ flex: 1 }}>
               <Editor
                 language={props.values.targetLanguage}
                 height="500px"
@@ -255,8 +241,8 @@ export default function RemixerInline() {
                 }}
                 value={outputCode}
               />
-            </Box>
-          </Stack>
+            </Card>
+          </Group>
         </Form>
       )}
     </Formik>

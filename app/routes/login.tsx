@@ -1,17 +1,7 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Container,
-  Stack,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Alert, Anchor, Button, Card, Stack } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { RiGithubFill, RiGitlabFill } from "react-icons/ri";
+import { AlertCircle, BrandGithub, BrandGitlab } from "tabler-icons-react";
 import { Page } from "~/components/Page";
 
 type LoaderData = {
@@ -49,43 +39,28 @@ export default function Login() {
   const error = searchParams.get("error");
 
   return (
-    <Page title="Login to Tereus" subtitle="Sign up or create an account in one click!">
+    <Page title="Login to Tereus" subtitle="Sign up or create an account in one click!" containerSize="sm">
       {error && (
-        <Container maxW="4xl" mb={4}>
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>An error occured!</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        </Container>
+        <Alert icon={<AlertCircle size={16} />} title="An error occured!" color="red" mb={12}>
+          {error}
+        </Alert>
       )}
 
-      <Container maxW="lg" py={{ base: "12", md: "24" }} px={{ base: "0", sm: "8" }}>
+      <Card shadow="sm" withBorder>
         <Stack>
-          <Box
-            py={{ base: "0", sm: "8" }}
-            px={{ base: "4", sm: "10" }}
-            bg={"gray.100"}
-            boxShadow={{ base: "none", sm: useColorModeValue("lg", "md-dark") }}
-            borderRadius={{ base: "none", sm: "xl" }}
-          >
-            <Stack spacing="6">
-              <Stack spacing="6">
-                <a href={loaderData.githubLoginUrl}>
-                  <Button width="100%" leftIcon={<RiGithubFill />} colorScheme="blue" variant="solid">
-                    Continue with GitHub
-                  </Button>
-                </a>
-                <a href={loaderData.githubLoginUrl}>
-                  <Button width="100%" leftIcon={<RiGitlabFill />} colorScheme="blue" variant="solid">
-                    Continue with GitLab
-                  </Button>
-                </a>
-              </Stack>
-            </Stack>
-          </Box>
+          <Anchor href={loaderData.githubLoginUrl}>
+            <Button fullWidth leftIcon={<BrandGithub />} color="blue">
+              Continue with GitHub
+            </Button>
+          </Anchor>
+
+          <Anchor href={loaderData.githubLoginUrl}>
+            <Button fullWidth leftIcon={<BrandGitlab />} color="blue">
+              Continue with GitLab
+            </Button>
+          </Anchor>
         </Stack>
-      </Container>
+      </Card>
     </Page>
   );
 }
