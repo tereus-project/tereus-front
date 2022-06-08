@@ -105,10 +105,10 @@ export interface SubmissionDTO {
   created_at: Date;
 }
 
-export const getUserSubmissions = (token: string) =>
+export const getUserSubmissions = (token: string, page: number) =>
   request<GetUserSubmissionsResponseDTO>({
     method: "GET",
-    url: `/users/me/submissions`,
+    url: `/users/me/submissions?page=${page}`,
     token,
   });
 

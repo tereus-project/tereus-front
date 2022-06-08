@@ -1,8 +1,9 @@
-import { Table } from "@mantine/core";
+import { Alert, Group, List, Pagination, Table } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useOutletContext } from "@remix-run/react";
-import { useState } from "react";
+import { useLoaderData, useNavigate, useOutletContext, useTransition } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { AlertCircle } from "tabler-icons-react";
 import * as api from "~/api";
 import { HistoryEntry } from "~/components/history/HistoryEntry";
 import { Page } from "~/components/Page";
@@ -16,8 +17,11 @@ interface LoaderResponse {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const token = await authGuard(request);
+  const url = new URL(request.url);
 
-  const [response, errors] = await api.getUserSubmissions(token);
+  const page = url.searchParams.get("page");
+
+  const [response, errors] = await api.getUserSubmissions(token, page ? Number(page) : 1);
   return json<LoaderResponse>({ response, errors });
 };
 
@@ -25,11 +29,27 @@ export default function History() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
+  const navigate = useNavigate();
+
   const [submissions, setSubmissions] = useState(loaderData.response?.items ?? []);
+
+  useEffect(() => {
+    setSubmissions(loaderData.response?.items ?? []);
+  }, [loaderData.response]);
 
   return (
     <Page title="Remix history" user={context.user} containerSize="xl">
-      <Table>
+      {loaderData.errors && (
+        <Alert icon={<AlertCircle size={16} />} title="An error occured!" color="red" mb={12}>
+          <List>
+            {loaderData.errors!.map((error) => (
+              <List.Item key={error}>{error}</List.Item>
+            ))}
+          </List>
+        </Alert>
+      )}
+
+      <Table mb={12}>
         <thead>
           <tr>
             <th>ID</th>
@@ -65,6 +85,18 @@ export default function History() {
           ))}
         </tbody>
       </Table>
+      {loaderData.response && (
+        <Group position="right">
+          <Pagination
+            page={loaderData.response.meta.current_page}
+            onChange={(page) => {
+              navigate(`/history?page=${page}`);
+            }}
+            total={loaderData.response.meta.total_pages}
+            withEdges
+          />
+        </Group>
+      )}
     </Page>
   );
 }
