@@ -103,6 +103,7 @@ export interface SubmissionDTO {
   reason: string;
   git_repo: string;
   created_at: Date;
+  share_id: string;
 }
 
 export const getUserSubmissions = (token: string, page: number) =>

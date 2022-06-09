@@ -122,7 +122,7 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
                   onClick={() => {
                     // e.preventDefault();
                     // e.stopPropagation();
-                    // copyShareUrl(submission.id);
+                    copyShareUrl(submission.share_id);
                   }}
                 >
                   {hasBeenCopied ? "Copied!" : "Copy link"}
