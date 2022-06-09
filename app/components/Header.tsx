@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Burger,
   Button,
   createStyles,
@@ -8,8 +9,10 @@ import {
   Header,
   Menu,
   Paper,
+  Switch,
   Transition,
   UnstyledButton,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useBooleanToggle } from "@mantine/hooks";
 import { Link } from "@remix-run/react";
@@ -54,6 +57,8 @@ const useStyles = createStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     height: "100%",
+    marginRight: "32px",
+    marginLeft: "32px",
   },
 
   links: {
@@ -111,11 +116,13 @@ export interface ResponsiveHeaderProps {
 }
 
 export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
+  const { classes, cx } = useStyles();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
   const [opened, toggleOpened] = useBooleanToggle(false);
   const [, setUserMenuOpened] = useState(false);
-  const { classes, cx } = useStyles();
 
-  const items = links.map(({ to, href, label, target, leftIcon }) => {
+  const Items = links.map(({ to, href, label, target, leftIcon }) => {
     if (to) {
       return (
         <Button<typeof Link>
@@ -145,9 +152,9 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   return (
     <Header height={HEADER_HEIGHT} className={classes.root}>
       <div className={classes.header}>
-        Tereus
+        <Box>Tereus</Box>
         <Group spacing={5} className={classes.links}>
-          {items}
+          {Items}
 
           {user && (
             <Menu
@@ -200,7 +207,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
         <Transition transition="pop-top-right" duration={200} mounted={opened}>
           {(styles) => (
             <Paper className={classes.dropdown} withBorder style={styles}>
-              {items}
+              {Items}
             </Paper>
           )}
         </Transition>

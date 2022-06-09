@@ -1,8 +1,10 @@
-import { MantineProvider } from "@mantine/core";
+import type { ColorScheme } from "@mantine/core";
+import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
@@ -51,18 +53,24 @@ export interface TereusContext {
 export default function App() {
   const loaderData = useLoaderData<LoaderResponse>();
 
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
   return (
     <AuthenticityTokenProvider token={loaderData.csrf}>
       <Document>
-        <MantineProvider>
-          <NotificationsProvider>
-            <Outlet
-              context={{
-                user: loaderData.user,
-              }}
-            />
-          </NotificationsProvider>
-        </MantineProvider>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          <MantineProvider withGlobalStyles withNormalizeCSS>
+            <NotificationsProvider>
+              <Outlet
+                context={{
+                  user: loaderData.user,
+                }}
+              />
+            </NotificationsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
       </Document>
     </AuthenticityTokenProvider>
   );
