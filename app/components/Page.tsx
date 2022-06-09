@@ -30,7 +30,7 @@ export function Page({
         user={user}
         links={[
           { to: "/", label: "Home", leftIcon: <Home size={16} /> },
-          { to: "/pricing", label: "Upgrade", leftIcon: <ArrowBigUpLines size={16} /> },
+          { to: "/pricing", label: user ? "Subscription" : "Pricing", leftIcon: <ArrowBigUpLines size={16} /> },
           { to: "/remixer/inline", label: "Transpilers", leftIcon: <Cpu size={16} /> },
           { to: "/history", label: "History", leftIcon: <History size={16} /> },
           { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
