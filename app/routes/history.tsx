@@ -1,7 +1,7 @@
 import { Alert, Group, List, Pagination, Table } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useNavigate, useOutletContext, useTransition } from "@remix-run/react";
+import { useLoaderData, useNavigate, useOutletContext } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { AlertCircle } from "tabler-icons-react";
 import * as api from "~/api";
