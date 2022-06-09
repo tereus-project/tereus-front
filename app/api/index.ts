@@ -147,6 +147,7 @@ export interface UpdateSubmissionVisibilityBodyDTO {
 export interface UpdateSubmissionVisibilityResponseDTO {
   id: string;
   is_public: boolean;
+  share_id: string;
 }
 
 export const updateSubmissionVisibility = (token: string, id: string, body: UpdateSubmissionVisibilityBodyDTO) =>

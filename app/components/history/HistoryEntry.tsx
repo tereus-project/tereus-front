@@ -51,7 +51,7 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
   useEffect(() => {
     if (updateVisibilityFetcher.type === "done") {
       if (updateVisibilityFetcher.data?.response) {
-        copyShareUrl(updateVisibilityFetcher.data.response.id);
+        copyShareUrl(updateVisibilityFetcher.data.response.share_id);
         onChange({
           ...submission,
           is_public: updateVisibilityFetcher.data.response!.is_public,
@@ -122,8 +122,7 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
                   onClick={() => {
                     // e.preventDefault();
                     // e.stopPropagation();
-
-                    copyShareUrl(submission.id);
+                    // copyShareUrl(submission.id);
                   }}
                 >
                   {hasBeenCopied ? "Copied!" : "Copy link"}
