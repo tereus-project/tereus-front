@@ -175,8 +175,9 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
               <Menu.Item icon={<Settings size={14} />} component={Link} to="/account/profile">
                 Account settings
               </Menu.Item>
-              <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
-
+              <Link to="/auth/logout">
+                <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
+              </Link>
               <Divider />
 
               <Menu.Label>Danger zone</Menu.Label>
