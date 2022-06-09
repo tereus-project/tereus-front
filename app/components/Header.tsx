@@ -9,10 +9,8 @@ import {
   Header,
   Menu,
   Paper,
-  Switch,
   Transition,
   UnstyledButton,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { useBooleanToggle } from "@mantine/hooks";
 import { Link } from "@remix-run/react";
@@ -117,7 +115,6 @@ export interface ResponsiveHeaderProps {
 
 export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   const { classes, cx } = useStyles();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   const [opened, toggleOpened] = useBooleanToggle(false);
   const [, setUserMenuOpened] = useState(false);
