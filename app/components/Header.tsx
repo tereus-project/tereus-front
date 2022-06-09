@@ -170,7 +170,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
               }
             >
               <Menu.Label>Settings</Menu.Label>
-              <Menu.Item icon={<Settings size={14} />} component={Link} to="/settings">
+              <Menu.Item icon={<Settings size={14} />} component={Link} to="/settings/profile">
                 Account settings
               </Menu.Item>
               <Link to="/auth/logout">
