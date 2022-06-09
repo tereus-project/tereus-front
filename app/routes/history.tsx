@@ -1,10 +1,10 @@
-import { Alert, Group, List, Pagination, Table } from "@mantine/core";
+import { Group, Pagination, Table } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate, useOutletContext } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { AlertCircle } from "tabler-icons-react";
 import * as api from "~/api";
+import { ErrorList } from "~/components/ErrorAlert";
 import { HistoryEntry } from "~/components/history/HistoryEntry";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
@@ -39,15 +39,7 @@ export default function History() {
 
   return (
     <Page title="Remix history" user={context.user} containerSize="xl">
-      {loaderData.errors && (
-        <Alert icon={<AlertCircle size={16} />} title="An error occured!" color="red" mb={12}>
-          <List>
-            {loaderData.errors!.map((error) => (
-              <List.Item key={error}>{error}</List.Item>
-            ))}
-          </List>
-        </Alert>
-      )}
+      <ErrorList errors={loaderData.errors} />
 
       <Table mb={12}>
         <thead>

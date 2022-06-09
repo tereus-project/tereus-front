@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Burger,
   Button,
@@ -9,18 +8,16 @@ import {
   Header,
   Menu,
   Paper,
-  Switch,
   Transition,
   UnstyledButton,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { useBooleanToggle } from "@mantine/hooks";
 import { Link } from "@remix-run/react";
-import md5 from "md5";
 import React, { useState } from "react";
 import type { To } from "react-router-dom";
 import { ChevronDown, Logout, PlayerPause, Settings, SwitchHorizontal, Trash } from "tabler-icons-react";
 import type { GetCurrentUserResponseDTO } from "~/api";
+import { UserAvatar } from "./UserAvatar";
 
 const HEADER_HEIGHT = 60;
 
@@ -117,7 +114,6 @@ export interface ResponsiveHeaderProps {
 
 export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   const { classes, cx } = useStyles();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   const [opened, toggleOpened] = useBooleanToggle(false);
   const [, setUserMenuOpened] = useState(false);
@@ -167,19 +163,14 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
               control={
                 <UnstyledButton className={cx(classes.link)}>
                   <Group spacing={7}>
-                    <Avatar
-                      src={`https://www.gravatar.com/avatar/${md5(user?.email ?? "")}`}
-                      alt="avater"
-                      radius="xl"
-                      size={20}
-                    />
+                    <UserAvatar email={user.email} size={20} />
                     <ChevronDown size={12} />
                   </Group>
                 </UnstyledButton>
               }
             >
               <Menu.Label>Settings</Menu.Label>
-              <Menu.Item icon={<Settings size={14} />} component={Link} to="/account/profile">
+              <Menu.Item icon={<Settings size={14} />} component={Link} to="/settings">
                 Account settings
               </Menu.Item>
               <Link to="/auth/logout">
@@ -197,7 +188,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
                   Upgrade
                 </Menu.Item>
               )}
-              <Menu.Item color="red" icon={<Trash size={14} />} component={Link} to="/account/profile">
+              <Menu.Item color="red" icon={<Trash size={14} />} component={Link} to="/settings/data">
                 Delete account
               </Menu.Item>
             </Menu>

@@ -1,11 +1,11 @@
-import { Alert, Card, Group, List } from "@mantine/core";
+import { Card, Group } from "@mantine/core";
 import Editor from "@monaco-editor/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
-import { AlertCircle } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
+import { ErrorList } from "~/components/ErrorAlert";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
@@ -40,16 +40,6 @@ export default function Remixer() {
   const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<SharedSubmissionLoaderResponse>();
 
-  const ErrorsDisplayComposition = () => (
-    <Alert icon={<AlertCircle size={16} />} title="An error occured!" color="red" mb={12}>
-      <List>
-        {loaderData.errors!.map((error) => (
-          <List.Item key={error}>{error}</List.Item>
-        ))}
-      </List>
-    </Alert>
-  );
-
   return (
     <Page
       title="Shared submission"
@@ -62,7 +52,7 @@ export default function Remixer() {
       containerFluid
       headerFluid
     >
-      {!loaderData.response && loaderData.errors && <ErrorsDisplayComposition />}
+      {!loaderData.response && <ErrorList errors={loaderData.errors} />}
 
       {loaderData.response && (
         <>
@@ -89,7 +79,7 @@ export default function Remixer() {
                   value={atob(loaderData.response.output.data)}
                 />
               ) : (
-                <ErrorsDisplayComposition />
+                <ErrorList errors={loaderData.errors} />
               )}
             </Card>
           </Group>
