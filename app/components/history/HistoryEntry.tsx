@@ -1,7 +1,7 @@
 import { Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { useEffect, useState } from "react";
 import { ChevronDown, Copy, Share, ShareOff, Trash } from "tabler-icons-react";
 import type * as api from "~/api";

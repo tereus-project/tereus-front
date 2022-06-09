@@ -6,7 +6,7 @@ import { json } from "@remix-run/node";
 import { useFetcher, useLocation, useNavigate } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { useEffect, useState } from "react";
 import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
 import { Exchange } from "tabler-icons-react";
