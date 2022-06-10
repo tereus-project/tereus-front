@@ -1,6 +1,7 @@
 import { Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
+import { formatDistance, parseJSON } from "date-fns";
 import debounce from "lodash/debounce";
 import { useEffect, useState } from "react";
 import { ChevronDown, Copy, Share, ShareOff, Trash } from "tabler-icons-react";
@@ -90,7 +91,7 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
         }}
       >
         <td>{submission.id}</td>
-        <td>{submission.created_at}</td>
+        <td>{formatDistance(parseJSON(submission.created_at), new Date(), { addSuffix: true })}</td>
         <td>{submission.source_language}</td>
         <td>{submission.target_language}</td>
         <td>
