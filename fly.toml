@@ -6,7 +6,7 @@ processes = []
 
 [env]
   API_URL = "http://tereus-api.internal:1323"
-  FRONT_URL = "https://tereus.qtmsheep.com"
+  FRONT_URL = "https://tereus.dev"
 
 [experimental]
   allowed_public_ports = []
