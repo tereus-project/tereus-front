@@ -2,37 +2,37 @@ import request from "~/api/request";
 
 export * from "~/api/utils";
 
-export interface RemixGitDTO {
+export interface TranspileGitDTO {
   git_repo: string;
 }
 
-export interface RemixInlineDTO {
+export interface TranspileInlineDTO {
   source_code: string;
 }
 
-export interface RemixResponseDTO {
+export interface TranspileResponseDTO {
   id: string;
   source_language: string;
   target_language: string;
 }
 
-export const remix = {
+export const transpile = {
   zip: (sourceLanguage: string, targetLanguage: string, body: FormData, token: string) =>
-    request<RemixResponseDTO>({
+    request<TranspileResponseDTO>({
       method: "POST",
       url: `/submissions/zip/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
-  git: (sourceLanguage: string, targetLanguage: string, body: RemixGitDTO, token: string) =>
-    request<RemixResponseDTO>({
+  git: (sourceLanguage: string, targetLanguage: string, body: TranspileGitDTO, token: string) =>
+    request<TranspileResponseDTO>({
       method: "POST",
       url: `/submissions/git/${sourceLanguage}/to/${targetLanguage}`,
       body,
       token,
     }),
-  inline: (sourceLanguage: string, targetLanguage: string, body: RemixInlineDTO, token: string) =>
-    request<RemixResponseDTO>({
+  inline: (sourceLanguage: string, targetLanguage: string, body: TranspileInlineDTO, token: string) =>
+    request<TranspileResponseDTO>({
       method: "POST",
       url: `/submissions/inline/${sourceLanguage}/to/${targetLanguage}`,
       body,

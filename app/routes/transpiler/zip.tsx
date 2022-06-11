@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   if (mode === "zip") {
-    const [response, errors] = await api.remix.zip(sourceLanguage, targetLanguage, values, session.get("token"));
+    const [response, errors] = await api.transpile.zip(sourceLanguage, targetLanguage, values, session.get("token"));
     return json({ response, errors });
   } else if (mode === "git") {
     const gitRepo = values.get("gitRepo")?.toString();
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request }) => {
       return json({ errors: ["Missing git repo"] });
     }
 
-    const [response, errors] = await api.remix.git(
+    const [response, errors] = await api.transpile.git(
       sourceLanguage,
       targetLanguage,
       {
@@ -68,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function RemixerZip() {
-  const fetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
+  const fetcher = useFetcher<ActionFormData<api.TranspileResponseDTO>>();
 
   const modes = ["zip", "git"];
 

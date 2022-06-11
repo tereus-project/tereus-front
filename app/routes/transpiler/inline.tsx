@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ errors: ["Missing source code"] });
   }
 
-  const [response, errors] = await api.remix.inline(
+  const [response, errors] = await api.transpile.inline(
     sourceLanguage,
     targetLanguage,
     {
@@ -121,7 +121,7 @@ export default function RemixerInline() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remixingInlineResultFetcher]);
 
-  const remixingFetcher = useFetcher<ActionFormData<api.RemixResponseDTO>>();
+  const remixingFetcher = useFetcher<ActionFormData<api.TranspileResponseDTO>>();
   useEffect(() => {
     if (remixingFetcher.type === "done") {
       if (remixingFetcher.data?.response) {

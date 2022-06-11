@@ -11,25 +11,25 @@ export const loader: LoaderFunction = async ({ request }) => {
   return {};
 };
 
-export default function Remixer() {
+export default function Transpiler() {
   const context = useOutletContext<TereusContext>();
   const location = useLocation();
 
   const tabs = [
     {
       name: "Zip / Git",
-      href: useHref(`/remixer/zip`),
-      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/remixer/zip`),
+      href: useHref(`/transpiler/zip`),
+      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/transpiler/zip`),
     },
     {
       name: "Inline",
-      href: useHref(`/remixer/inline`),
-      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/remixer/inline`),
+      href: useHref(`/transpiler/inline`),
+      clickHandler: useLinkClickHandler<HTMLButtonElement>(`/transpiler/inline`),
     },
   ];
 
   return (
-    <Page title="Remixer" containerFluid headerSize="sm">
+    <Page title="Transpiler" containerFluid headerSize="sm">
       <Container size="sm">
         <Tabs
           active={tabs.findIndex((tab) => tab.href === location.pathname)}

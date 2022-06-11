@@ -36,7 +36,7 @@ export default function History() {
   }, [loaderData.response]);
 
   return (
-    <Page title="Remix history" containerSize="xl">
+    <Page title="Transpilation history" containerSize="xl">
       <ErrorList errors={loaderData.errors} />
 
       <Table mb={12}>
