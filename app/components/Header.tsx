@@ -102,7 +102,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export interface ResponsiveHeaderProps {
-  user?: GetCurrentUserResponseDTO;
+  user?: GetCurrentUserResponseDTO | null;
   links: {
     to?: To;
     href?: string;

@@ -1,4 +1,4 @@
-import type { ColorScheme } from "@mantine/core";
+import { ColorScheme, Stack } from "@mantine/core";
 import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
@@ -6,8 +6,10 @@ import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
+import { ArrowBigUpLines, BrandGithub, Cpu, Home, History } from "tabler-icons-react";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
+import { ResponsiveHeader } from "./components/Header";
 import { commitSession, getSession } from "./sessions.server";
 
 export const meta: MetaFunction = () => ({
@@ -51,23 +53,40 @@ export interface TereusContext {
 }
 
 export default function App() {
-  const loaderData = useLoaderData<LoaderResponse>();
+  const { user, csrf } = useLoaderData<LoaderResponse>();
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   return (
-    <AuthenticityTokenProvider token={loaderData.csrf}>
+    <AuthenticityTokenProvider token={csrf}>
       <Document>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
-              <Outlet
-                context={{
-                  user: loaderData.user,
-                }}
-              />
+              <Stack>
+                <ResponsiveHeader
+                  user={user}
+                  links={[
+                    { to: "/", label: "Home", leftIcon: <Home size={16} /> },
+                    {
+                      to: "/pricing",
+                      label: user ? "Subscription" : "Pricing",
+                      leftIcon: <ArrowBigUpLines size={16} />,
+                    },
+                    { to: "/remixer/inline", label: "Transpilers", leftIcon: <Cpu size={16} /> },
+                    { to: "/history", label: "History", leftIcon: <History size={16} /> },
+                    { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
+                  ]}
+                />
+
+                <Outlet
+                  context={{
+                    user,
+                  }}
+                />
+              </Stack>
             </NotificationsProvider>
           </MantineProvider>
         </ColorSchemeProvider>

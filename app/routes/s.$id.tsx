@@ -2,12 +2,11 @@ import { Card, Group } from "@mantine/core";
 import Editor from "@monaco-editor/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { ErrorList } from "~/components/ErrorAlert";
 import { Page } from "~/components/Page";
-import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
 
 export type SharedSubmissionLoaderResponse = ActionFormData<{
@@ -37,7 +36,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function Remixer() {
-  const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<SharedSubmissionLoaderResponse>();
 
   return (
@@ -48,7 +46,6 @@ export default function Remixer() {
           ? `${loaderData.response.submissionId} - ${loaderData.response.input.source_language} to ${loaderData.response.input.target_language}`
           : undefined
       }
-      user={context.user}
       containerFluid
       headerFluid
     >

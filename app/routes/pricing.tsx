@@ -188,7 +188,7 @@ export default function Pricing() {
   };
 
   return (
-    <Page title="Pricing" user={context.user} containerSize="lg">
+    <Page title="Pricing" containerSize="lg">
       {searchParams.get("success") === "true" && (
         <Alert icon={<AlertCircle size={16} />} title="Success!" color="green" mb={12}>
           Successfully subscribed to the {plans[currentPlanIndex].name} plan. Enjoy your new features!

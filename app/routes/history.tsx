@@ -1,13 +1,12 @@
 import { Group, Pagination, Table } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useNavigate, useOutletContext } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import * as api from "~/api";
 import { ErrorList } from "~/components/ErrorAlert";
 import { HistoryEntry } from "~/components/history/HistoryEntry";
 import { Page } from "~/components/Page";
-import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
 
 interface LoaderResponse {
@@ -26,7 +25,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function History() {
-  const context = useOutletContext<TereusContext>();
   const loaderData = useLoaderData<LoaderResponse>();
 
   const navigate = useNavigate();
@@ -38,7 +36,7 @@ export default function History() {
   }, [loaderData.response]);
 
   return (
-    <Page title="Remix history" user={context.user} containerSize="xl">
+    <Page title="Remix history" containerSize="xl">
       <ErrorList errors={loaderData.errors} />
 
       <Table mb={12}>

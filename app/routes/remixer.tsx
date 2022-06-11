@@ -29,7 +29,7 @@ export default function Remixer() {
   ];
 
   return (
-    <Page title="Remixer" user={context.user} containerFluid headerSize="sm">
+    <Page title="Remixer" containerFluid headerSize="sm">
       <Container size="sm">
         <Tabs
           active={tabs.findIndex((tab) => tab.href === location.pathname)}

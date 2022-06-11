@@ -36,7 +36,7 @@ export default function AccountSettings() {
   ];
 
   return (
-    <Page title="Settings" user={context.user}>
+    <Page title="Settings">
       <AppShell
         navbar={
           <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 200 }}>
