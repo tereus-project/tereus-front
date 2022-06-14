@@ -13,7 +13,7 @@ import {
 import type { LoaderFunction } from "@remix-run/node";
 import { Link, Outlet, useOutletContext } from "@remix-run/react";
 import { useState } from "react";
-import { ShieldLock, Table, User } from "tabler-icons-react";
+import { ReportMoney, ShieldLock, Table, User } from "tabler-icons-react";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
@@ -32,6 +32,7 @@ export default function AccountSettings() {
   const items = [
     { icon: <User size={16} />, color: "teal", label: "Profile", to: "/settings/profile" },
     { icon: <ShieldLock size={16} />, color: "grape", label: "Security", to: "/settings/security" },
+    { icon: <ReportMoney size={16} />, color: "indigo", label: "Billing", to: "/settings/billing" },
     { icon: <Table size={16} />, color: "violet", label: "Data", to: "/settings/data" },
   ];
 

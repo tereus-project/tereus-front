@@ -71,6 +71,7 @@ export interface GetCurrentUserResponseDTO {
     expires_at: string;
     cancelled: boolean;
   };
+  current_usage_bytes: number;
 }
 
 export const getCurrentUser = (token: string) =>
