@@ -44,8 +44,8 @@ export default function History() {
           <tr>
             <th>ID</th>
             <th>Created at</th>
-            <th>Source language</th>
-            <th>Target language</th>
+            <th>Source</th>
+            <th>Target</th>
             <th>Download</th>
             <th>Share</th>
             <th>Delete</th>

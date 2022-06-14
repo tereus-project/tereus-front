@@ -3,6 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
 import { formatDistance, parseJSON } from "date-fns";
 import debounce from "lodash/debounce";
+import prettyBytes from "pretty-bytes";
 import { useEffect, useState } from "react";
 import { ChevronDown, Copy, Share, ShareOff, Trash } from "tabler-icons-react";
 import type * as api from "~/api";
@@ -92,8 +93,12 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
       >
         <td>{submission.id}</td>
         <td>{formatDistance(parseJSON(submission.created_at), new Date(), { addSuffix: true })}</td>
-        <td>{submission.source_language}</td>
-        <td>{submission.target_language}</td>
+        <td>
+          {submission.source_language} ({prettyBytes(submission.source_size_bytes)})
+        </td>
+        <td>
+          {submission.target_language} ({prettyBytes(submission.target_size_bytes)})
+        </td>
         <td>
           {submission.status === "done" ? (
             <Button
