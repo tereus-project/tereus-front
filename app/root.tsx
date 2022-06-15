@@ -1,12 +1,12 @@
-import { ColorScheme, Stack } from "@mantine/core";
-import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
+import type { ColorScheme } from "@mantine/core";
+import { ColorSchemeProvider, MantineProvider, Stack } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
-import { ArrowBigUpLines, BrandGithub, Cpu, Home, History } from "tabler-icons-react";
+import { ArrowBigUpLines, BrandGithub, Cpu, History, Home } from "tabler-icons-react";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
 import { ResponsiveHeader } from "./components/Header";
