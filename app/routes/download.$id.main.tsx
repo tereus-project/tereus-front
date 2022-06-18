@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       response: {
         submissionId: params.id!,
         // is terminal if the response is ok or is an error which is not 404
-        isTerminal: !!res && (res.ok || res?.status !== 404),
+        isTerminal: !!res && ((res.ok && submissionData?.status === "done") || res.status !== 404),
         submissionData,
       },
       errors,

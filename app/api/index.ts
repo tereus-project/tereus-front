@@ -94,13 +94,15 @@ export interface GetUserSubmissionsResponseDTO {
   meta: PaginationMetadataDTO;
 }
 
+export type SubmissionStatus = "pending" | "processing" | "done" | "failed" | "cleaned";
+
 export interface SubmissionDTO {
   id: string;
   source_language: string;
   target_language: string;
   is_inline: boolean;
   is_public: boolean;
-  status: string;
+  status: SubmissionStatus;
   reason: string;
   git_repo: string;
   created_at: Date;
@@ -126,8 +128,13 @@ export const downloadSubmission = (token: string, id: string) =>
 
 export interface DownloadInlineSubmissionDataResponseDTO {
   data: string;
+  status: SubmissionStatus;
   source_language: string;
   target_language: string;
+  source_size_bytes: number;
+  target_size_bytes: number;
+  processing_started_at: string;
+  processing_finished_at: string;
 }
 
 export const downloadInlineSubmissionInput = (token: string | null, id: string) =>

@@ -1,5 +1,17 @@
-import { Box, Button, Card, Container, Divider, Group, Kbd, Select, Stack } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Divider,
+  Group,
+  Kbd,
+  Loader,
+  LoadingOverlay,
+  Select,
+  Stack,
+} from "@mantine/core";
+import { showNotification, updateNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -7,6 +19,7 @@ import { useFetcher, useLocation, useNavigate } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import debounce from "lodash/debounce";
+import uniqueId from "lodash/uniqueId";
 import { useEffect, useState } from "react";
 import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
 import { Exchange } from "tabler-icons-react";
@@ -67,8 +80,10 @@ export default function RemixerInline() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isRemixing, setIsRemixing] = useState(false);
+  const [isTranspiling, setIsTranspiling] = useState(false);
+  const [transpilationNotificationId, setTranspilationNotificationId] = useState<string>("");
   const [outputCode, setOutputCode] = useState("");
+  const [submissionStatus, setSubmissionStatus] = useState("Pending");
 
   let sourceCode = new URLSearchParams(location.search).get("i");
   if (sourceCode) {
@@ -86,66 +101,86 @@ export default function RemixerInline() {
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 
-  const remixingInlineResultFetcher = useFetcher<DownloadSubmissionMainOutputLoaderResponse>();
-  useEffect(() => {
-    if (remixingInlineResultFetcher.type === "done") {
-      if (remixingInlineResultFetcher.data?.errors) {
-        if (remixingInlineResultFetcher.data.response.isTerminal) {
-          setIsRemixing(false);
+  const pollTranspilationCompletion = (submissionId: string, ms = 600) => {
+    setTimeout(() => inlineTranspilationResultFetcher.load(`/download/${submissionId}/main`), ms);
+  };
 
-          showNotification({
+  const inlineTranspilationResultFetcher = useFetcher<DownloadSubmissionMainOutputLoaderResponse>();
+  useEffect(() => {
+    if (inlineTranspilationResultFetcher.type === "done") {
+      const { submissionId, submissionData, isTerminal } = inlineTranspilationResultFetcher.data.response;
+
+      if (inlineTranspilationResultFetcher.data.errors) {
+        if (isTerminal) {
+          updateNotification({
+            id: transpilationNotificationId,
+            autoClose: true,
+            disallowClose: false,
             color: "red",
             title: "An error occured",
-            message: remixingInlineResultFetcher.data.errors.join("\n"),
+            message: inlineTranspilationResultFetcher.data.errors.join("\n"),
           });
-        } else {
-          setTimeout(
-            () =>
-              remixingInlineResultFetcher.load(
-                `/download/${remixingInlineResultFetcher.data.response.submissionId}/main`
-              ),
-            600
-          );
         }
-      } else if (remixingInlineResultFetcher.data?.response.submissionData) {
-        setIsRemixing(false);
-        setOutputCode(atob(remixingInlineResultFetcher.data.response.submissionData.data));
+      } else if (submissionData) {
+        setSubmissionStatus(submissionData.status);
 
-        showNotification({
-          color: "green",
-          title: "Remixing success!",
-          message: "",
-        });
+        if (submissionData.status === "done") {
+          setOutputCode(atob(submissionData.data));
+
+          const startDate = new Date(submissionData.processing_started_at);
+          const endDate = new Date(submissionData.processing_finished_at);
+
+          updateNotification({
+            id: transpilationNotificationId,
+            autoClose: true,
+            disallowClose: false,
+            color: "green",
+            title: "Transpilation success!",
+            message: `It took ${(endDate.getTime() - startDate.getTime()) / 1000} seconds`,
+          });
+        }
+      }
+
+      if (!isTerminal) {
+        pollTranspilationCompletion(submissionId);
+      } else {
+        setIsTranspiling(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remixingInlineResultFetcher]);
+  }, [inlineTranspilationResultFetcher]);
 
-  const remixingFetcher = useFetcher<ActionFormData<api.TranspileResponseDTO>>();
+  const transpilationFetcher = useFetcher<ActionFormData<api.TranspileResponseDTO>>();
   useEffect(() => {
-    if (remixingFetcher.type === "done") {
-      if (remixingFetcher.data?.response) {
+    if (transpilationFetcher.type === "done") {
+      if (transpilationFetcher.data?.response) {
+        const randomId = uniqueId("transpilation-notification-");
+        setTranspilationNotificationId(randomId);
+
         showNotification({
-          color: "blue",
-          title: "Remixing started!",
+          id: randomId,
+          loading: true,
+          title: "Transpilation started!",
           message: "",
+          autoClose: false,
+          disallowClose: true,
         });
 
-        setTimeout(() => remixingInlineResultFetcher.load(`/download/${remixingFetcher.data.response!.id}/main`), 600);
-      } else if (remixingFetcher.data?.errors) {
+        pollTranspilationCompletion(transpilationFetcher.data.response.id, 50);
+      } else if (transpilationFetcher.data?.errors) {
         showNotification({
           color: "red",
           title: "An error occured",
-          message: remixingFetcher.data.errors.join("\n"),
+          message: transpilationFetcher.data.errors.join("\n"),
         });
 
-        setIsRemixing(false);
+        setIsTranspiling(false);
       }
-    } else if (remixingFetcher.type === "actionSubmission") {
-      setIsRemixing(true);
+    } else if (transpilationFetcher.type === "actionSubmission") {
+      setIsTranspiling(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remixingFetcher]);
+  }, [transpilationFetcher]);
 
   type FormValues = {
     sourceLanguage: string;
@@ -161,7 +196,8 @@ export default function RemixerInline() {
         sourceCode: sourceCode ?? DEFAULT_SOURCE_CODES["c"],
       }}
       onSubmit={(values, actions) => {
-        remixingFetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
+        setSubmissionStatus("pending");
+        transpilationFetcher.submit({ csrf, ...values }, { replace: true, method: "post" });
         actions.setSubmitting(false);
       }}
     >
@@ -218,7 +254,7 @@ export default function RemixerInline() {
                 px={10}
                 color="blue"
                 leftIcon={<Exchange size={16} />}
-                loading={props.isSubmitting || isRemixing}
+                loading={props.isSubmitting || isTranspiling}
                 type="submit"
               >
                 Transpile
@@ -233,6 +269,14 @@ export default function RemixerInline() {
               </Box>
             </Stack>
             <Card shadow="sm" withBorder style={{ flex: 1 }}>
+              <LoadingOverlay
+                visible={props.isSubmitting || isTranspiling}
+                loader={
+                  <Group>
+                    <Loader /> {submissionStatus}...
+                  </Group>
+                }
+              />
               <Editor
                 language={props.values.targetLanguage}
                 height="500px"
