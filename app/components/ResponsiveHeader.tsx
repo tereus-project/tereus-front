@@ -109,6 +109,7 @@ export interface ResponsiveHeaderProps {
     label: React.ReactNode;
     target?: React.HTMLAttributeAnchorTarget;
     leftIcon?: React.ReactNode;
+    hidden?: boolean;
   }[];
 }
 
@@ -118,7 +119,11 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   const [opened, toggleOpened] = useBooleanToggle(false);
   const [, setUserMenuOpened] = useState(false);
 
-  const Items = links.map(({ to, href, label, target, leftIcon }) => {
+  const Items = links.map(({ to, href, label, target, leftIcon, hidden = false }) => {
+    if (hidden) {
+      return null;
+    }
+
     if (to) {
       return (
         <Button<typeof Link>

@@ -6,10 +6,10 @@ import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
-import { ArrowBigUpLines, BrandGithub, Cpu, History, Home } from "tabler-icons-react";
+import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login } from "tabler-icons-react";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
-import { ResponsiveHeader } from "./components/Header";
+import { ResponsiveHeader } from "./components/ResponsiveHeader";
 import { commitSession, getSession } from "./sessions.server";
 
 export const meta: MetaFunction = () => ({
@@ -77,6 +77,7 @@ export default function App() {
                     },
                     { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} /> },
                     { to: "/history", label: "History", leftIcon: <History size={16} /> },
+                    { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
                     { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
                   ]}
                 />
