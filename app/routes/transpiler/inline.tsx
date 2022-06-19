@@ -147,7 +147,7 @@ export default function RemixerInline() {
             message: `It took ${(endDate.getTime() - startDate.getTime()) / 1000} seconds`,
           });
         } else if (submissionData.status === "failed") {
-          setOutputCode("");
+          setOutputCode(submissionData.reason);
 
           updateNotification({
             id: transpilationNotificationId,

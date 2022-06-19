@@ -135,6 +135,7 @@ export interface DownloadInlineSubmissionDataResponseDTO {
   target_size_bytes: number;
   processing_started_at: string;
   processing_finished_at: string;
+  reason: string;
 }
 
 export const downloadInlineSubmissionInput = (token: string | null, id: string) =>
