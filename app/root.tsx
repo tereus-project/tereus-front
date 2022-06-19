@@ -75,8 +75,8 @@ export default function App() {
                       label: user ? "Subscription" : "Pricing",
                       leftIcon: <ArrowBigUpLines size={16} />,
                     },
-                    { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} /> },
-                    { to: "/history", label: "History", leftIcon: <History size={16} /> },
+                    { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} />, hidden: !user },
+                    { to: "/history", label: "History", leftIcon: <History size={16} />, hidden: !user },
                     { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
                     { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
                   ]}
