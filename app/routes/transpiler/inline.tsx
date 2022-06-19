@@ -132,11 +132,11 @@ export default function RemixerInline() {
       } else if (submissionData) {
         setSubmissionStatus(submissionData.status);
 
+        const startDate = new Date(submissionData.processing_started_at);
+        const endDate = new Date(submissionData.processing_finished_at);
+
         if (submissionData.status === "done") {
           setOutputCode(atob(submissionData.data));
-
-          const startDate = new Date(submissionData.processing_started_at);
-          const endDate = new Date(submissionData.processing_finished_at);
 
           updateNotification({
             id: transpilationNotificationId,
@@ -144,6 +144,15 @@ export default function RemixerInline() {
             disallowClose: false,
             color: "green",
             title: "Transpilation success!",
+            message: `It took ${(endDate.getTime() - startDate.getTime()) / 1000} seconds`,
+          });
+        } else if (submissionData.status === "failed") {
+          updateNotification({
+            id: transpilationNotificationId,
+            autoClose: true,
+            disallowClose: false,
+            color: "red",
+            title: "An error occured!",
             message: `It took ${(endDate.getTime() - startDate.getTime()) / 1000} seconds`,
           });
         }
