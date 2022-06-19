@@ -74,6 +74,14 @@ int main() {
 `.trimStart(),
 };
 
+const SUBMISSION_STATUS_MAP: Record<api.SubmissionStatus, string> = {
+  pending: "Pending",
+  processing: "Processing",
+  failed: "Failed",
+  done: "Done",
+  cleaned: "Cleaned",
+};
+
 export default function RemixerInline() {
   const csrf = useAuthenticityToken();
 
@@ -83,7 +91,7 @@ export default function RemixerInline() {
   const [isTranspiling, setIsTranspiling] = useState(false);
   const [transpilationNotificationId, setTranspilationNotificationId] = useState<string>("");
   const [outputCode, setOutputCode] = useState("");
-  const [submissionStatus, setSubmissionStatus] = useState("Pending");
+  const [submissionStatus, setSubmissionStatus] = useState<api.SubmissionStatus>("pending");
 
   let sourceCode = new URLSearchParams(location.search).get("i");
   if (sourceCode) {
@@ -273,7 +281,7 @@ export default function RemixerInline() {
                 visible={props.isSubmitting || isTranspiling}
                 loader={
                   <Group>
-                    <Loader /> {submissionStatus}...
+                    <Loader /> {SUBMISSION_STATUS_MAP[submissionStatus]}...
                   </Group>
                 }
               />
