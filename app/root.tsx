@@ -3,6 +3,7 @@ import { ColorSchemeProvider, MantineProvider, Stack } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
@@ -46,6 +47,10 @@ export const loader: LoaderFunction = async ({ request }) => {
       "Set-Cookie": await commitSession(session),
     },
   });
+};
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) => {
+  return !!submission && submission.method !== "GET";
 };
 
 export interface TereusContext {

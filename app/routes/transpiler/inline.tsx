@@ -15,7 +15,8 @@ import { showNotification, updateNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher, useLocation, useNavigate } from "@remix-run/react";
+import type { ShouldReloadFunction } from "@remix-run/react";
+import { useFetcher, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
 import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import debounce from "lodash/debounce";
@@ -66,6 +67,14 @@ export const action: ActionFunction = async ({ request }) => {
   return json({ response, errors });
 };
 
+export const unstable_shouldReload: ShouldReloadFunction = ({ url, prevUrl }) => {
+  if (url.searchParams.get("i") !== prevUrl.searchParams.get("i")) {
+    return false;
+  }
+
+  return false;
+};
+
 const DEFAULT_SOURCE_CODES = {
   c: `
 int main() {
@@ -85,6 +94,7 @@ const SUBMISSION_STATUS_MAP: Record<api.SubmissionStatus, string> = {
 export default function RemixerInline() {
   const csrf = useAuthenticityToken();
 
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -93,7 +103,7 @@ export default function RemixerInline() {
   const [outputCode, setOutputCode] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<api.SubmissionStatus>("pending");
 
-  let sourceCode = new URLSearchParams(location.search).get("i");
+  let sourceCode = searchParams.get("i");
   if (sourceCode) {
     try {
       sourceCode = atob(decodeURIComponent(sourceCode));
@@ -103,9 +113,7 @@ export default function RemixerInline() {
   }
 
   const updateInputQueryParam = debounce((value: string | undefined) => {
-    const searchParams = new URLSearchParams(location.search);
     searchParams.set("i", encodeURIComponent(btoa(value ?? "")));
-
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 

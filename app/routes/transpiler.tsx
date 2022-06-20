@@ -1,5 +1,6 @@
 import { Container, Tabs } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
+import type { ShouldReloadFunction } from "@remix-run/react";
 import { Link, Outlet, useHref, useLocation, useOutletContext } from "@remix-run/react";
 import { useLinkClickHandler } from "react-router-dom";
 import { Page } from "~/components/Page";
@@ -9,6 +10,10 @@ import { authGuard } from "~/utils/authGuard";
 export const loader: LoaderFunction = async ({ request }) => {
   await authGuard(request);
   return {};
+};
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) => {
+  return !!submission && submission.method !== "GET";
 };
 
 export default function Transpiler() {
@@ -33,7 +38,7 @@ export default function Transpiler() {
       <Container size="sm">
         <Tabs
           active={tabs.findIndex((tab) => tab.href === location.pathname)}
-          styles={(theme) => ({
+          styles={{
             tabControl: {
               padding: 0,
             },
@@ -49,7 +54,7 @@ export default function Transpiler() {
                 textDecoration: "inherit",
               },
             },
-          })}
+          }}
         >
           {tabs.map((tab) => (
             <Tabs.Tab key={tab.name} label={<Link to={tab.href}>{tab.name}</Link>} />
