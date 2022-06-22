@@ -7,6 +7,27 @@ import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
 import { authGuard } from "~/utils/authGuard";
 
+export const TRANSPILER_MAP = {
+  c: {
+    label: "C",
+    targets: [
+      {
+        label: "Go",
+        value: "go",
+      },
+    ],
+  },
+  lua: {
+    label: "Lua",
+    targets: [
+      {
+        label: "Ruby",
+        value: "ruby",
+      },
+    ],
+  },
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   await authGuard(request);
   return {};

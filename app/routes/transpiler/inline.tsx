@@ -28,6 +28,7 @@ import type { ActionFormData } from "~/api";
 import * as api from "~/api";
 import { getSession } from "~/sessions.server";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
+import { TRANSPILER_MAP } from "../transpiler";
 
 export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request);
@@ -75,11 +76,14 @@ export const unstable_shouldReload: ShouldReloadFunction = ({ url, prevUrl }) =>
   return false;
 };
 
-const DEFAULT_SOURCE_CODES = {
+const DEFAULT_SOURCE_CODES: Record<keyof typeof TRANSPILER_MAP, string> = {
   c: `
 int main() {
     printf("Hello, World!");
 }
+`.trimStart(),
+  lua: `
+a = 1 + 2
 `.trimStart(),
 };
 
@@ -210,7 +214,7 @@ export default function RemixerInline() {
   }, [transpilationFetcher]);
 
   type FormValues = {
-    sourceLanguage: string;
+    sourceLanguage: keyof typeof TRANSPILER_MAP;
     targetLanguage: string;
     sourceCode: string;
   };
@@ -234,7 +238,24 @@ export default function RemixerInline() {
             <Card shadow="sm" withBorder>
               <Field name="sourceLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["sourceLanguage"]>) => (
-                  <Select {...field} label="Source language" data={[{ value: "c", label: "C" }]} error={meta.error} />
+                  <Select
+                    {...field}
+                    label="Source language"
+                    data={Object.entries(TRANSPILER_MAP).map(([value, { label }]) => ({ value, label }))}
+                    error={meta.error}
+                    onChange={(value: keyof typeof TRANSPILER_MAP) => {
+                      props.setFieldValue("sourceLanguage", value);
+
+                      const isCurrentTargetLanguageAvailable = TRANSPILER_MAP[value].targets.some(
+                        (target) => target.value === props.values.targetLanguage
+                      );
+
+                      if (!isCurrentTargetLanguageAvailable) {
+                        props.setFieldValue("targetLanguage", TRANSPILER_MAP[value].targets[0].value);
+                        props.setFieldValue("sourceCode", DEFAULT_SOURCE_CODES[value]);
+                      }
+                    }}
+                  />
                 )}
               </Field>
 
@@ -242,7 +263,12 @@ export default function RemixerInline() {
 
               <Field name="targetLanguage" isRequired>
                 {({ field, meta }: FieldProps<FormValues["targetLanguage"]>) => (
-                  <Select {...field} label="Target language" data={[{ value: "go", label: "Go" }]} error={meta.error} />
+                  <Select
+                    {...field}
+                    label="Target language"
+                    data={TRANSPILER_MAP[props.values.sourceLanguage].targets}
+                    error={meta.error}
+                  />
                 )}
               </Field>
             </Card>
