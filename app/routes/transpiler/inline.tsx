@@ -69,7 +69,11 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const unstable_shouldReload: ShouldReloadFunction = ({ url, prevUrl }) => {
-  if (url.searchParams.get("i") !== prevUrl.searchParams.get("i")) {
+  if (
+    url.searchParams.get("i") !== prevUrl.searchParams.get("i") ||
+    url.searchParams.get("lang-src") !== prevUrl.searchParams.get("lang-src") ||
+    url.searchParams.get("lang-out") !== prevUrl.searchParams.get("lang-out")
+  ) {
     return false;
   }
 
@@ -107,17 +111,18 @@ export default function RemixerInline() {
   const [outputCode, setOutputCode] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<api.SubmissionStatus>("pending");
 
-  let sourceCode = searchParams.get("i");
-  if (sourceCode) {
-    try {
-      sourceCode = atob(decodeURIComponent(sourceCode));
-    } catch {
-      sourceCode = "";
-    }
-  }
-
   const updateInputQueryParam = debounce((value: string | undefined) => {
     searchParams.set("i", encodeURIComponent(btoa(value ?? "")));
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
+  }, 1000);
+
+  const updateSourceLanguageQueryParam = debounce((value: string | undefined) => {
+    searchParams.set("lang-src", encodeURIComponent(value ?? ""));
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
+  }, 1000);
+
+  const updateTargetLanguageQueryParam = debounce((value: string | undefined) => {
+    searchParams.set("lang-out", encodeURIComponent(value ?? ""));
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 
@@ -219,12 +224,34 @@ export default function RemixerInline() {
     sourceCode: string;
   };
 
+  let sourceLanguage = (searchParams.get("lang-src") ?? "c") as keyof typeof TRANSPILER_MAP;
+  let targetLanguage = searchParams.get("lang-out") ?? "go";
+
+  if (!(sourceLanguage in TRANSPILER_MAP)) {
+    sourceLanguage = "c";
+  }
+
+  if (!(targetLanguage in TRANSPILER_MAP[sourceLanguage])) {
+    targetLanguage = TRANSPILER_MAP[sourceLanguage].targets[0].value;
+  }
+
+  let sourceCode = searchParams.get("i");
+  if (sourceCode) {
+    try {
+      sourceCode = atob(decodeURIComponent(sourceCode));
+    } catch {}
+  }
+
+  if (!sourceCode) {
+    sourceCode = DEFAULT_SOURCE_CODES[sourceLanguage];
+  }
+
   return (
     <Formik<FormValues>
       initialValues={{
-        sourceLanguage: "c",
-        targetLanguage: "go",
-        sourceCode: sourceCode ?? DEFAULT_SOURCE_CODES["c"],
+        sourceLanguage,
+        targetLanguage,
+        sourceCode,
       }}
       onSubmit={(values, actions) => {
         setSubmissionStatus("pending");
@@ -243,16 +270,21 @@ export default function RemixerInline() {
                     label="Source language"
                     data={Object.entries(TRANSPILER_MAP).map(([value, { label }]) => ({ value, label }))}
                     error={meta.error}
-                    onChange={(value: keyof typeof TRANSPILER_MAP) => {
-                      props.setFieldValue("sourceLanguage", value);
+                    onChange={(sourceLanguage: keyof typeof TRANSPILER_MAP) => {
+                      props.setFieldValue("sourceLanguage", sourceLanguage);
+                      updateSourceLanguageQueryParam(sourceLanguage);
 
-                      const isCurrentTargetLanguageAvailable = TRANSPILER_MAP[value].targets.some(
+                      const isCurrentTargetLanguageAvailable = TRANSPILER_MAP[sourceLanguage].targets.some(
                         (target) => target.value === props.values.targetLanguage
                       );
 
                       if (!isCurrentTargetLanguageAvailable) {
-                        props.setFieldValue("targetLanguage", TRANSPILER_MAP[value].targets[0].value);
-                        props.setFieldValue("sourceCode", DEFAULT_SOURCE_CODES[value]);
+                        const targetLanguage = TRANSPILER_MAP[sourceLanguage].targets[0].value;
+
+                        props.setFieldValue("targetLanguage", targetLanguage);
+                        props.setFieldValue("sourceCode", DEFAULT_SOURCE_CODES[sourceLanguage]);
+
+                        updateTargetLanguageQueryParam(targetLanguage);
                       }
                     }}
                   />
@@ -268,6 +300,11 @@ export default function RemixerInline() {
                     label="Target language"
                     data={TRANSPILER_MAP[props.values.sourceLanguage].targets}
                     error={meta.error}
+                    onChange={(targetLanguage: string) => {
+                      props.setFieldValue("targetLanguage", targetLanguage);
+
+                      updateTargetLanguageQueryParam(targetLanguage);
+                    }}
                   />
                 )}
               </Field>
