@@ -1,3 +1,4 @@
+import type { Session } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import * as api from "~/api";
 import { getSession } from "~/sessions.server";
@@ -15,7 +16,12 @@ function redirectToLogin(request: Request, errors?: string[]) {
   return redirect(`/login?${searchParams.toString()}`);
 }
 
-export const authGuard: Guard<string> = async (request: Request) => {
+export interface AuthGuardResult {
+  token: string;
+  session: Session;
+}
+
+export const authGuard: Guard<AuthGuardResult> = async (request: Request) => {
   const session = await getSession(request);
 
   if (!session.has("token")) {
@@ -27,5 +33,8 @@ export const authGuard: Guard<string> = async (request: Request) => {
     throw redirectToLogin(request, errors);
   }
 
-  return session.get("token");
+  return {
+    token: session.get("token"),
+    session,
+  };
 };

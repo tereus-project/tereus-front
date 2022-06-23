@@ -4,7 +4,7 @@ import * as api from "~/api";
 import { authGuard } from "~/utils/authGuard";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const token = await authGuard(request);
+  const { token } = await authGuard(request);
 
   const [, errors, res] = await api.downloadSubmission(token, params.id!);
 

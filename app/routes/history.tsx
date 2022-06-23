@@ -15,7 +15,7 @@ interface LoaderResponse {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const token = await authGuard(request);
+  const { token } = await authGuard(request);
   const url = new URL(request.url);
 
   const page = url.searchParams.get("page");

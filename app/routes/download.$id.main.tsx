@@ -11,7 +11,7 @@ export type DownloadSubmissionMainOutputLoaderResponse = ActionFormDataEnsured<{
 }>;
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const token = await authGuard(request);
+  const { token } = await authGuard(request);
 
   const [submissionData, errors, res] = await api.downloadInlineSubmissionOutput(token, params.id!);
   return json<DownloadSubmissionMainOutputLoaderResponse>(

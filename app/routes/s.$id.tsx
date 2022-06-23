@@ -16,7 +16,7 @@ export type SharedSubmissionLoaderResponse = ActionFormData<{
 }>;
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const token = await authGuard(request).catch(() => null);
+  const { token } = await authGuard(request).catch(() => null);
 
   const [inputResponse, inputErrors] = await api.downloadInlineSubmissionInput(token, params.id!);
   if (inputErrors) {
