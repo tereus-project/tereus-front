@@ -126,7 +126,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
 
     return (
       <Button<typeof Link | "a">
-        key={`header-link-${to}`}
+        key={`header-link-${to ?? href}`}
         variant="subtle"
         component={to ? Link : "a"}
         to={to!}
