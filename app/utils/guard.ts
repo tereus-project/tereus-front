@@ -1,1 +1,1 @@
-export type Guard<T> = (request: Request) => Promise<T>;
+export type Guard<T, P extends unknown[] = []> = (request: Request, ...args: P) => Promise<T>;

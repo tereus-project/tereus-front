@@ -28,7 +28,7 @@ interface LoaderResponse {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
-  const csrf = createAuthenticityToken(session);
+  const csrf = session.get("csrf") ?? createAuthenticityToken(session);
 
   const data: LoaderResponse = {
     csrf,

@@ -9,7 +9,7 @@ import {
   Loader,
   LoadingOverlay,
   Select,
-  Stack,
+  Stack
 } from "@mantine/core";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
@@ -22,21 +22,18 @@ import { Field, Form, Formik } from "formik";
 import debounce from "lodash/debounce";
 import uniqueId from "lodash/uniqueId";
 import { useEffect, useState } from "react";
-import { useAuthenticityToken, verifyAuthenticityToken } from "remix-utils";
+import { useAuthenticityToken } from "remix-utils";
 import { Exchange } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { getSession } from "~/sessions.server";
+import { authGuard } from "~/utils/authGuard";
+import { csrfGuard } from "~/utils/csrfGuard";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 import { TRANSPILER_MAP } from "../transpiler";
 
 export const action: ActionFunction = async ({ request }) => {
-  const session = await getSession(request);
-  await verifyAuthenticityToken(request, session);
-
-  if (!session.has("token")) {
-    return json({ errors: ["Not logged in"] });
-  }
+  const { token, session } = await authGuard(request);
+  await csrfGuard(request, session);
 
   const values = await request.formData();
 
@@ -63,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
     {
       source_code: sourceCode,
     },
-    session.get("token")
+    token
   );
   return json({ response, errors });
 };
