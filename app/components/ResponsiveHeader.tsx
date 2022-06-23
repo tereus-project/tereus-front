@@ -124,29 +124,22 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
       return null;
     }
 
-    if (to) {
-      return (
-        <Button<typeof Link>
-          key={`header-link-${to}`}
-          variant="subtle"
-          component={Link}
-          to={to}
-          target={target}
-          className={cx(classes.link)}
-          leftIcon={leftIcon}
-          onClick={() => {
-            toggleOpened(false);
-          }}
-        >
-          {label}
-        </Button>
-      );
-    }
-
     return (
-      <a key={`header-link-${href}`} href={href} target={target} className={cx(classes.link)}>
+      <Button<typeof Link | "a">
+        key={`header-link-${to}`}
+        variant="subtle"
+        component={to ? Link : "a"}
+        to={to!}
+        href={href!}
+        target={target}
+        className={cx(classes.link)}
+        leftIcon={leftIcon}
+        onClick={() => {
+          toggleOpened(false);
+        }}
+      >
         {label}
-      </a>
+      </Button>
     );
   });
 
