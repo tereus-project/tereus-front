@@ -7,7 +7,7 @@ import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
-import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login } from "tabler-icons-react";
+import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login, Notebook } from "tabler-icons-react";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
 import { ResponsiveHeader } from "./components/ResponsiveHeader";
@@ -83,6 +83,12 @@ export default function App() {
                     { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} />, hidden: !user },
                     { to: "/history", label: "History", leftIcon: <History size={16} />, hidden: !user },
                     { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
+                    {
+                      href: "https://tereus-docs.pages.dev/",
+                      label: "Documentation",
+                      leftIcon: <Notebook size={16} />,
+                      target: "_blank",
+                    },
                     { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
                   ]}
                 />
