@@ -9,7 +9,7 @@ import {
   Loader,
   LoadingOverlay,
   Select,
-  Stack
+  Stack,
 } from "@mantine/core";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
