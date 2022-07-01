@@ -1,5 +1,5 @@
 import { Button, Group, Stack, Text, Title } from "@mantine/core";
-import { useOutletContext } from "@remix-run/react";
+import { Link, useOutletContext } from "@remix-run/react";
 import prettyBytes from "pretty-bytes";
 import { ReportMoney, Settings } from "tabler-icons-react";
 import type { TereusContext } from "~/root";
@@ -24,7 +24,7 @@ export default function AccountSettingsBilling() {
         </Stack>
       </Group>
       <Group>
-        <Button component={"a"} href="" target="_blank" variant="light" color="blue" leftIcon={<Settings />}>
+        <Button component={Link} to="/pricing" variant="light" color="blue" leftIcon={<Settings />}>
           Manage subscription
         </Button>
         <Button component={"a"} href="" target="_blank" variant="light" color="blue" leftIcon={<ReportMoney />}>
