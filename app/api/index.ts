@@ -63,14 +63,16 @@ export const validateToken = (token: string) =>
     raw: true,
   });
 
+export interface SubscriptionDTO {
+  tier: string;
+  expires_at: string;
+  cancelled: boolean;
+}
+
 export interface GetCurrentUserResponseDTO {
   id: string;
   email: string;
-  subscription?: {
-    tier: string;
-    expires_at: string;
-    cancelled: boolean;
-  };
+  subscription?: SubscriptionDTO;
   current_usage_bytes: number;
 }
 
