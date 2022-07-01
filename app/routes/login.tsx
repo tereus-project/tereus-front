@@ -6,29 +6,42 @@ import { Page } from "~/components/Page";
 
 type LoaderData = {
   githubLoginUrl: string;
+  gitlabLoginUrl: string;
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  let githubLoginUrl = `https://github.com/login/oauth/authorize?scope=user:email%20repo%20gist&client_id=${process.env.GITHUB_OAUTH2_CLIENT_ID}`;
-
-  const queries = new URL(request.url).searchParams;
-  const to = queries.get("to");
-
+export function getRedirectUri(provider: "github" | "gitlab", origin: URL, to: string | null) {
   const searchParams = new URLSearchParams();
 
   if (to) {
-    searchParams.append("to", to);
+    searchParams.set("to", to);
   }
 
   if (process.env.FRONT_URL) {
-    githubLoginUrl += `&redirect_uri=${process.env.FRONT_URL}/auth/github?${searchParams.toString()}`;
-  } else if (process.env.NODE_ENV === "development") {
-    const url = new URL(request.url);
-    githubLoginUrl += `&redirect_uri=http://127.0.0.1:${url.port}/auth/github?${searchParams.toString()}`;
+    return `http://${process.env.FRONT_URL}/auth/${provider}?${searchParams.toString()}`;
   }
+
+  return `http://127.0.0.1:${origin.port}/auth/${provider}?${searchParams.toString()}`;
+}
+
+const AUTHORIZE_URLS = {
+  github: "https://github.com/login/oauth/authorize?scope=user:email%20repo%20gist",
+  gitlab: "https://gitlab.com/oauth/authorize?scope=read_api%20read_user%20read_repository&response_type=code",
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const to = url.searchParams.get("to");
+
+  let githubLoginUrl = `${AUTHORIZE_URLS.github}&client_id=${
+    process.env.GITHUB_OAUTH2_CLIENT_ID
+  }&redirect_uri=${getRedirectUri("github", url, to)}`;
+  let gitlabLoginUrl = `${AUTHORIZE_URLS.gitlab}&client_id=${
+    process.env.GITLAB_OAUTH2_CLIENT_ID
+  }&redirect_uri=${getRedirectUri("gitlab", url, to)}`;
 
   return {
     githubLoginUrl,
+    gitlabLoginUrl,
   } as LoaderData;
 };
 
@@ -54,7 +67,7 @@ export default function Login() {
             </Button>
           </Anchor>
 
-          <Anchor href={loaderData.githubLoginUrl}>
+          <Anchor href={loaderData.gitlabLoginUrl}>
             <Button fullWidth leftIcon={<BrandGitlab />} color="blue">
               Continue with GitLab
             </Button>

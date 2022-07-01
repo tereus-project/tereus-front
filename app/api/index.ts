@@ -40,18 +40,30 @@ export const transpile = {
     }),
 };
 
+export interface AuthResponseDTO {
+  token: string;
+}
+
 export interface AuthGithubDTO {
   code: string;
 }
 
-export interface AuthGithubResponseDTO {
-  token: string;
-}
-
 export const authGithub = (body: AuthGithubDTO) =>
-  request<AuthGithubResponseDTO>({
+  request<AuthResponseDTO>({
     method: "POST",
     url: `/auth/login/github`,
+    body,
+  });
+
+export interface AuthGitlabDTO {
+  code: string;
+  redirect_uri: string;
+}
+
+export const authGitlab = (body: AuthGitlabDTO) =>
+  request<AuthResponseDTO>({
+    method: "POST",
+    url: `/auth/login/gitlab`,
     body,
   });
 
