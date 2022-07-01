@@ -147,11 +147,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   return (
     <Header height={HEADER_HEIGHT} className={classes.root}>
       <div className={classes.header}>
-        <Group
-          sx={{
-            height: "100%",
-          }}
-        >
+        <Group>
           <Image height="40px" src="/images/logo.png" />
           <Box>Tereus</Box>
         </Group>

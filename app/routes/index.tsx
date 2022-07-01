@@ -111,7 +111,11 @@ export default function Index() {
         </div>
       </Container>
 
-      <Container>
+      <Container
+        sx={{
+          height: "500px",
+        }}
+      >
         <AnimatedTerminal />
       </Container>
     </Page>

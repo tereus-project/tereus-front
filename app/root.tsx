@@ -10,6 +10,7 @@ import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils"
 import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login, Notebook } from "tabler-icons-react";
 import * as api from "~/api";
 import { Document } from "~/components/Document";
+import { ResponsiveFooter } from "./components/ResponsiveFooter";
 import { ResponsiveHeader } from "./components/ResponsiveHeader";
 import { commitSession, getSession } from "./sessions.server";
 
@@ -85,7 +86,7 @@ export default function App() {
                     { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
                     {
                       href: "https://tereus-docs.pages.dev/",
-                      label: "Documentation",
+                      label: "Docs",
                       leftIcon: <Notebook size={16} />,
                       target: "_blank",
                     },
@@ -97,6 +98,39 @@ export default function App() {
                   context={{
                     user,
                   }}
+                />
+
+                <ResponsiveFooter
+                  data={[
+                    {
+                      title: "About",
+                      links: [
+                        {
+                          label: "The team",
+                          to: "/team",
+                        },
+                        {
+                          label: "Contact",
+                          href: "mailto:contact@tereus.dev",
+                        },
+                      ],
+                    },
+                    {
+                      title: "Project",
+                      links: [
+                        {
+                          label: "Documentation",
+                          href: "https://tereus-docs.pages.dev/",
+                          target: "_blank",
+                        },
+                        {
+                          label: "GitHub",
+                          href: "https://github.com/tereus-project",
+                          target: "_blank",
+                        },
+                      ],
+                    },
+                  ]}
                 />
               </Stack>
             </NotificationsProvider>
