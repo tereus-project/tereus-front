@@ -6,6 +6,7 @@ import {
   Divider,
   Group,
   Header,
+  Image,
   Menu,
   Paper,
   Transition,
@@ -146,7 +147,15 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   return (
     <Header height={HEADER_HEIGHT} className={classes.root}>
       <div className={classes.header}>
-        <Box>Tereus</Box>
+        <Group
+          sx={{
+            height: "100%",
+          }}
+        >
+          <Image height="40px" src="/images/logo.png" />
+          <Box>Tereus</Box>
+        </Group>
+
         <Group spacing={5} className={classes.links}>
           {Items}
 
