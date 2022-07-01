@@ -15,11 +15,11 @@ export function Page({ children, title, subtitle, containerSize, containerFluid,
     <main>
       <Container size={containerSize} fluid={containerFluid} mb={18}>
         <Container size={headerSize ?? containerSize} px={0} fluid={headerFluid}>
-          <Stack mb={14} spacing={2}>
+          <Stack mb={14} spacing={20}>
             <Title order={1}>{title}</Title>
             {subtitle && (
               <Title
-                order={2}
+                order={4}
                 sx={(theme) => ({
                   color: theme.colors.gray[5],
                 })}
