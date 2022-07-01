@@ -128,7 +128,7 @@ export function ResponsiveFooter({ data }: ResponsiveFooterProps) {
 
   return (
     <footer className={classes.footer}>
-      <Container className={classes.inner} sx={{ position: "relative", left: 0, right: 0 }}>
+      <Container className={classes.inner}>
         <div className={classes.logo}>
           <Group>
             <Image height="40px" src="/images/logo.png" />
