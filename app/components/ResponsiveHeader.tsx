@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Box,
   Burger,
   Button,
@@ -147,10 +148,12 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   return (
     <Header height={HEADER_HEIGHT} className={classes.root}>
       <div className={classes.header}>
-        <Group>
-          <Image height="40px" src="/images/logo.png" />
-          <Box>Tereus</Box>
-        </Group>
+        <Anchor variant="text" component={Link} to="/">
+          <Group>
+            <Image height="40px" src="/images/logo.png" />
+            <Box>Tereus</Box>
+          </Group>
+        </Anchor>
 
         <Group spacing={5} className={classes.links}>
           {Items}
