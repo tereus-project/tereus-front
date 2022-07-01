@@ -30,7 +30,7 @@ const TEAM_MEMBERS = [
 export default function Team() {
   return (
     <Page title="The team">
-      <Group sx={{ width: "100%" }} position="center">
+      <Group sx={{ width: "100%", padding: "3em" }} position="center">
         {TEAM_MEMBERS.map((member) => (
           <Card key={member.name} shadow="sm" sx={{ width: 340 }}>
             <Group sx={{ width: "100%" }}>
@@ -86,7 +86,9 @@ export default function Team() {
       </Group>
 
       <Box mt={46}>
-        <Title order={2}>Who we are</Title>
+        <Title order={2} sx={{ marginBottom: "2em" }}>
+          Who we are
+        </Title>
 
         <Text>
           We are two students majoring in Computer Science, more precisely in Software Engineering. Tereus is our last
