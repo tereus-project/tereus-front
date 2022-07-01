@@ -102,7 +102,7 @@ export default function Index() {
               variant="default"
               color="gray"
             >
-              Get started
+              Start transpiling
             </Button>
             <Button component={Link} to="/pricing" className={classes.control} size="lg">
               Upgrade to Pro
