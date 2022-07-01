@@ -1,7 +1,7 @@
-import { Alert, Button, Group, Stack, Title } from "@mantine/core";
+import { Alert, Button, Group, Modal, Stack, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, Download, InfoCircle, Trash } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 
@@ -17,7 +17,6 @@ export default function AccountSettingsProfile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteUserFetcher]);
-
   const downloadUserExport = async () => {
     const res = await fetch(`/settings/data/export`);
 
@@ -40,6 +39,8 @@ export default function AccountSettingsProfile() {
     }
   };
 
+  const [modalOpened, setModalOpened] = useState(false);
+
   return (
     <Stack spacing={64}>
       <Stack>
@@ -60,6 +61,36 @@ export default function AccountSettingsProfile() {
           </Button>
         </Group>
       </Stack>
+
+      <Modal centered opened={modalOpened} onClose={() => setModalOpened(false)} title="Delete account confirmation">
+        <Stack>
+          <Alert icon={<AlertCircle size={16} />} color="red">
+            Deleting your account is permanent and cannot be undone. Make sure you have a backup of your data before
+            proceeding!
+          </Alert>
+
+          <Group>
+            <Button
+              variant="outline"
+              color="red"
+              leftIcon={<Trash size={16} />}
+              onClick={() => {
+                deleteUserFetcher.submit(
+                  {},
+                  {
+                    action: `/settings/data/delete`,
+                    replace: true,
+                    method: "post",
+                  }
+                );
+              }}
+            >
+              Yes, I want to delete my account
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
       <Stack>
         <Title order={4}>Delete account</Title>
         <Alert icon={<AlertCircle size={16} />} color="red">
@@ -68,21 +99,7 @@ export default function AccountSettingsProfile() {
         </Alert>
 
         <Group>
-          <Button
-            variant="outline"
-            color="red"
-            leftIcon={<Trash size={16} />}
-            onClick={() => {
-              deleteUserFetcher.submit(
-                {},
-                {
-                  action: `/settings/data/delete`,
-                  replace: true,
-                  method: "post",
-                }
-              );
-            }}
-          >
+          <Button variant="outline" color="red" leftIcon={<Trash size={16} />} onClick={() => setModalOpened(true)}>
             Delete account
           </Button>
         </Group>
