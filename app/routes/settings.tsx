@@ -11,7 +11,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
-import { Link, Outlet, useOutletContext } from "@remix-run/react";
+import { Link, Outlet, useMatches, useOutletContext } from "@remix-run/react";
 import { useState } from "react";
 import { ReportMoney, ShieldLock, Table, User } from "tabler-icons-react";
 import { Page } from "~/components/Page";
@@ -36,6 +36,8 @@ export default function AccountSettings() {
     { icon: <Table size={16} />, color: "violet", label: "Data", to: "/settings/data" },
   ];
 
+  const matches = useMatches();
+
   return (
     <Page title="Settings">
       <AppShell
@@ -53,6 +55,7 @@ export default function AccountSettings() {
                     padding: theme.spacing.xs,
                     borderRadius: theme.radius.sm,
                     color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
+                    fontWeight: matches[2].pathname === item.to ? "bold" : "normal",
 
                     "&:hover": {
                       backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
