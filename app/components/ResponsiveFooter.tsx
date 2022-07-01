@@ -5,7 +5,7 @@ import type { To } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   footer: {
-    marginTop: 120,
+    marginTop: 0,
     paddingTop: theme.spacing.xl * 2,
     paddingBottom: theme.spacing.xl * 2,
     backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
@@ -128,7 +128,7 @@ export function ResponsiveFooter({ data }: ResponsiveFooterProps) {
 
   return (
     <footer className={classes.footer}>
-      <Container className={classes.inner}>
+      <Container className={classes.inner} sx={{ position: "relative", left: 0, right: 0 }}>
         <div className={classes.logo}>
           <Group>
             <Image height="40px" src="/images/logo.png" />

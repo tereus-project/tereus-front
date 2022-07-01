@@ -13,7 +13,7 @@ export type PageProps = React.PropsWithChildren<{
 export function Page({ children, title, subtitle, containerSize, containerFluid, headerSize, headerFluid }: PageProps) {
   return (
     <main>
-      <Container size={containerSize} fluid={containerFluid} mb={18}>
+      <Container size={containerSize} fluid={containerFluid} mb={18} sx={{ minHeight: "calc(100vh - 300px)" }}>
         <Container size={headerSize ?? containerSize} px={0} fluid={headerFluid}>
           <Stack mb={14} spacing={20}>
             <Title order={1}>{title}</Title>
