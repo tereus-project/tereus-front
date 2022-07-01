@@ -17,7 +17,7 @@ export function getRedirectUri(provider: "github" | "gitlab", origin: URL, to: s
   }
 
   if (process.env.FRONT_URL) {
-    return `http://${process.env.FRONT_URL}/auth/${provider}?${searchParams.toString()}`;
+    return `${process.env.FRONT_URL}/auth/${provider}?${searchParams.toString()}`;
   }
 
   return `http://127.0.0.1:${origin.port}/auth/${provider}?${searchParams.toString()}`;
