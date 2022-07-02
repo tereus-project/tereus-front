@@ -5,9 +5,9 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { ErrorList } from "~/components/ErrorAlert";
+import { ErrorList } from "~/components/ErrorList";
 import { Page } from "~/components/Page";
-import { authGuard } from "~/utils/authGuard";
+import { authGuardMaybe } from "~/utils/authGuard.server";
 
 export type SharedSubmissionLoaderResponse = ActionFormData<{
   submissionId: string;
@@ -16,9 +16,7 @@ export type SharedSubmissionLoaderResponse = ActionFormData<{
 }>;
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const { token } = await authGuard(request).catch(() => ({
-    token: null,
-  }));
+  const { token } = await authGuardMaybe(request);
 
   const [inputResponse, inputErrors] = await api.downloadInlineSubmissionInput(token, params.id!);
   if (inputErrors) {

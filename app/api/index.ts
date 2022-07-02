@@ -48,11 +48,12 @@ export interface AuthGithubDTO {
   code: string;
 }
 
-export const authGithub = (body: AuthGithubDTO) =>
+export const authGithub = (token: string | null, body: AuthGithubDTO) =>
   request<AuthResponseDTO>({
     method: "POST",
     url: `/auth/login/github`,
     body,
+    token,
   });
 
 export interface AuthGitlabDTO {
@@ -60,11 +61,12 @@ export interface AuthGitlabDTO {
   redirect_uri: string;
 }
 
-export const authGitlab = (body: AuthGitlabDTO) =>
+export const authGitlab = (token: string | null, body: AuthGitlabDTO) =>
   request<AuthResponseDTO>({
     method: "POST",
     url: `/auth/login/gitlab`,
     body,
+    token,
   });
 
 export const validateToken = (token: string) =>
@@ -92,6 +94,18 @@ export const getCurrentUser = (token: string) =>
   request<GetCurrentUserResponseDTO>({
     method: "GET",
     url: `/users/me`,
+    token,
+  });
+
+export interface GetCurrentUserLinkedAccountsResponseDTO {
+  github: boolean;
+  gitlab: boolean;
+}
+
+export const getCurrentUserLinkedAccounts = (token: string) =>
+  request<GetCurrentUserLinkedAccountsResponseDTO>({
+    method: "GET",
+    url: `/users/me/linked-accounts`,
     token,
   });
 

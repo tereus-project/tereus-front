@@ -4,10 +4,10 @@ import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import * as api from "~/api";
-import { ErrorList } from "~/components/ErrorAlert";
+import { ErrorList } from "~/components/ErrorList";
 import { HistoryEntry } from "~/components/history/HistoryEntry";
 import { Page } from "~/components/Page";
-import { authGuard } from "~/utils/authGuard";
+import { authGuard } from "~/utils/authGuard.server";
 
 interface LoaderResponse {
   response: api.GetUserSubmissionsResponseDTO | null;

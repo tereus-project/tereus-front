@@ -3,45 +3,20 @@ import type { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { AlertCircle, BrandGithub, BrandGitlab } from "tabler-icons-react";
 import { Page } from "~/components/Page";
+import { getAuthorizeUrl } from "~/utils/oauth2.server";
 
 type LoaderData = {
   githubLoginUrl: string;
   gitlabLoginUrl: string;
 };
 
-export function getRedirectUri(provider: "github" | "gitlab", origin: URL, to: string | null) {
-  const searchParams = new URLSearchParams();
-
-  if (to) {
-    searchParams.set("to", to);
-  }
-
-  if (process.env.FRONT_URL) {
-    return `${process.env.FRONT_URL}/auth/${provider}?${searchParams.toString()}`;
-  }
-
-  return `http://127.0.0.1:${origin.port}/auth/${provider}?${searchParams.toString()}`;
-}
-
-const AUTHORIZE_URLS = {
-  github: "https://github.com/login/oauth/authorize?scope=user:email%20repo%20gist",
-  gitlab: "https://gitlab.com/oauth/authorize?scope=read_api%20read_user%20read_repository&response_type=code",
-};
-
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const to = url.searchParams.get("to");
 
-  let githubLoginUrl = `${AUTHORIZE_URLS.github}&client_id=${
-    process.env.GITHUB_OAUTH2_CLIENT_ID
-  }&redirect_uri=${getRedirectUri("github", url, to)}`;
-  let gitlabLoginUrl = `${AUTHORIZE_URLS.gitlab}&client_id=${
-    process.env.GITLAB_OAUTH2_CLIENT_ID
-  }&redirect_uri=${getRedirectUri("gitlab", url, to)}`;
-
   return {
-    githubLoginUrl,
-    gitlabLoginUrl,
+    githubLoginUrl: getAuthorizeUrl("github", url, to),
+    gitlabLoginUrl: getAuthorizeUrl("gitlab", url, to),
   } as LoaderData;
 };
 

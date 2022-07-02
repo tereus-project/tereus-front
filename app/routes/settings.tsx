@@ -16,7 +16,7 @@ import { useState } from "react";
 import { ReportMoney, ShieldLock, Table, User } from "tabler-icons-react";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
-import { authGuard } from "~/utils/authGuard";
+import { authGuard } from "~/utils/authGuard.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await authGuard(request);

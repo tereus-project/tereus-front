@@ -5,7 +5,7 @@ import { Link, Outlet, useHref, useLocation, useOutletContext } from "@remix-run
 import { useLinkClickHandler } from "react-router-dom";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
-import { authGuard } from "~/utils/authGuard";
+import { authGuard } from "~/utils/authGuard.server";
 
 export const TRANSPILER_MAP = {
   c: {

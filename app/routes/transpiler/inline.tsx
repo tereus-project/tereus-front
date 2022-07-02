@@ -26,8 +26,8 @@ import { useAuthenticityToken } from "remix-utils";
 import { Exchange } from "tabler-icons-react";
 import type { ActionFormData } from "~/api";
 import * as api from "~/api";
-import { authGuard } from "~/utils/authGuard";
-import { csrfGuard } from "~/utils/csrfGuard";
+import { authGuard } from "~/utils/authGuard.server";
+import { csrfGuard } from "~/utils/csrfGuard.server";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 import { TRANSPILER_MAP } from "../transpiler";
 

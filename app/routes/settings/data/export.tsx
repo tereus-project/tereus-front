@@ -1,7 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import * as api from "~/api";
-import { authGuard } from "~/utils/authGuard";
+import { authGuard } from "~/utils/authGuard.server";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const { token } = await authGuard(request);
