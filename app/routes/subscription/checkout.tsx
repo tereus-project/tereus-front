@@ -1,6 +1,6 @@
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import * as api from "~/api";
+import * as api from "~/api.server";
 import { getSession } from "~/sessions.server";
 
 export const action: ActionFunction = async ({ request }) => {

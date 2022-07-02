@@ -19,10 +19,10 @@ export function getRedirectUri(provider: OAuth2Provider, origin: URL, to: string
   }
 
   if (process.env.FRONT_URL) {
-    return `${process.env.FRONT_URL}/auth/${provider}?${searchParams.toString()}`;
+    return `${process.env.FRONT_URL}/auth/login/${provider}?${searchParams.toString()}`;
   }
 
-  return `http://127.0.0.1:${origin.port}/auth/${provider}?${searchParams.toString()}`;
+  return `http://127.0.0.1:${origin.port}/auth/login/${provider}?${searchParams.toString()}`;
 }
 
 export function getAuthorizeUrl(provider: OAuth2Provider, origin: URL, to: string | null) {

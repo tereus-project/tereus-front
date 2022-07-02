@@ -8,7 +8,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login, Notebook } from "tabler-icons-react";
-import * as api from "~/api";
+import * as api from "~/api.server";
 import { Document } from "~/components/Document";
 import { ResponsiveFooter } from "./components/ResponsiveFooter";
 import { ResponsiveHeader } from "./components/ResponsiveHeader";

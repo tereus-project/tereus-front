@@ -18,7 +18,7 @@ import { Link } from "@remix-run/react";
 import React, { useState } from "react";
 import type { To } from "react-router-dom";
 import { ChevronDown, Logout, PlayerPause, Settings, SwitchHorizontal, Trash } from "tabler-icons-react";
-import type { GetCurrentUserResponseDTO } from "~/api";
+import type { GetCurrentUserResponseDTO } from "~/api.server";
 import { UserAvatar } from "./UserAvatar";
 
 const HEADER_HEIGHT = 60;

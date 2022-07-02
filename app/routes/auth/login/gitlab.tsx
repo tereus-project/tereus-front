@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import * as api from "~/api";
+import * as api from "~/api.server";
 import { commitSession, getSession } from "~/sessions.server";
 import { authGuardMaybe } from "~/utils/authGuard.server";
 import { csrfGuard } from "~/utils/csrfGuard.server";
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   }
 
-  const [data, errors] = await api.authGitlab(token, {
+  const [data, errors] = await api.authLoginGitlab(token, {
     code,
     redirect_uri: getRedirectUri("gitlab", url, to),
   });

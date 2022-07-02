@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import * as api from "~/api";
+import * as api from "~/api.server";
 import { commitSession, getSession } from "~/sessions.server";
 import { authGuardMaybe } from "~/utils/authGuard.server";
 import { csrfGuard } from "~/utils/csrfGuard.server";
@@ -42,7 +42,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   }
 
-  const [data, errors] = await api.authGithub(token, { code });
+  const [data, errors] = await api.authLoginGithub(token, { code });
 
   if (errors) {
     searchParams.append("error", errors[0]);

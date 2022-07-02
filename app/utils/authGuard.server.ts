@@ -1,6 +1,6 @@
 import type { Session } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import * as api from "~/api";
+import * as api from "~/api.server";
 import { getSession } from "~/sessions.server";
 import type { Guard } from "./guard";
 

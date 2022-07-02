@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { AlertCircle, Download, InfoCircle, Trash } from "tabler-icons-react";
-import type { ActionFormData } from "~/api";
+import type { ActionFormData } from "~/api.server";
 
 export default function AccountSettingsProfile() {
   const deleteUserFetcher = useFetcher<ActionFormData<null>>();
@@ -17,6 +17,7 @@ export default function AccountSettingsProfile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteUserFetcher]);
+
   const downloadUserExport = async () => {
     const res = await fetch(`/settings/data/export`);
 
@@ -62,7 +63,7 @@ export default function AccountSettingsProfile() {
         </Group>
       </Stack>
 
-      <Modal centered opened={modalOpened} onClose={() => setModalOpened(false)} title="Delete account confirmation">
+      <Modal opened={modalOpened} onClose={() => setModalOpened(false)} title="Delete account confirmation">
         <Stack>
           <Alert icon={<AlertCircle size={16} />} color="red">
             Deleting your account is permanent and cannot be undone. Make sure you have a backup of your data before

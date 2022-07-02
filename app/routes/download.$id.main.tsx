@@ -1,7 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import * as api from "~/api";
-import type { ActionFormDataEnsured } from "~/api";
+import * as api from "~/api.server";
+import type { ActionFormDataEnsured } from "~/api.server";
 import { authGuard } from "~/utils/authGuard.server";
 
 export type DownloadSubmissionMainOutputLoaderResponse = ActionFormDataEnsured<{

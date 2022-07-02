@@ -1,6 +1,6 @@
-import request from "~/api/request";
+import request from "~/api.server/request";
 
-export * from "~/api/utils";
+export * from "~/api.server/utils";
 
 export interface TranspileGitDTO {
   git_repo: string;
@@ -40,32 +40,50 @@ export const transpile = {
     }),
 };
 
-export interface AuthResponseDTO {
+export interface LoginResponseDTO {
   token: string;
 }
 
-export interface AuthGithubDTO {
+export interface RevokeResponseDTO {
+  success: boolean;
+}
+
+export interface LoginGithubBodyDTO {
   code: string;
 }
 
-export const authGithub = (token: string | null, body: AuthGithubDTO) =>
-  request<AuthResponseDTO>({
+export const authLoginGithub = (token: string | null, body: LoginGithubBodyDTO) =>
+  request<LoginResponseDTO>({
     method: "POST",
     url: `/auth/login/github`,
     body,
     token,
   });
 
-export interface AuthGitlabDTO {
+export const authRevokeGithub = (token: string) =>
+  request<RevokeResponseDTO>({
+    method: "POST",
+    url: `/auth/revoke/github`,
+    token,
+  });
+
+export interface LoginGitlabBodyDTO {
   code: string;
   redirect_uri: string;
 }
 
-export const authGitlab = (token: string | null, body: AuthGitlabDTO) =>
-  request<AuthResponseDTO>({
+export const authLoginGitlab = (token: string | null, body: LoginGitlabBodyDTO) =>
+  request<LoginResponseDTO>({
     method: "POST",
     url: `/auth/login/gitlab`,
     body,
+    token,
+  });
+
+export const authRevokeGitlab = (token: string) =>
+  request<RevokeResponseDTO>({
+    method: "POST",
+    url: `/auth/revoke/gitlab`,
     token,
   });
 

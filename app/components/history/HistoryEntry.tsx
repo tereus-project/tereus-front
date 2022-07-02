@@ -6,7 +6,7 @@ import debounce from "lodash/debounce";
 import prettyBytes from "pretty-bytes";
 import { useEffect, useState } from "react";
 import { ChevronDown, Copy, Share, ShareOff, Trash } from "tabler-icons-react";
-import type * as api from "~/api";
+import type * as api from "~/api.server";
 
 export type HistoryEntryProps = {
   submission: api.SubmissionDTO;
