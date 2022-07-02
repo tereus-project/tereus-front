@@ -14,9 +14,11 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { useBooleanToggle } from "@mantine/hooks";
-import { Link } from "@remix-run/react";
-import React, { useState } from "react";
+import { Link, useFetcher } from "@remix-run/react";
+import React, { useEffect, useState } from "react";
 import type { To } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuthenticityToken } from "remix-utils";
 import { ChevronDown, Logout, PlayerPause, Settings, SwitchHorizontal, Trash } from "tabler-icons-react";
 import type { GetCurrentUserResponseDTO } from "~/api.server";
 import { UserAvatar } from "./UserAvatar";
@@ -118,8 +120,20 @@ export interface ResponsiveHeaderProps {
 export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   const { classes, cx } = useStyles();
 
+  const csrf = useAuthenticityToken();
+  const navigate = useNavigate();
+
   const [opened, toggleOpened] = useBooleanToggle(false);
   const [, setUserMenuOpened] = useState(false);
+
+  const logoutFetcher = useFetcher();
+  const logout = () => logoutFetcher.submit({ csrf }, { method: "post", action: "/auth/logout" });
+  useEffect(() => {
+    if (logoutFetcher.type === "done") {
+      navigate("/login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logoutFetcher]);
 
   const Items = links.map(({ to, href, label, target, leftIcon, hidden = false }) => {
     if (hidden) {
@@ -179,9 +193,9 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
               <Menu.Item icon={<Settings size={14} />} component={Link} to="/settings/profile">
                 Account settings
               </Menu.Item>
-              <Link to="/auth/logout">
-                <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
-              </Link>
+              <Menu.Item icon={<Logout size={14} />} onClick={logout}>
+                Logout
+              </Menu.Item>
               <Divider />
 
               <Menu.Label>Danger zone</Menu.Label>

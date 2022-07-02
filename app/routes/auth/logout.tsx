@@ -1,14 +1,20 @@
-import type { LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { commitSession, getSession } from "~/sessions.server";
+import { csrfGuard } from "~/utils/csrfGuard.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request);
+  await csrfGuard(request, session);
+
   session.unset("token");
 
-  return redirect("/login", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+  return json(
+    { success: true },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    }
+  );
 };
