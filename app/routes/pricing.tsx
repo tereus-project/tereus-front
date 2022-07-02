@@ -31,7 +31,7 @@ const plans: Plan[] = [
       "Inline transpilation": "full",
       "Zip transpilation": "no",
       "Git repository transpilation": "no",
-      "Data retention": "no",
+      "Data retention (24h only)": "partial",
       "Active support": "no",
     },
   },
