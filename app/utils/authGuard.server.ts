@@ -39,9 +39,11 @@ export const authGuard: Guard<AuthGuardResult> = async (request: Request) => {
   };
 };
 
-export const authGuardMaybe: Guard<AuthGuardResult | Record<keyof AuthGuardResult, null>> = async (request: Request) => {
+export const authGuardMaybe: Guard<AuthGuardResult | Record<keyof AuthGuardResult, null>> = async (
+  request: Request
+) => {
   return authGuard(request).catch(() => ({
     token: null,
     session: null,
   }));
-}
+};

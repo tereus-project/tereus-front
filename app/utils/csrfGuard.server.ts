@@ -3,7 +3,11 @@ import { json } from "@remix-run/node";
 import { verifyAuthenticityToken } from "remix-utils";
 import type { Guard } from "./guard";
 
-export const csrfGuard: Guard<void, [Session, (string | null)?]> = async (request: Request, session: Session, value?: string | null) => {
+export const csrfGuard: Guard<void, [Session, (string | null)?]> = async (
+  request: Request,
+  session: Session,
+  value?: string | null
+) => {
   try {
     if (value) {
       const token = session.get("csrf");
