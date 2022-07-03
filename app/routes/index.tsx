@@ -204,7 +204,8 @@ export default function Index() {
 
       <Group
         position="center"
-        p={32}
+        px="md"
+        py={64}
         sx={{
           backgroundColor: theme.colors.gray[0],
         }}
