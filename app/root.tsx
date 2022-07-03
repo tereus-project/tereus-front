@@ -65,6 +65,8 @@ export default function App() {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
+  console.log(user);
+
   return (
     <AuthenticityTokenProvider token={csrf}>
       <Document>
@@ -78,7 +80,7 @@ export default function App() {
                     { to: "/", label: "Home", leftIcon: <Home size={16} /> },
                     {
                       to: "/pricing",
-                      label: user ? "Subscription" : "Pricing",
+                      label: user && user?.subscription ? "Subscription" : "Pricing",
                       leftIcon: <ArrowBigUpLines size={16} />,
                     },
                     { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} />, hidden: !user },
