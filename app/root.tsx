@@ -1,5 +1,5 @@
 import type { ColorScheme } from "@mantine/core";
-import { ColorSchemeProvider, MantineProvider, Stack } from "@mantine/core";
+import { ColorSchemeProvider, MantineProvider, Space } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -73,68 +73,68 @@ export default function App() {
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
-              <Stack>
-                <ResponsiveHeader
-                  user={user}
-                  links={[
-                    { to: "/", label: "Home", leftIcon: <Home size={16} /> },
-                    {
-                      to: "/pricing",
-                      label: user && user?.subscription ? "Subscription" : "Pricing",
-                      leftIcon: <ArrowBigUpLines size={16} />,
-                    },
-                    { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} />, hidden: !user },
-                    { to: "/history", label: "History", leftIcon: <History size={16} />, hidden: !user },
-                    { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
-                    {
-                      href: "https://tereus-docs.pages.dev/",
-                      label: "Docs",
-                      leftIcon: <Notebook size={16} />,
-                      target: "_blank",
-                    },
-                    { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
-                  ]}
-                />
+              <ResponsiveHeader
+                user={user}
+                links={[
+                  { to: "/", label: "Home", leftIcon: <Home size={16} /> },
+                  {
+                    to: "/pricing",
+                    label: user && user?.subscription ? "Subscription" : "Pricing",
+                    leftIcon: <ArrowBigUpLines size={16} />,
+                  },
+                  { to: "/transpiler/inline", label: "Transpiler", leftIcon: <Cpu size={16} />, hidden: !user },
+                  { to: "/history", label: "History", leftIcon: <History size={16} />, hidden: !user },
+                  { to: "/login", label: "Login", leftIcon: <Login size={16} />, hidden: !!user },
+                  {
+                    href: "https://tereus-docs.pages.dev/",
+                    label: "Docs",
+                    leftIcon: <Notebook size={16} />,
+                    target: "_blank",
+                  },
+                  { href: "https://github.com/tereus-project", label: <BrandGithub size={16} />, target: "_blank" },
+                ]}
+              />
 
-                <Outlet
-                  context={{
-                    user,
-                  }}
-                />
+              <Space h="md" />
 
-                <ResponsiveFooter
-                  data={[
-                    {
-                      title: "About",
-                      links: [
-                        {
-                          label: "The team",
-                          to: "/team",
-                        },
-                        {
-                          label: "Contact",
-                          href: "mailto:contact@tereus.dev",
-                        },
-                      ],
-                    },
-                    {
-                      title: "Project",
-                      links: [
-                        {
-                          label: "Documentation",
-                          href: "https://tereus-docs.pages.dev/",
-                          target: "_blank",
-                        },
-                        {
-                          label: "GitHub",
-                          href: "https://github.com/tereus-project",
-                          target: "_blank",
-                        },
-                      ],
-                    },
-                  ]}
-                />
-              </Stack>
+              <Outlet
+                context={{
+                  user,
+                }}
+              />
+
+              <ResponsiveFooter
+                data={[
+                  {
+                    title: "About",
+                    links: [
+                      {
+                        label: "The team",
+                        to: "/team",
+                      },
+                      {
+                        label: "Contact",
+                        href: "mailto:contact@tereus.dev",
+                      },
+                    ],
+                  },
+                  {
+                    title: "Project",
+                    links: [
+                      {
+                        label: "Documentation",
+                        href: "https://tereus-docs.pages.dev/",
+                        target: "_blank",
+                      },
+                      {
+                        label: "GitHub",
+                        href: "https://github.com/tereus-project",
+                        target: "_blank",
+                      },
+                    ],
+                  },
+                ]}
+              />
             </NotificationsProvider>
           </MantineProvider>
         </ColorSchemeProvider>

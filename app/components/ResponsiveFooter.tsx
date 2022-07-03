@@ -8,7 +8,7 @@ const useStyles = createStyles((theme) => ({
     marginTop: 0,
     paddingTop: theme.spacing.xl * 2,
     paddingBottom: theme.spacing.xl * 2,
-    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
+    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[1],
     borderTop: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]}`,
   },
 
