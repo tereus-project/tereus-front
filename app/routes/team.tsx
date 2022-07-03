@@ -34,7 +34,7 @@ export default function Team() {
         {TEAM_MEMBERS.map((member) => (
           <Card key={member.name} shadow="sm" sx={{ width: 340 }}>
             <Group sx={{ width: "100%" }}>
-              <Image src={member.avatar} height={96} width={96} alt={member.name} />
+              <Image src={member.avatar} height={96} width={96} radius="lg" alt={member.name} />
 
               <Stack>
                 <Stack spacing={0}>
