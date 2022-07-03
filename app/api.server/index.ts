@@ -155,6 +155,7 @@ export interface SubmissionDTO {
   share_id: string;
   source_size_bytes: number;
   target_size_bytes: number;
+  duration: number;
 }
 
 export const getUserSubmissions = (token: string, page: number) =>

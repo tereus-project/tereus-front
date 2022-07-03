@@ -44,6 +44,7 @@ export default function History() {
           <tr>
             <th>ID</th>
             <th>Created at</th>
+            <th>Duration</th>
             <th>Source</th>
             <th>Target</th>
             <th>Download</th>
