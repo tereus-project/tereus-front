@@ -109,7 +109,7 @@ export default function RemixerInline() {
   const [submissionStatus, setSubmissionStatus] = useState<api.SubmissionStatus>("pending");
 
   const updateInputQueryParam = debounce((value: string | undefined) => {
-    searchParams.set("i", encodeURIComponent(btoa(value ?? "")));
+    searchParams.set("i", encodeURIComponent(btoa(escape(value ?? ""))));
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 
@@ -150,7 +150,7 @@ export default function RemixerInline() {
         const endDate = new Date(submissionData.processing_finished_at);
 
         if (submissionData.status === "done") {
-          setOutputCode(atob(submissionData.data));
+          setOutputCode(atob(unescape(submissionData.data)));
 
           updateNotification({
             id: transpilationNotificationId,
