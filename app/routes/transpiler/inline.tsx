@@ -30,6 +30,7 @@ import { authGuard } from "~/utils/authGuard.server";
 import { csrfGuard } from "~/utils/csrfGuard.server";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 import { TRANSPILER_MAP } from "../transpiler";
+import { compressToBase64, decompressFromBase64 } from "lz-string";
 
 export const action: ActionFunction = async ({ request }) => {
   const { token, session } = await authGuard(request);
@@ -109,7 +110,7 @@ export default function RemixerInline() {
   const [submissionStatus, setSubmissionStatus] = useState<api.SubmissionStatus>("pending");
 
   const updateInputQueryParam = debounce((value: string | undefined) => {
-    searchParams.set("i", encodeURIComponent(btoa(escape(value ?? ""))));
+    searchParams.set("i", encodeURIComponent(compressToBase64(value ?? "")));
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true, state: { scroll: false } });
   }, 1000);
 
@@ -235,7 +236,7 @@ export default function RemixerInline() {
   let sourceCode = searchParams.get("i");
   if (sourceCode) {
     try {
-      sourceCode = unescape(atob(decodeURIComponent(sourceCode)));
+      sourceCode = decompressFromBase64(decodeURIComponent(sourceCode));
     } catch {}
   }
 
