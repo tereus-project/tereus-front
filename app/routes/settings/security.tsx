@@ -34,7 +34,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json<LoaderResponse>({
     response: {
       githubOauth2SettingsUrl: `https://github.com/settings/connections/applications/${process.env.GITHUB_OAUTH2_CLIENT_ID}`,
-      githubLoginUrl: `${getAuthorizeUrl("github", url, url.pathname)}`,
+      githubLoginUrl: getAuthorizeUrl("github", url, url.pathname),
       gitlabLoginUrl: getAuthorizeUrl("gitlab", url, url.pathname),
       linkedAccounts,
     },

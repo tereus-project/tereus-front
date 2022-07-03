@@ -65,8 +65,6 @@ export default function App() {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
-  console.log(user);
-
   return (
     <AuthenticityTokenProvider token={csrf}>
       <Document>

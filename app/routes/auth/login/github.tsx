@@ -28,18 +28,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const session = await getSession(request);
 
-  if (token) {
-    try {
-      await csrfGuard(request, session, queries.get("state"));
-    } catch (e) {
-      searchParams.append("error", "Invalid CSRF token");
+  try {
+    await csrfGuard(request, session, queries.get("state"));
+  } catch (e) {
+    searchParams.append("error", "Invalid CSRF token");
 
-      if (token) {
-        return redirect(`/settings/security?${searchParams.toString()}`);
-      }
-
-      return redirect(`/login?${searchParams.toString()}`);
+    if (token) {
+      return redirect(`/settings/security?${searchParams.toString()}`);
     }
+
+    return redirect(`/login?${searchParams.toString()}`);
   }
 
   const [data, errors] = await api.authLoginGithub(token, { code });

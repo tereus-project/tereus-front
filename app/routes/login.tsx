@@ -2,6 +2,7 @@ import { Alert, Anchor, Button, Card, Stack } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
+import { useAuthenticityToken } from "remix-utils";
 import { AlertCircle, BrandGithub, BrandGitlab } from "tabler-icons-react";
 import { Page } from "~/components/Page";
 import { authGuardMaybe } from "~/utils/authGuard.server";
@@ -29,6 +30,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Login() {
+  const csrf = useAuthenticityToken();
+
   const loaderData = useLoaderData<LoaderData>();
   const [searchParams] = useSearchParams();
 
@@ -44,13 +47,13 @@ export default function Login() {
 
       <Card shadow="sm" withBorder>
         <Stack>
-          <Anchor href={loaderData.githubLoginUrl}>
+          <Anchor href={`${loaderData.githubLoginUrl}&state=${csrf}`}>
             <Button fullWidth leftIcon={<BrandGithub />} color="blue">
               Continue with GitHub
             </Button>
           </Anchor>
 
-          <Anchor href={loaderData.gitlabLoginUrl}>
+          <Anchor href={`${loaderData.gitlabLoginUrl}&state=${csrf}`}>
             <Button fullWidth leftIcon={<BrandGitlab />} color="blue">
               Continue with GitLab
             </Button>
