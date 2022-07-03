@@ -131,7 +131,7 @@ export function ResponsiveFooter({ data }: ResponsiveFooterProps) {
       <Container className={classes.inner}>
         <div className={classes.logo}>
           <Group>
-            <Image height="40px" src="/images/logo.png" />
+            <Image height="40px" width="40px" src="/images/logo.png" />
             <Box>Tereus</Box>
           </Group>
         </div>
