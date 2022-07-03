@@ -150,7 +150,7 @@ export default function RemixerInline() {
         const endDate = new Date(submissionData.processing_finished_at);
 
         if (submissionData.status === "done") {
-          setOutputCode(atob(unescape(submissionData.data)));
+          setOutputCode(atob(submissionData.data));
 
           updateNotification({
             id: transpilationNotificationId,
@@ -235,7 +235,7 @@ export default function RemixerInline() {
   let sourceCode = searchParams.get("i");
   if (sourceCode) {
     try {
-      sourceCode = atob(decodeURIComponent(sourceCode));
+      sourceCode = unescape(atob(decodeURIComponent(sourceCode)));
     } catch {}
   }
 
