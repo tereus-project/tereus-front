@@ -24,49 +24,93 @@ const VARIANTS: Variant[] = [
   {
     sourceLanguage: "c",
     sourceCode: `
-#include <stdio.h>
+  #include <stdio.h>
 
-int main() {
-  printf("Hello, World!");
-  return 0;
-}
-`.trim(),
+  int main() {
+    printf("Hello, World!");
+    return 0;
+  }
+  `.trim(),
     targetLanguage: "go",
     targetCode: `
-package main
+  package main
 
-import (
-	"fmt"
-	"os"
-)
+  import (
+  	"fmt"
+  	"os"
+  )
 
-func main() {
-	fmt.Printf("Hello, World!")
-	os.Exit(0)
-}
-`.trim(),
+  func main() {
+  	fmt.Printf("Hello, World!")
+  	os.Exit(0)
+  }
+  `.trim(),
   },
   {
     sourceLanguage: "c",
     sourceCode: `
-#include <stdio.h>
+  #include <stdio.h>
 
-int fib(int n)
-{
-    if (n <= 1)
-        return n;
-    return fib(n - 1) + fib(n - 2);
+  int fib(int n)
+  {
+      if (n <= 1)
+          return n;
+      return fib(n - 1) + fib(n - 2);
+  }
+  `.trim(),
+    targetLanguage: "go",
+    targetCode: `
+  package main
+
+  func fib(n int) int {
+  	if n <= 1 {
+  		return n
+  	}
+  	return fib(n-1) + fib(n-2)
+  }
+  `.trim(),
+  },
+  {
+    sourceLanguage: "c",
+    sourceCode: `
+double Pow(double x, int n) {
+  // init
+  double sum = 1.0;
+
+  int sign = n < 0 ? -1 : 1;
+  unsigned int nn = (unsigned int) n * sign;
+
+  while (nn) {
+    if (nn & 1) {
+      sum *= x;
+    }
+    nn >>= 1;
+    x *= x;
+  }
+
+  return sign == 1 ? sum : 1.0 / sum;
 }
 `.trim(),
     targetLanguage: "go",
     targetCode: `
 package main
 
-func fib(n int) int {
-	if n <= 1 {
-		return n
-	}
-	return fib(n-1) + fib(n-2)
+import "github.com/tereus-project/tereus-transpiler-c-go/libc"
+
+func Pow(x float64, n int) float64 {
+  // init
+  sum := float64(1.0)
+  sign := libc.Ternary(n < 0, func() int { return -1 }, func() int { return 1 })
+  nn := uint(n) * uint(sign)
+
+  for nn {
+    if nn & uint(1) {
+      sum *= x
+    }
+    nn >>= uint(1)
+    x *= x
+  }
+  return libc.Ternary(sign == 1, func() float64 { return sum }, func() float32 { return 1.0 / float32(sum) })
 }
 `.trim(),
   },
