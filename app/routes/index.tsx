@@ -204,10 +204,11 @@ export default function Index() {
 
       <Group
         position="center"
-        p="md"
+        p={32}
         sx={{
           backgroundColor: theme.colors.gray[0],
         }}
+        spacing={24}
       >
         {OPINIONS.map((opinion) => (
           <Card
