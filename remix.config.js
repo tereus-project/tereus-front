@@ -8,5 +8,13 @@ module.exports = {
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
   // devServerPort: 8002,
-  serverDependenciesToBundle: [/^rehype.*/, /^remark.*/, /^unified.*/, /^vfile.*/, /^unist.*/, /^pretty-bytes.*/],
+  serverDependenciesToBundle: [
+    /^rehype.*/,
+    /^remark.*/,
+    /^unified.*/,
+    /^vfile.*/,
+    /^unist.*/,
+    /^pretty-bytes.*/,
+    /@sentry\/.*/,
+  ],
 };
