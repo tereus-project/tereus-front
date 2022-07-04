@@ -20,6 +20,7 @@ export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "Tereus",
   viewport: "width=device-width,initial-scale=1",
+  description: "Tereus code transpilation service",
 });
 
 interface LoaderResponse {
