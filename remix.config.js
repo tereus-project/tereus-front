@@ -15,6 +15,6 @@ module.exports = {
     /^vfile.*/,
     /^unist.*/,
     /^pretty-bytes.*/,
-    /@sentry\/.*/,
+    /^@sentry\/.*/,
   ],
 };
