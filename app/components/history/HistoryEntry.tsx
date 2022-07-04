@@ -1,4 +1,4 @@
-import { Button, Group } from "@mantine/core";
+import { Button, Code, createStyles, Group, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useFetcher } from "@remix-run/react";
 import { formatDistance, parseJSON } from "date-fns";
@@ -13,6 +13,12 @@ export type HistoryEntryProps = {
   onChange: (submission: api.SubmissionDTO) => void;
   onClean: (submission: api.SubmissionDTO) => void;
 };
+
+const useStyles = createStyles((theme, _params, getRef) => ({
+  error: {
+    padding: "1em 2em !important",
+  },
+}));
 
 export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProps) {
   const [collapsed, setCollapsed] = useState(false);
@@ -82,6 +88,8 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cleanFetcher]);
+
+  const { classes } = useStyles();
 
   return (
     <>
@@ -218,15 +226,11 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
 
       {submission.status === "failed" && (
         <tr hidden={!collapsed}>
-          <td colSpan={6}>
-            {/* <Heading mb={4} size="lg">
-              Reason
-            </Heading>
-            <UnorderedList mb={2}>
-              {submission.reason.split("\n").map((line, i) => (
-                <ListItem key={`reason-${i}`}>{line}</ListItem>
-              ))}
-            </UnorderedList> */}
+          <td className={classes.toto} colSpan={6}>
+            <Title pb={"sm"} order={4}>
+              Error
+            </Title>
+            <Code block>{submission.reason}</Code>
           </td>
         </tr>
       )}
