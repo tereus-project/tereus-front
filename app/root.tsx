@@ -9,6 +9,7 @@ import { useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login, Notebook } from "tabler-icons-react";
 import * as api from "~/api.server";
+import type { DocumentProps } from "~/components/Document";
 import { Document } from "~/components/Document";
 import { ResponsiveFooter } from "./components/ResponsiveFooter";
 import { ResponsiveHeader } from "./components/ResponsiveHeader";
@@ -23,7 +24,8 @@ export const meta: MetaFunction = () => ({
 interface LoaderResponse {
   csrf: string;
   user: api.GetCurrentUserResponseDTO | null;
-  cloudflareAnalyticsToken?: string;
+  cloudflareAnalyticsToken?: DocumentProps["cloudflareAnalyticsToken"];
+  umamiAnalytics?: DocumentProps["umamiAnalytics"];
 
   errors: string[] | null;
 }
@@ -31,11 +33,18 @@ interface LoaderResponse {
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
   const csrf = session.get("csrf") ?? createAuthenticityToken(session);
-
+  console.log(process.env);
   const data: LoaderResponse = {
     csrf,
     user: null,
     cloudflareAnalyticsToken: process.env.CLOUDFLARE_ANALYTICS_TOKEN,
+    umamiAnalytics:
+      process.env.UMAMI_WEBSITE_ID && process.env.UMAMI_SCRIPT
+        ? {
+            dataWebsiteId: process.env.UMAMI_WEBSITE_ID,
+            script: process.env.UMAMI_SCRIPT,
+          }
+        : undefined,
     errors: null,
   };
 
@@ -61,7 +70,7 @@ export interface TereusContext {
 }
 
 export default function App() {
-  const { user, csrf, cloudflareAnalyticsToken } = useLoaderData<LoaderResponse>();
+  const { user, csrf, cloudflareAnalyticsToken, umamiAnalytics } = useLoaderData<LoaderResponse>();
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -69,7 +78,7 @@ export default function App() {
 
   return (
     <AuthenticityTokenProvider token={csrf}>
-      <Document cloudflareAnalyticsToken={cloudflareAnalyticsToken}>
+      <Document cloudflareAnalyticsToken={cloudflareAnalyticsToken} umamiAnalytics={umamiAnalytics}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
