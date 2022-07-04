@@ -21,16 +21,17 @@ import type { FieldProps } from "formik";
 import { Field, Form, Formik } from "formik";
 import debounce from "lodash/debounce";
 import uniqueId from "lodash/uniqueId";
+import { compressToBase64, decompressFromBase64 } from "lz-string";
 import { useEffect, useState } from "react";
 import { useAuthenticityToken } from "remix-utils";
 import { Exchange } from "tabler-icons-react";
 import type { ActionFormData } from "~/api.server";
 import * as api from "~/api.server";
 import { authGuard } from "~/utils/authGuard.server";
+import { realisticConfettis } from "~/utils/confetti.client";
 import { csrfGuard } from "~/utils/csrfGuard.server";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 import { TRANSPILER_MAP } from "../transpiler";
-import { compressToBase64, decompressFromBase64 } from "lz-string";
 
 export const action: ActionFunction = async ({ request }) => {
   const { token, session } = await authGuard(request);
@@ -151,7 +152,8 @@ export default function RemixerInline() {
         const endDate = new Date(submissionData.processing_finished_at);
 
         if (submissionData.status === "done") {
-          setOutputCode(atob(submissionData.data));
+          const outputCode = atob(submissionData.data);
+          setOutputCode(outputCode);
 
           updateNotification({
             id: transpilationNotificationId,
@@ -161,6 +163,10 @@ export default function RemixerInline() {
             title: "Transpilation success!",
             message: `It took ${(endDate.getTime() - startDate.getTime()) / 1000} seconds`,
           });
+
+          if (/(sananes)|(ecalle)|(20\/20)/gi.test(outputCode ?? "")) {
+            realisticConfettis();
+          }
         } else if (submissionData.status === "failed") {
           setOutputCode(submissionData.reason);
 
