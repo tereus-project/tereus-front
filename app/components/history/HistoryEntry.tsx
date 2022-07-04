@@ -101,7 +101,9 @@ export function HistoryEntry({ submission, onChange, onClean }: HistoryEntryProp
       >
         <td>{submission.id}</td>
         <td>{formatDistance(parseJSON(submission.created_at), new Date(), { addSuffix: true })}</td>
-        <td>{submission.status === "pending" ? "-" : Math.ceil((submission.duration / 1000000000) * 1000) / 1000}s</td>
+        <td>
+          {submission.status === "pending" ? "-" : Math.ceil((submission.duration / 1000000000) * 1000) / 1000 + "s"}
+        </td>
         <td>
           {submission.source_language} ({prettyBytes(submission.source_size_bytes)})
         </td>
