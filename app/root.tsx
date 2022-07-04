@@ -4,8 +4,9 @@ import { NotificationsProvider } from "@mantine/notifications";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { ShouldReloadFunction } from "@remix-run/react";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { Outlet, useLoaderData, useLocation, useMatches } from "@remix-run/react";
+import * as Sentry from "@sentry/remix";
+import { useEffect, useState } from "react";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 import { ArrowBigUpLines, BrandGithub, Cpu, History, Home, Login, Notebook } from "tabler-icons-react";
 import * as api from "~/api.server";
@@ -26,6 +27,7 @@ interface LoaderResponse {
   user: api.GetCurrentUserResponseDTO | null;
   cloudflareAnalyticsToken?: DocumentProps["cloudflareAnalyticsToken"];
   umamiAnalytics?: DocumentProps["umamiAnalytics"];
+  sentryDsn?: string;
 
   errors: string[] | null;
 }
@@ -33,7 +35,7 @@ interface LoaderResponse {
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
   const csrf = session.get("csrf") ?? createAuthenticityToken(session);
-  console.log(process.env);
+
   const data: LoaderResponse = {
     csrf,
     user: null,
@@ -45,6 +47,8 @@ export const loader: LoaderFunction = async ({ request }) => {
             script: process.env.UMAMI_SCRIPT,
           }
         : undefined,
+    sentryDsn: process.env.SENTRY_DSN,
+
     errors: null,
   };
 
@@ -70,7 +74,29 @@ export interface TereusContext {
 }
 
 export default function App() {
-  const { user, csrf, cloudflareAnalyticsToken, umamiAnalytics } = useLoaderData<LoaderResponse>();
+  const { user, csrf, cloudflareAnalyticsToken, umamiAnalytics, sentryDsn } = useLoaderData<LoaderResponse>();
+
+  if (typeof document !== "undefined") {
+    Sentry.init({
+      dsn: sentryDsn,
+      tracesSampleRate: 1,
+      integrations: [
+        new Sentry.BrowserTracing({
+          routingInstrumentation: Sentry.remixRouterInstrumentation(useEffect, useLocation, useMatches),
+        }),
+      ],
+    });
+
+    Sentry.configureScope((scope) => {
+      if (user) {
+        scope.setUser({
+          id: user.id,
+        });
+      } else {
+        scope.setUser(null);
+      }
+    });
+  }
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
   const toggleColorScheme = (value?: ColorScheme) =>
