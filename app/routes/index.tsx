@@ -84,7 +84,7 @@ const useStyles = createStyles((theme) => ({
 const OPINIONS = [
   {
     name: "Frédéric Sananes",
-    avatar: "/images/opinions/frederic.png",
+    avatar: "/images/opinions/frederic.jpg",
     content: "20/20",
   },
   {
@@ -104,7 +104,7 @@ const OPINIONS = [
   },
   {
     name: "Kamal Hennou",
-    avatar: "/images/opinions/kamal.png",
+    avatar: "/images/opinions/kamal.jpg",
     content: "You can welcome a new shareholder to the team.",
   },
   {
@@ -119,13 +119,18 @@ const OPINIONS = [
   },
   {
     name: "Khalida Ouamar",
-    avatar: "/images/opinions/khalida.png",
+    avatar: "/images/opinions/khalida.jpg",
     content: "I'll invest all my money in this project when it's going on the market!",
   },
   {
     name: "Noé Larieu Lacoste",
     avatar: "/images/opinions/noe.jpg",
     content: "It's been a while since I started using it and it's the best tool I've ever used.",
+  },
+  {
+    name: "Swann Herrara",
+    avatar: "/images/opinions/swann.jpg",
+    content: "Tereus is so awesome! Is support for TypeScript to Rust coming soon?",
   },
   {
     name: "Rémy Machavoine",
@@ -143,6 +148,16 @@ const OPINIONS = [
     content: "During my work, I cannot imagine a more useful tool than Tereus.",
   },
   {
+    name: "Quentin Solard",
+    avatar: "/images/opinions/quentin.jpg",
+    content: "I use Tereus for converting my Arduino C++ code to Go code. It's really great!",
+  },
+  {
+    name: "Latif Sagna",
+    avatar: "/images/opinions/latif.jpg",
+    content: "Very efficient and fast. I'm going to learn Go with this tool!",
+  },
+  {
     name: "Maxime d'Harboullé",
     avatar: "/images/opinions/maxime.jpg",
     content: "Fast and easy to use, I can only recommend Tereus for your projects!",
@@ -151,6 +166,11 @@ const OPINIONS = [
     name: "Gwendal Siwiorek",
     avatar: "/images/opinions/gwendal.jpg",
     content: "Between two lines of code, I sometimes feel like I'm in the middle of a movie.",
+  },
+  {
+    name: "Julien Da Corte",
+    avatar: "/images/opinions/julien.jpg",
+    content: "We've been using Tereus for a while now and it's pretty cool.",
   },
 ];
 
