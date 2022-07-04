@@ -130,7 +130,7 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
   const logout = () => logoutFetcher.submit({ csrf }, { method: "post", action: "/auth/logout" });
   useEffect(() => {
     if (logoutFetcher.type === "done") {
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [logoutFetcher]);
