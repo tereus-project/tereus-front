@@ -23,6 +23,7 @@ export const meta: MetaFunction = () => ({
 interface LoaderResponse {
   csrf: string;
   user: api.GetCurrentUserResponseDTO | null;
+  cloudflareAnalyticsToken?: string;
 
   errors: string[] | null;
 }
@@ -34,6 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const data: LoaderResponse = {
     csrf,
     user: null,
+    cloudflareAnalyticsToken: process.env.CLOUDFLARE_ANALYTICS_TOKEN,
     errors: null,
   };
 
@@ -59,7 +61,7 @@ export interface TereusContext {
 }
 
 export default function App() {
-  const { user, csrf } = useLoaderData<LoaderResponse>();
+  const { user, csrf, cloudflareAnalyticsToken } = useLoaderData<LoaderResponse>();
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -67,7 +69,7 @@ export default function App() {
 
   return (
     <AuthenticityTokenProvider token={csrf}>
-      <Document>
+      <Document cloudflareAnalyticsToken={cloudflareAnalyticsToken}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
