@@ -1,6 +1,11 @@
 import { ActionIcon, Box, Card, Group, Image, Stack, Text, Title } from "@mantine/core";
+import type { MetaFunction } from "@remix-run/node";
 import { BrandGithub, BrandInstagram, BrandTwitter, World } from "tabler-icons-react";
 import { Page } from "~/components/Page";
+
+export const meta: MetaFunction = () => ({
+  title: "The team | Tereus",
+});
 
 const TEAM_MEMBERS = [
   {

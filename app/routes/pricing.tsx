@@ -1,5 +1,6 @@
 import { Alert, Badge, Button, Card, Grid, Group, List, Stack, Title, useMantineTheme } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import type { MetaFunction } from "@remix-run/node";
 import { Link, useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
@@ -12,6 +13,10 @@ import type {
 } from "~/api.server";
 import { Page } from "~/components/Page";
 import type { TereusContext } from "~/root";
+
+export const meta: MetaFunction = () => ({
+  title: "Pricing | Tereus",
+});
 
 type PlanTier = "free" | "pro" | "enterprise";
 

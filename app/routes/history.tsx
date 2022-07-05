@@ -1,5 +1,5 @@
 import { Group, Pagination, Table } from "@mantine/core";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
@@ -8,6 +8,10 @@ import { ErrorList } from "~/components/ErrorList";
 import { HistoryEntry } from "~/components/history/HistoryEntry";
 import { Page } from "~/components/Page";
 import { authGuard } from "~/utils/authGuard.server";
+
+export const meta: MetaFunction = () => ({
+  title: "History | Tereus",
+});
 
 interface LoaderResponse {
   response: api.GetUserSubmissionsResponseDTO | null;
