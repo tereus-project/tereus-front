@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   Container,
@@ -232,37 +233,49 @@ export default function Index() {
         <AnimatedTerminal />
       </Container>
 
-      <Group
-        position="center"
+      <Box
         px="md"
         py={64}
         sx={{
           backgroundColor: theme.colors.gray[0],
         }}
-        spacing={24}
       >
-        {OPINIONS.map((opinion) => (
-          <Card
-            shadow="sm"
-            key={opinion.name}
-            sx={{
-              maxWidth: "100%",
-              width: "450px",
-            }}
-          >
-            <Group sx={{ width: "100%" }} align="start">
-              <Image src={opinion.avatar} height={64} width={64} radius={50} alt={opinion.name} />
+        <Container size={1400}>
+          <Stack>
+            <Title order={2}>They love Tereus</Title>
 
-              <Stack spacing={0} sx={{ flex: 1 }}>
-                <Text weight={500}>{opinion.name}</Text>
-                <Text size="sm" color="gray">
-                  {opinion.content}
-                </Text>
-              </Stack>
+            <Group position="center" spacing={24}>
+              {OPINIONS.map((opinion) => (
+                <Card
+                  shadow="sm"
+                  key={opinion.name}
+                  sx={{
+                    maxWidth: "100%",
+                    width: "calc(100% - 12px)",
+                    "@media (min-width: 992px)": {
+                      width: "calc(50% - 12px)",
+                    },
+                    "@media (min-width: 1400px)": {
+                      width: "calc(33% - 12px)",
+                    },
+                  }}
+                >
+                  <Group sx={{ width: "100%" }} align="start">
+                    <Image src={opinion.avatar} height={64} width={64} radius={50} alt={opinion.name} />
+
+                    <Stack spacing={0} sx={{ flex: 1 }}>
+                      <Text weight={500}>{opinion.name}</Text>
+                      <Text size="sm" color="gray">
+                        {opinion.content}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Card>
+              ))}
             </Group>
-          </Card>
-        ))}
-      </Group>
+          </Stack>
+        </Container>
+      </Box>
     </main>
   );
 }
