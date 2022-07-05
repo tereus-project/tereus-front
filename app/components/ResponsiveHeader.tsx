@@ -170,7 +170,6 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
               width="40px"
               alt="Tereus logo"
               style={{
-                borderRadius: "50%",
                 minWidth: "40px !important",
                 minHeight: "40px !important",
                 maxWidth: "40px !important",
