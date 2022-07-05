@@ -253,6 +253,8 @@ export default function Index() {
                     <Image
                       src={opinion.avatar}
                       alt={opinion.name}
+                      height="64px"
+                      width="64px"
                       style={{
                         borderRadius: "50%",
                         minWidth: "64px !important",

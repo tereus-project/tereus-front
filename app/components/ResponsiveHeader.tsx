@@ -166,6 +166,8 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
           <Group>
             <Image
               src="/images/logo.png"
+              height="40px"
+              width="40px"
               style={{
                 borderRadius: "50%",
                 minWidth: "40px !important",
