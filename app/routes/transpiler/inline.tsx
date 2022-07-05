@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import Editor from "@monaco-editor/react";
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { useFetcher, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
@@ -32,6 +32,10 @@ import { realisticConfettis } from "~/utils/confetti.client";
 import { csrfGuard } from "~/utils/csrfGuard.server";
 import type { DownloadSubmissionMainOutputLoaderResponse } from "../download.$id.main";
 import { TRANSPILER_MAP } from "../transpiler";
+
+export const meta: MetaFunction = () => ({
+  title: "Inline | Transpiler | Tereus",
+});
 
 export const action: ActionFunction = async ({ request }) => {
   const { token, session } = await authGuard(request);

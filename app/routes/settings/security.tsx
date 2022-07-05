@@ -1,6 +1,6 @@
 import { Alert, Button, Group, Modal, Stack, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useSearchParams } from "@remix-run/react";
 import { useEffect, useMemo, useState } from "react";
@@ -13,6 +13,10 @@ import { authGuard } from "~/utils/authGuard.server";
 import { getAuthorizeUrl } from "~/utils/oauth2.server";
 import type { RevokeGithubResponse } from "../auth/revoke/github";
 import type { RevokeGitlabResponse } from "../auth/revoke/gitlab";
+
+export const meta: MetaFunction = () => ({
+  title: "Security | Settings | Tereus",
+});
 
 export type LoaderResponse = ActionFormData<{
   githubOauth2SettingsUrl: string;

@@ -1,9 +1,14 @@
 import { Alert, Button, Group, Modal, Stack, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import type { MetaFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { AlertCircle, Download, InfoCircle, Trash } from "tabler-icons-react";
 import type { ActionFormData } from "~/api.server";
+
+export const meta: MetaFunction = () => ({
+  title: "Data | Settings | Tereus",
+});
 
 export default function AccountSettingsProfile() {
   const deleteUserFetcher = useFetcher<ActionFormData<null>>();

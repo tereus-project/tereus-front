@@ -1,11 +1,16 @@
 import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import type { MetaFunction } from "@remix-run/node";
 import { Link, useFetcher, useOutletContext } from "@remix-run/react";
 import prettyBytes from "pretty-bytes";
 import { useEffect, useState } from "react";
 import { ReportMoney, Settings } from "tabler-icons-react";
-import type { ActionFormData, CreateBillingPortalResponseDTO, SubscriptionDTO } from "~/api";
+import type { ActionFormData, CreateBillingPortalResponseDTO, SubscriptionDTO } from "~/api.server";
 import type { TereusContext } from "~/root";
+
+export const meta: MetaFunction = () => ({
+  title: "Billing | Settings | Tereus",
+});
 
 export default function AccountSettingsBilling() {
   const context = useOutletContext<TereusContext>();

@@ -1,8 +1,13 @@
 import { Anchor, Button, Group, Input, InputWrapper, Stack, Text, Title } from "@mantine/core";
+import type { MetaFunction } from "@remix-run/node";
 import { Link, useOutletContext } from "@remix-run/react";
 import { At } from "tabler-icons-react";
 import { UserAvatar } from "~/components/UserAvatar";
 import type { TereusContext } from "~/root";
+
+export const meta: MetaFunction = () => ({
+  title: "Profile | Settings | Tereus",
+});
 
 export default function AccountSettingsProfile() {
   const context = useOutletContext<TereusContext>();

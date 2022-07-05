@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Stack } from "@mantine/core";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { useAuthenticityToken } from "remix-utils";
@@ -7,6 +7,10 @@ import { AlertCircle, BrandGithub, BrandGitlab } from "tabler-icons-react";
 import { Page } from "~/components/Page";
 import { authGuardMaybe } from "~/utils/authGuard.server";
 import { getAuthorizeUrl } from "~/utils/oauth2.server";
+
+export const meta: MetaFunction = () => ({
+  title: "Login | Tereus",
+});
 
 type LoaderData = {
   githubLoginUrl: string;

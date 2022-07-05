@@ -1,6 +1,6 @@
 import { Button, Card, Code, Container, Select, Tabs, TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionFunction, MetaFunction } from "@remix-run/node";
 import { json, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
 import type { FieldProps } from "formik";
@@ -12,6 +12,10 @@ import * as api from "~/api.server";
 import { FilePicker } from "~/components/FilePicker";
 import { getSession } from "~/sessions.server";
 import { TRANSPILER_MAP } from "../transpiler";
+
+export const meta: MetaFunction = () => ({
+  title: "Zip / Git | Transpiler | Tereus",
+});
 
 export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request);
