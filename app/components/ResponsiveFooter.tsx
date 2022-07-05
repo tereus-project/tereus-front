@@ -1,7 +1,8 @@
-import { Box, Container, createStyles, Group, Image, Text } from "@mantine/core";
+import { Box, Container, createStyles, Group, Text } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import type { HTMLAttributeAnchorTarget } from "react";
 import type { To } from "react-router-dom";
+import Image from "remix-image";
 
 const useStyles = createStyles((theme) => ({
   footer: {
@@ -131,7 +132,28 @@ export function ResponsiveFooter({ data }: ResponsiveFooterProps) {
       <Container className={classes.inner}>
         <div className={classes.logo}>
           <Group>
-            <Image height="40px" width="40px" src="/images/logo.png" />
+            <Image
+              src="/images/logo.png"
+              style={{
+                borderRadius: "50%",
+                minWidth: "40px !important",
+                minHeight: "40px !important",
+                maxWidth: "40px !important",
+                maxHeight: "40px !important",
+              }}
+              responsive={[
+                {
+                  size: {
+                    width: 80,
+                    height: 80,
+                  },
+                },
+              ]}
+              options={{
+                quality: 80,
+                compressionLevel: 9,
+              }}
+            />
             <Box>Tereus</Box>
           </Group>
         </div>

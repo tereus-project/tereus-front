@@ -1,17 +1,6 @@
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  createStyles,
-  Group,
-  Image,
-  Stack,
-  Text,
-  Title,
-  useMantineTheme,
-} from "@mantine/core";
+import { Box, Button, Card, Container, createStyles, Group, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import { Link } from "@remix-run/react";
+import Image from "remix-image";
 import { AnimatedTerminal } from "~/components/AnimatedTerminal";
 
 const useStyles = createStyles((theme) => ({
@@ -261,7 +250,29 @@ export default function Index() {
                   }}
                 >
                   <Group sx={{ width: "100%" }} align="start">
-                    <Image src={opinion.avatar} height={64} width={64} radius={50} alt={opinion.name} />
+                    <Image
+                      src={opinion.avatar}
+                      alt={opinion.name}
+                      style={{
+                        borderRadius: "50%",
+                        minWidth: "64px !important",
+                        minHeight: "64px !important",
+                        maxWidth: "64px !important",
+                        maxHeight: "64px !important",
+                      }}
+                      responsive={[
+                        {
+                          size: {
+                            width: 128,
+                            height: 128,
+                          },
+                        },
+                      ]}
+                      options={{
+                        quality: 80,
+                        compressionLevel: 9,
+                      }}
+                    />
 
                     <Stack spacing={0} sx={{ flex: 1 }}>
                       <Text weight={500}>{opinion.name}</Text>

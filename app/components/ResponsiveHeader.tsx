@@ -7,7 +7,6 @@ import {
   Divider,
   Group,
   Header,
-  Image,
   Menu,
   Paper,
   Transition,
@@ -18,6 +17,7 @@ import { Link, useFetcher } from "@remix-run/react";
 import React, { useEffect, useState } from "react";
 import type { To } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Image from "remix-image";
 import { useAuthenticityToken } from "remix-utils";
 import { ChevronDown, Logout, PlayerPause, Settings, SwitchHorizontal, Trash } from "tabler-icons-react";
 import type { GetCurrentUserResponseDTO } from "~/api.server";
@@ -164,7 +164,28 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
       <div className={classes.header}>
         <Anchor variant="text" component={Link} to="/">
           <Group>
-            <Image height="40px" width="40px" src="/images/logo.png" />
+            <Image
+              src="/images/logo.png"
+              style={{
+                borderRadius: "50%",
+                minWidth: "40px !important",
+                minHeight: "40px !important",
+                maxWidth: "40px !important",
+                maxHeight: "40px !important",
+              }}
+              responsive={[
+                {
+                  size: {
+                    width: 80,
+                    height: 80,
+                  },
+                },
+              ]}
+              options={{
+                quality: 80,
+                compressionLevel: 9,
+              }}
+            />
             <Box>Tereus</Box>
           </Group>
         </Anchor>
