@@ -1,7 +1,7 @@
 import type { ColorScheme } from "@mantine/core";
 import { ColorSchemeProvider, MantineProvider, Space } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useLoaderData, useLocation, useMatches } from "@remix-run/react";
@@ -22,6 +22,18 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
   description: "Tereus code transpilation service",
 });
+
+export const links: LinksFunction = () => {
+  const isDev = process.env.NODE_ENV === "development";
+
+  return [
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      href: isDev ? "/favicon-dev.ico" : "/favicon.ico",
+    },
+  ];
+};
 
 interface LoaderResponse {
   csrf: string;
