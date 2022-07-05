@@ -98,6 +98,11 @@ const OPINIONS = [
     content: "Tested to the extreme and works flawlessly.",
   },
   {
+    name: "Micaël Pais Novo",
+    avatar: "/images/opinions/micael.jpg",
+    content: "When I play with Cristiano Ronaldo, I sometimes think about transpiling my code with Tereus.",
+  },
+  {
     name: "Christophe Delon",
     avatar: "/images/opinions/christophe.jpg",
     content: "I use this tool daily for my courses. If it's not a 20/20, I don't know what it is.",
@@ -113,14 +118,14 @@ const OPINIONS = [
     content: "What an amazing tool! Very fast response when transpiling code!",
   },
   {
-    name: "Stéphane Rabenarisoa",
-    avatar: "/images/opinions/stephane.jpg",
-    content: "개발자로 테레우스가 너무 좋아서 우리 한국 회사에서 매일 씁니다!",
-  },
-  {
     name: "Khalida Ouamar",
     avatar: "/images/opinions/khalida.jpg",
     content: "I'll invest all my money in this project when it's going on the market!",
+  },
+  {
+    name: "Stéphane Rabenarisoa",
+    avatar: "/images/opinions/stephane.jpg",
+    content: "개발자로 테레우스가 너무 좋아서 우리 한국 회사에서 매일 씁니다!",
   },
   {
     name: "Noé Larieu Lacoste",
@@ -150,12 +155,17 @@ const OPINIONS = [
   {
     name: "Quentin Solard",
     avatar: "/images/opinions/quentin.jpg",
-    content: "I use Tereus for converting my Arduino C++ code to Go code. It's really great!",
+    content: "I use Tereus for converting my Arduino C code to Go code. It's really great!",
   },
   {
     name: "Latif Sagna",
     avatar: "/images/opinions/latif.jpg",
     content: "Very efficient and fast. I'm going to learn Go with this tool!",
+  },
+  {
+    name: "Clément Legouest",
+    avatar: "/images/opinions/clement.jpg",
+    content: "It's like when I listen to heavy metal music and I can't stop listening to it.",
   },
   {
     name: "Maxime d'Harboullé",
