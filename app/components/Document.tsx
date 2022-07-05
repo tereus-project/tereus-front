@@ -1,7 +1,14 @@
+import { createStyles } from "@mantine/core";
 import { Links, LiveReload, Meta, Scripts } from "@remix-run/react";
 import { ErrorBoundary, withSentryRouteTracing } from "@sentry/remix";
 import { StructuredData } from "remix-utils";
 import { CustomScrollRestoration } from "./CustomScrollRestoration";
+
+const useStyles = createStyles((theme) => ({
+  body: {
+    overflowX: "hidden",
+  },
+}));
 
 export type DocumentProps = React.PropsWithChildren<{
   cloudflareAnalyticsToken?: string;
@@ -12,6 +19,8 @@ export type DocumentProps = React.PropsWithChildren<{
 }>;
 
 function DocumentComponent({ children, cloudflareAnalyticsToken, umamiAnalytics }: DocumentProps) {
+  const { classes } = useStyles();
+
   return (
     <ErrorBoundary>
       <html lang="en">
@@ -20,7 +29,7 @@ function DocumentComponent({ children, cloudflareAnalyticsToken, umamiAnalytics 
           <Links />
           <StructuredData />
         </head>
-        <body>
+        <body className={classes.body}>
           {children}
           <CustomScrollRestoration />
           {cloudflareAnalyticsToken && (
