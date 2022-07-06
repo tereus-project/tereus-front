@@ -74,7 +74,6 @@ const VARIANTS: Variant[] = [
     sourceLanguage: "c",
     sourceCode: `
 double Pow(double x, int n) {
-  // init
   double sum = 1.0;
 
   int sign = n < 0 ? -1 : 1;
@@ -98,7 +97,6 @@ package main
 import "github.com/tereus-project/tereus-transpiler-c-go/libc"
 
 func Pow(x float64, n int) float64 {
-  // init
   sum := float64(1.0)
   sign := libc.Ternary(n < 0, func() int { return -1 }, func() int { return 1 })
   nn := uint(n) * uint(sign)
@@ -111,6 +109,53 @@ func Pow(x float64, n int) float64 {
     x *= x
   }
   return libc.Ternary(sign == 1, func() float64 { return sum }, func() float32 { return 1.0 / float32(sum) })
+}
+`.trim(),
+  },
+  {
+    sourceLanguage: "c",
+    sourceCode: `
+#include <stdio.h>
+
+void swap(int* n1, int* n2)
+{
+    int temp;
+    temp = *n1;
+    *n1 = *n2;
+    *n2 = temp;
+}
+
+int main()
+{
+    int num1 = 5, num2 = 10;
+    swap( &num1, &num2);
+    printf("num1 = %d\n", num1);
+    printf("num2 = %d", num2);
+    return 0;
+}
+`.trim(),
+    targetLanguage: "go",
+    targetCode: `
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func swap(n1 *int, n2 *int) {
+	temp := 0
+	temp = *n1
+	*n1 = *n2
+	*n2 = temp
+}
+
+func main() {
+	num1, num2 := 5, 10
+	swap(&num1, &num2)
+	fmt.Printf("num1 = %d\n", num1)
+	fmt.Printf("num2 = %d", num2)
+	os.Exit(0)
 }
 `.trim(),
   },
