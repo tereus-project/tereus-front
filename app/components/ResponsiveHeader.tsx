@@ -153,6 +153,11 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
         onClick={() => {
           toggleOpened(false);
         }}
+        sx={{
+          "@media (max-width: 768px)": {
+            padding: "0 !important",
+          },
+        }}
       >
         {label}
       </Button>
