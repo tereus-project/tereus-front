@@ -63,20 +63,16 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-          SENTRY_LOG_LEVEL: debug
 
-  name: Lighthouse CI
-  on: push
-  jobs:
-    lighthouse:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: Audit URLs using Lighthouse
-          uses: treosh/lighthouse-ci-action@v9
-          with:
-            urls: |
-              https://tereus.dev/
-            # budgetPath: ./budget.json # test performance budgets
-            uploadArtifacts: true # save results as an action artifacts
-            temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://tereus.dev/
+          # budgetPath: ./budget.json # test performance budgets
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse report to the temporary storage
