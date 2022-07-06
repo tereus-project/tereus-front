@@ -1,6 +1,5 @@
 ci:
   collect:
-    staticDistDir: ./build
     settings:
       formFactor: desktop
       screenEmulation:
