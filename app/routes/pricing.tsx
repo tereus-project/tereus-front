@@ -208,48 +208,54 @@ export default function Pricing() {
         {plans.map((plan, planIndex) => (
           <Grid.Col sm={12 / plans.length} xs={12} key={`plan-${plan.tier}`}>
             <Card shadow="sm" p={0} withBorder style={{ height: "100%" }}>
-              <Stack
-                mb={12}
-                p="lg"
-                sx={() => ({
-                  gap: 0,
-                  borderBottom: `1px solid ${theme.colors.gray[2]}`,
-                })}
-              >
-                <Group>
-                  <Title order={3}>{plan.name}</Title>
-                  {plan.tier === currentTier && (
-                    <Badge color="green">
-                      {!context.user?.subscription?.cancelled ? <div>Current</div> : <div>Expires at {expiresAt}</div>}
-                    </Badge>
-                  )}
-                </Group>
-                <Title order={4} style={{ color: theme.colors.gray[5] }}>
-                  ${plan.usdPrice} / month
-                </Title>
-              </Stack>
-
-              <Stack p="lg">
-                <List spacing={8}>
-                  {Object.entries(plan.features).map(([feature, isIncluded], i) => (
-                    <List.Item
-                      key={`plan-${plan.tier}-feature-${i}`}
-                      icon={
-                        isIncluded === "full" ? (
-                          <Check size={16} strokeWidth={3} color="teal" />
-                        ) : isIncluded === "partial" ? (
-                          <CircleDotted size={16} strokeWidth={3} color="blue" />
+              <Stack spacing={0} sx={{ height: "100%" }}>
+                <Stack
+                  mb={12}
+                  p="lg"
+                  sx={() => ({
+                    gap: 0,
+                    borderBottom: `1px solid ${theme.colors.gray[2]}`,
+                  })}
+                >
+                  <Group>
+                    <Title order={3}>{plan.name}</Title>
+                    {plan.tier === currentTier && (
+                      <Badge color="green">
+                        {!context.user?.subscription?.cancelled ? (
+                          <div>Current</div>
                         ) : (
-                          <X size={16} strokeWidth={3} color="red" />
-                        )
-                      }
-                    >
-                      {feature}
-                    </List.Item>
-                  ))}
-                </List>
+                          <div>Expires at {expiresAt}</div>
+                        )}
+                      </Badge>
+                    )}
+                  </Group>
+                  <Title order={4} style={{ color: theme.colors.gray[5] }}>
+                    ${plan.usdPrice} / month
+                  </Title>
+                </Stack>
 
-                <ManagePlanButton planIndex={planIndex} plan={plan} />
+                <Stack p="lg" justify="space-between" sx={{ flex: 1 }}>
+                  <List spacing={8}>
+                    {Object.entries(plan.features).map(([feature, isIncluded], i) => (
+                      <List.Item
+                        key={`plan-${plan.tier}-feature-${i}`}
+                        icon={
+                          isIncluded === "full" ? (
+                            <Check size={16} strokeWidth={3} color="teal" />
+                          ) : isIncluded === "partial" ? (
+                            <CircleDotted size={16} strokeWidth={3} color="blue" />
+                          ) : (
+                            <X size={16} strokeWidth={3} color="red" />
+                          )
+                        }
+                      >
+                        {feature}
+                      </List.Item>
+                    ))}
+                  </List>
+
+                  <ManagePlanButton planIndex={planIndex} plan={plan} />
+                </Stack>
               </Stack>
             </Card>
           </Grid.Col>
