@@ -47,6 +47,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy]
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Install modules
+        run: npm install
+      - name: Build with sourcemaps
+        run: npm run build
       - uses: getsentry/action-release@v1
         with:
           environment: "production"
