@@ -78,17 +78,25 @@ export default function RemixerZip() {
   const modes = ["zip", "git"];
 
   useEffect(() => {
-    if (fetcher.state === "loading" && fetcher.data?.response) {
-      showNotification({
-        color: "green",
-        title: "New source added",
-        message: (
-          <>
-            Source <Code>{fetcher.data.response.id}</Code> added. Remixing will start soon. You can check the{" "}
-            <Link to="/history">history page</Link> for status.
-          </>
-        ),
-      });
+    if (fetcher.type === "done") {
+      if (fetcher.data.errors) {
+        showNotification({
+          color: "red",
+          title: "An error occured",
+          message: fetcher.data.errors.join("\n"),
+        });
+      } else {
+        showNotification({
+          color: "green",
+          title: "New source added",
+          message: (
+            <>
+              Source <Code>{fetcher.data.response!.id}</Code> added. Remixing will start soon. You can check the{" "}
+              <Link to="/history">history page</Link> for status.
+            </>
+          ),
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher]);
