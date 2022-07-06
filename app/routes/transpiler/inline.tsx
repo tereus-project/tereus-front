@@ -322,7 +322,18 @@ export default function RemixerInline() {
           <br />
 
           <Group mb={24} position="center" align="start">
-            <Card shadow="sm" withBorder style={{ flex: 1 }}>
+            <Card
+              shadow="sm"
+              withBorder
+              sx={(theme) => ({
+                [theme.fn.largerThan("md")]: {
+                  flex: 1,
+                },
+                [theme.fn.smallerThan("md")]: {
+                  width: "100%",
+                },
+              })}
+            >
               <Field name="sourceCode" isRequired>
                 {({ field, meta }: FieldProps<FormValues["sourceCode"]>) => (
                   <Editor
@@ -366,7 +377,18 @@ export default function RemixerInline() {
                 <Kbd px={10}>⌘</Kbd> + <Kbd px={10}>↵</Kbd>
               </Box>
             </Stack>
-            <Card shadow="sm" withBorder style={{ flex: 1 }}>
+            <Card
+              shadow="sm"
+              withBorder
+              sx={(theme) => ({
+                [theme.fn.largerThan("sm")]: {
+                  flex: 1,
+                },
+                [theme.fn.smallerThan("sm")]: {
+                  width: "100%",
+                },
+              })}
+            >
               <LoadingOverlay
                 visible={props.isSubmitting || isTranspiling}
                 loader={
