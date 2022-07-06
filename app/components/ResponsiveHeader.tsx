@@ -247,6 +247,25 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
           {(styles) => (
             <Paper className={classes.dropdown} withBorder style={styles}>
               {Items}
+              {user && (
+                <Button<typeof Link>
+                  variant="subtle"
+                  component={Link}
+                  to={"/settings/profile"}
+                  className={cx(classes.link)}
+                  leftIcon={<Settings size={16} />}
+                  onClick={() => {
+                    toggleOpened(false);
+                  }}
+                  sx={(theme) => ({
+                    [theme.fn.smallerThan("sm")]: {
+                      padding: "0 !important",
+                    },
+                  })}
+                >
+                  Account
+                </Button>
+              )}
             </Paper>
           )}
         </Transition>
