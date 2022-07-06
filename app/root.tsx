@@ -103,6 +103,7 @@ export default function App() {
     Sentry.configureScope((scope) => {
       if (user) {
         scope.setUser({
+          email: user.email,
           id: user.id,
         });
       } else {
