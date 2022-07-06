@@ -28,7 +28,7 @@ const HEADER_HEIGHT = 60;
 const useStyles = createStyles((theme) => ({
   root: {
     position: "relative",
-    zIndex: 1,
+    zIndex: 999999,
   },
 
   userMenu: {
@@ -153,11 +153,11 @@ export function ResponsiveHeader({ user, links }: ResponsiveHeaderProps) {
         onClick={() => {
           toggleOpened(false);
         }}
-        sx={{
-          "@media (max-width: 768px)": {
+        sx={(theme) => ({
+          [theme.fn.smallerThan("sm")]: {
             padding: "0 !important",
           },
-        }}
+        })}
       >
         {label}
       </Button>
