@@ -234,7 +234,7 @@ export default function RemixerZip() {
                     {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
                       <TextInput
                         {...field}
-                        placeholder="https://github.com/sqlite/sqlite"
+                        placeholder="https://github.com/user/repository"
                         label="Git repository"
                         required={props.values.mode === "git"}
                         error={meta.error}
@@ -253,75 +253,6 @@ export default function RemixerZip() {
                 </Card>
               </Tabs.Tab>
             </Tabs>
-            {/* <Box borderWidth="1px" borderRadius="lg" p={4} shadow="md">
-          <Field name="mode">
-            {({ field, meta }: FieldProps<FormValues["mode"]>) => (
-              <input {...field} id="mode" type="hidden" value={mode} />
-            )}
-          </Field>
-
-          <Tabs
-            isFitted
-            variant="enclosed"
-            index={modes.findIndex((m) => m === mode)}
-            onChange={(index) => setMode(modes[index])}
-          >
-            <TabList>
-              <Tab>Zip</Tab>
-              <Tab>Git</Tab>
-            </TabList>
-
-            <Box borderWidth="1px" borderRadius="lg" borderTopRadius="none" p={4} shadow="md">
-              <TabPanels>
-                <TabPanel>
-                  <Field name="file">
-                    {({ field, meta }: FieldProps<FormValues["file"]>) => (
-                      <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "zip"}>
-                        <FormLabel htmlFor="file">Zip file</FormLabel>
-                        <FileUpload
-                          {...field}
-                          id="file"
-                          accept=".zip"
-                          setFieldValue={(file) => props.setFieldValue("file", file)}
-                          placeholder="Select a zip file"
-                        />
-                        <FormErrorMessage>{meta.error}</FormErrorMessage>
-                      </FormControl>
-                    )}
-                  </Field>
-
-                  <Button
-                    mt={4}
-                    colorScheme="teal"
-                    isLoading={props.isSubmitting || fetcher.state === "submitting"}
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                </TabPanel>
-                <TabPanel>
-                  <Field name="gitRepo">
-                    {({ field, meta }: FieldProps<FormValues["gitRepo"]>) => (
-                      <FormControl isInvalid={!!meta.error && meta.touched} isRequired={mode === "git"}>
-                        <FormLabel htmlFor="gitRepo">Git repository</FormLabel>
-                        <Input {...field} id="gitRepo" placeholder="https://github.com/sqlite/sqlite" />
-                        <FormErrorMessage>{meta.error}</FormErrorMessage>
-                      </FormControl>
-                    )}
-                  </Field>
-
-                  <Button
-                    mt={4}
-                    colorScheme="teal"
-                    isLoading={props.isSubmitting || fetcher.state === "submitting"}
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                </TabPanel>
-              </TabPanels>
-            </Box>
-          </Tabs> */}
           </Form>
         )}
       </Formik>
