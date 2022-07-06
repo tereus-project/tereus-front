@@ -87,12 +87,15 @@ export const authRevokeGitlab = (token: string) =>
     token,
   });
 
-export const validateToken = (token: string) =>
-  request<void>({
+export interface AuthCheckResponseDTO {
+  valid: boolean;
+}
+
+export const authCheck = (token: string) =>
+  request<AuthCheckResponseDTO>({
     method: "POST",
     url: `/auth/check`,
     token,
-    raw: true,
   });
 
 export interface SubscriptionDTO {

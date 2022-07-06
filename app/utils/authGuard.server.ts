@@ -28,7 +28,8 @@ export const authGuard: Guard<AuthGuardResult> = async (request: Request) => {
     throw redirectToLogin(request);
   }
 
-  const [, errors] = await api.validateToken(session.get("token"));
+  const [, errors] = await api.authCheck(session.get("token"));
+  console.log(errors);
   if (errors) {
     throw redirectToLogin(request, errors);
   }
