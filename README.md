@@ -1,3 +1,7 @@
 # Tereus Front
 
-Web application for Tereus API.
+Remix-based frontend for Tereus.
+
+## Demo
+
+![](./img/demo_inline.gif)

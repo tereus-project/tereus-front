@@ -9,14 +9,14 @@ export const meta: MetaFunction = () => ({
 
 const TEAM_MEMBERS = [
   {
-    name: "Stanislas Lange",
+    name: "Stanislas L",
     level: "Co-Founder",
     avatar: "https://avatars.githubusercontent.com/u/11699655",
     socials: {
-      website: "https://stanislas.blog",
+      website: "",
       github: "angristan",
-      twitter: "fuolpit",
-      instagram: "angristan",
+      twitter: "",
+      instagram: "",
     },
   },
   {
